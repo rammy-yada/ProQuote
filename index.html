@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProQuote — Quotation Maker</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Lora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ─── RESET & BASE ─── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f2f7;
+  --panel:#ffffff;
+  --panel2:#f7f8fc;
+  --border:#e2e5ef;
+  --border2:#d0d4e4;
+  --text:#1a1d2e;
+  --muted:#7a7f9a;
+  --dim:#b0b5cc;
+  --accent:#2557d6;
+  --accent-soft:#eef1fd;
+  --accent-hover:#1a46c0;
+  --danger:#e53935;
+  --danger-soft:#fdecea;
+  --success:#1b8a5a;
+  --success-soft:#e6f4ee;
+  --warn:#d97706;
+  --warn-soft:#fef3e0;
+  --radius:8px;
+  --shadow:0 2px 12px rgba(0,0,0,0.08);
+  --shadow-lg:0 8px 32px rgba(0,0,0,0.12);
+  --nav-h:56px;
+  --steps-h:48px;
+  --doc-color:#1e40af;
+}
+html,body{height:100%;font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+
+/* ─── LAYOUT ─── */
+.shell{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+
+/* ─── TOPBAR ─── */
+.topbar{
+  height:var(--nav-h);
+  background:var(--panel);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;
+  flex-shrink:0;
+  z-index:100;
+}
+.logo{font-family:'Lora',serif;font-size:1.2rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
+.logo-mark{width:28px;height:28px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:0.75rem;font-weight:700;letter-spacing:-0.5px}
+.topbar-right{display:flex;align-items:center;gap:8px}
+
+/* ─── STEP BAR ─── */
+.stepbar{
+  height:var(--steps-h);
+  background:var(--panel);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:stretch;
+  padding:0 20px;
+  gap:4px;
+  flex-shrink:0;
+  overflow-x:auto;
+}
+.stepbar::-webkit-scrollbar{display:none}
+.step-tab{
+  display:flex;align-items:center;gap:6px;
+  padding:0 14px;
+  background:none;border:none;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:0.8rem;font-weight:500;
+  color:var(--muted);
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+  white-space:nowrap;
+  transition:all 0.15s;
+}
+.step-tab:hover{color:var(--text)}
+.step-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.step-tab.done{color:var(--success)}
+.step-badge{
+  width:20px;height:20px;border-radius:50%;
+  background:var(--border);
+  font-size:0.68rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:all 0.15s;
+}
+.step-tab.active .step-badge{background:var(--accent);color:white}
+.step-tab.done .step-badge{background:var(--success);color:white}
+.step-sep{width:1px;background:var(--border);margin:12px 0;flex-shrink:0}
+
+/* ─── MAIN GRID ─── */
+.main{
+  display:grid;
+  grid-template-columns:360px 1fr;
+  flex:1;
+  overflow:hidden;
+}
+
+/* ─── FORM PANEL ─── */
+.form-panel{
+  background:var(--panel);
+  border-right:1px solid var(--border);
+  overflow-y:auto;
+  display:flex;flex-direction:column;
+}
+.form-panel::-webkit-scrollbar{width:4px}
+.form-panel::-webkit-scrollbar-track{background:transparent}
+.form-panel::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+.pane{display:none;flex:1;flex-direction:column}
+.pane.active{display:flex}
+.pane-body{flex:1;padding:20px;overflow-y:auto}
+.pane-body::-webkit-scrollbar{width:4px}
+.pane-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+.pane-head{
+  padding:18px 20px 0;
+  border-bottom:1px solid var(--border);
+  background:var(--panel2);
+  flex-shrink:0;
+  padding-bottom:14px;
+}
+.pane-title{font-family:'Lora',serif;font-size:1rem;font-weight:600;color:var(--text)}
+.pane-sub{font-size:0.76rem;color:var(--muted);margin-top:3px}
+
+/* ─── FORM CONTROLS ─── */
+.fg{margin-bottom:14px}
+.fg:last-child{margin-bottom:0}
+.fl{display:block;font-size:0.72rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+input[type=text],input[type=number],input[type=date],input[type=email],input[type=tel],
+textarea,select{
+  width:100%;
+  padding:8px 11px;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:0.84rem;
+  color:var(--text);
+  background:var(--panel);
+  outline:none;
+  transition:border 0.15s,box-shadow 0.15s;
+  appearance:none;
+}
+input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+input::placeholder,textarea::placeholder{color:var(--dim)}
+textarea{resize:vertical;min-height:60px;line-height:1.6}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237a7f9a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;cursor:pointer}
+input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:pointer;border:1px solid var(--border);background:var(--panel)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+
+/* ─── DIVIDER ─── */
+.divider{border:none;border-top:1px solid var(--border);margin:18px 0}
+.sec-label{font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--dim);margin-bottom:10px}
+
+/* ─── TOGGLE ─── */
+.toggle-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 12px;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  margin-bottom:8px;
+  cursor:pointer;
+  user-select:none;
+  transition:border 0.15s,background 0.15s;
+  background:var(--panel2);
+}
+.toggle-item:hover{border-color:var(--border2);background:white}
+.toggle-text{}
+.toggle-name{font-size:0.84rem;font-weight:500}
+.toggle-hint{font-size:0.72rem;color:var(--muted);margin-top:2px}
+.sw{
+  width:36px;height:20px;
+  border-radius:10px;
+  background:var(--border2);
+  position:relative;
+  transition:background 0.15s;
+  flex-shrink:0;margin-left:12px;
+}
+.sw::after{
+  content:'';
+  position:absolute;
+  width:14px;height:14px;
+  background:white;border-radius:50%;
+  top:3px;left:3px;
+  transition:left 0.15s;
+  box-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+.sw.on{background:var(--accent)}
+.sw.on::after{left:19px}
+
+/* ─── BUTTONS ─── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:8px 16px;border:none;border-radius:var(--radius);
+  font-family:'Plus Jakarta Sans',sans-serif;font-size:0.82rem;font-weight:600;
+  cursor:pointer;transition:all 0.15s;white-space:nowrap;
+}
+.btn-primary{background:var(--accent);color:white}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-outline{background:white;color:var(--text);border:1px solid var(--border)}
+.btn-outline:hover{border-color:var(--border2);background:var(--panel2)}
+.btn-ghost{background:transparent;color:var(--muted);border:none}
+.btn-ghost:hover{color:var(--text);background:var(--panel2)}
+.btn-danger{background:var(--danger-soft);color:var(--danger);border:1px solid rgba(229,57,53,0.15)}
+.btn-danger:hover{background:var(--danger);color:white}
+.btn-success{background:var(--success-soft);color:var(--success);border:1px solid rgba(27,138,90,0.2)}
+.btn-success:hover{background:var(--success);color:white}
+.btn-sm{padding:5px 10px;font-size:0.76rem}
+.btn-full{width:100%}
+.btn-icon{padding:7px;width:30px;height:30px;border-radius:6px;flex-shrink:0}
+
+/* ─── PANE FOOTER NAV ─── */
+.pane-nav{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 20px;
+  border-top:1px solid var(--border);
+  background:var(--panel2);
+  flex-shrink:0;
+}
+
+/* ─── ITEMS ─── */
+.items-wrap{background:var(--panel2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:10px}
+.items-head{
+  display:grid;
+  grid-template-columns:1fr 52px 80px 68px 28px;
+  gap:6px;
+  padding:7px 10px;
+  background:var(--border);
+  font-size:0.67rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);
+}
+.item-entry{
+  display:grid;
+  grid-template-columns:1fr 52px 80px 68px 28px;
+  gap:6px;
+  padding:8px 10px;
+  border-top:1px solid var(--border);
+  align-items:center;
+  background:white;
+  transition:background 0.1s;
+}
+.item-entry:first-of-type{border-top:none}
+.item-entry:hover{background:#fafbff}
+.item-entry input{padding:5px 7px;font-size:0.8rem;border-radius:5px;background:white}
+.item-desc-wrap{display:flex;flex-direction:column;gap:3px}
+.item-disc-row{
+  display:none;
+  grid-column:1/-1;
+  align-items:center;
+  gap:8px;
+  padding:4px 0 2px;
+  border-top:1px dashed var(--border);
+  margin-top:4px;
+}
+.item-entry.has-disc .item-disc-row{display:flex}
+.disc-tag{font-size:0.7rem;color:var(--warn);background:var(--warn-soft);padding:2px 6px;border-radius:4px;font-weight:600;white-space:nowrap}
+.item-del{background:none;border:none;width:26px;height:26px;border-radius:5px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--dim);font-size:0.85rem;transition:all 0.12s}
+.item-del:hover{background:var(--danger-soft);color:var(--danger)}
+.add-row-btn{
+  width:100%;padding:9px;background:none;
+  border:1px dashed var(--accent);border-radius:var(--radius);
+  color:var(--accent);font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:0.8rem;font-weight:600;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+  transition:all 0.15s;
+}
+.add-row-btn:hover{background:var(--accent-soft)}
+
+/* ─── LOGO UPLOAD ─── */
+.logo-drop{
+  border:2px dashed var(--border2);border-radius:var(--radius);
+  padding:16px;text-align:center;
+  position:relative;cursor:pointer;
+  transition:all 0.15s;background:var(--panel2);
+}
+.logo-drop:hover{border-color:var(--accent);background:var(--accent-soft)}
+.logo-drop input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.logo-drop-label{font-size:0.78rem;color:var(--muted)}
+.logo-drop-sub{font-size:0.7rem;color:var(--dim);margin-top:3px}
+.logo-preview-img{max-width:100px;max-height:44px;object-fit:contain;border-radius:4px}
+
+/* ─── COLOR PRESETS ─── */
+.color-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px}
+.cpick{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all 0.12s;flex-shrink:0}
+.cpick:hover,.cpick.sel{border-color:var(--text);transform:scale(1.15)}
+
+/* ─── PREVIEW PANEL ─── */
+.preview-panel{
+  background:var(--bg);
+  overflow-y:auto;
+  display:flex;flex-direction:column;
+  align-items:center;
+  padding:24px 32px;
+  gap:16px;
+}
+.preview-panel::-webkit-scrollbar{width:6px}
+.preview-panel::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+.preview-bar{
+  width:100%;max-width:794px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.preview-bar-left{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)}
+.preview-bar-right{display:flex;gap:6px;align-items:center}
+
+/* ─── VISIBILITY CHIPS ─── */
+.vis-group{display:flex;gap:4px;background:white;border:1px solid var(--border);border-radius:6px;padding:3px;align-items:center}
+.vis-chip{
+  display:flex;align-items:center;gap:4px;
+  padding:3px 9px;border-radius:4px;
+  font-size:0.72rem;font-weight:600;
+  border:none;background:none;cursor:pointer;
+  color:var(--muted);transition:all 0.12s;
+}
+.vis-chip.on{background:var(--accent);color:white}
+
+/* ─── QUOTE DOCUMENT ─── */
+#quote-doc{
+  width:794px;
+  background:white;
+  box-shadow:var(--shadow-lg);
+  border-radius:3px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  color:#1a1d2e;
+  position:relative;
+}
+
+/* A4 page break support */
+.doc-page{
+  width:794px;
+  min-height:1122px;
+  padding:44px 52px;
+  position:relative;
+  page-break-after:always;
+  background:white;
+  display:flex;flex-direction:column;
+}
+.doc-page:last-child{page-break-after:avoid}
+
+/* Header */
+.dh{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+.dh-left{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.dh-logo{max-width:80px;max-height:60px;object-fit:contain;border-radius:3px;display:none}
+.dh-company{}
+.dh-company-name{font-family:'Lora',serif;font-size:1.2rem;font-weight:700;color:#0f1117;line-height:1.2}
+.dh-company-loc{font-size:0.76rem;color:#6a6f88;margin-top:2px}
+.dh-right{text-align:right}
+.dh-doc-title{
+  font-family:'Lora',serif;font-size:1.05rem;font-weight:700;
+  color:var(--doc-color);letter-spacing:0.02em;
+}
+.dh-dates{margin-top:6px}
+.dh-date-row{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:3px}
+.dh-date-label{font-size:0.7rem;color:#8a90a8;font-weight:500}
+.dh-date-val{font-size:0.77rem;color:#1a1d2e;font-weight:600}
+.status-chip{
+  display:inline-block;
+  padding:2px 9px;border-radius:20px;
+  font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;
+  margin-top:5px;
+}
+.s-draft{background:#fff3cd;color:#856404;border:1px solid #ffc107}
+.s-sent{background:#cfe2ff;color:#0a58ca;border:1px solid #9ec5fe}
+.s-approved{background:#d1e7dd;color:#0f5132;border:1px solid #a3cfbb}
+.s-rejected{background:#f8d7da;color:#842029;border:1px solid #f1aeb5}
+
+/* Accent line */
+.doc-accent-bar{height:3px;background:var(--doc-color);border-radius:2px;margin-bottom:18px}
+
+/* Parties section */
+.parties{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:20px;padding:14px 16px;background:#f8f9fc;border-radius:6px;border:1px solid #eef0f8}
+.party-label{font-size:0.62rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#a0a5be;margin-bottom:5px}
+.party-name{font-size:0.92rem;font-weight:700;color:#0f1117;line-height:1.3}
+.party-detail{font-size:0.74rem;color:#6a6f88;margin-top:3px;line-height:1.7}
+
+/* Table — Excel-style grid */
+.doc-table{
+  width:100%;border-collapse:collapse;
+  font-size:0.79rem;
+  border:1px solid #c8cce0;
+  margin-bottom:0;
+}
+.doc-table thead tr{background:var(--doc-color)}
+.doc-table th{
+  padding:8px 11px;color:white;font-size:0.68rem;font-weight:600;letter-spacing:0.05em;
+  text-align:left;
+  border-right:1px solid rgba(255,255,255,0.18);
+}
+.doc-table th:last-child{border-right:none}
+.doc-table th.r{text-align:right}
+.doc-table th.c{text-align:center}
+/* every cell gets a border — Excel style */
+.doc-table tbody tr{background:white}
+.doc-table tbody tr:nth-child(even){background:#f9fafc}
+.doc-table td{
+  padding:8px 11px;
+  color:#1a1d2e;
+  vertical-align:middle;
+  border-right:1px solid #d8dce8;
+  border-bottom:1px solid #d8dce8;
+}
+.doc-table td:last-child{border-right:none}
+.doc-table tbody tr:last-child td{border-bottom:none}
+.doc-table td.r{text-align:right;font-variant-numeric:tabular-nums}
+.doc-table td.c{text-align:center}
+.unit-type-badge{font-size:0.67rem;color:#8a90a8;display:inline-block;margin-top:2px}
+
+/* Totals — table-flush, right-aligned rows */
+.totals-wrap{display:flex;justify-content:flex-end;margin:0 0 18px}.totals-box{
+  width:300px;
+  border:1px solid #c8cce0;
+  border-top:none;
+  font-size:0.8rem;
+}
+.tot-row{
+  display:grid;
+  grid-template-columns:1fr auto;
+  padding:7px 11px;
+  border-bottom:1px solid #d8dce8;
+  align-items:center;
+}
+.tot-row:last-child{border-bottom:none}
+.tot-row.grand{
+  background:var(--doc-color);color:white;
+  font-weight:700;font-size:0.86rem;
+}
+.tot-label{color:#5a5f78}
+.tot-row.grand .tot-label{color:rgba(255,255,255,0.82)}
+.tot-val{
+  text-align:right;
+  font-weight:600;
+  font-variant-numeric:tabular-nums;
+  padding-left:20px;
+}
+.tot-row.disc-row .tot-label,.tot-row.disc-row .tot-val{color:#b45309}
+.tot-row.vat-row{background:#f5f7ff}
+.vat-note{font-size:0.67rem;color:#8a90a8;text-align:right;margin-top:4px}
+
+/* Footer */
+.doc-footer{
+  margin-top:auto;
+  padding-top:16px;
+  border-top:1px solid #eef0f8;
+  display:flex;gap:24px;
+  align-items:flex-start;
+}
+.footer-col{flex:1}
+.footer-tag{font-size:0.62rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#a0a5be;margin-bottom:4px}
+.footer-text{font-size:0.73rem;color:#6a6f88;line-height:1.7}
+
+/* Signature */
+.sig-wrap{display:flex;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid #eef0f8}
+.sig-box{text-align:center;width:180px}
+.sig-line{border-bottom:1px solid #1a1d2e;margin-bottom:6px;padding-bottom:28px}
+.sig-label{font-size:0.7rem;color:#8a90a8}
+
+/* Watermark */
+.doc-watermark{
+  position:absolute;bottom:18px;right:20px;
+  font-family:'Lora',serif;
+  font-size:0.62rem;font-weight:600;letter-spacing:0.12em;
+  color:#dadce8;text-transform:uppercase;
+  pointer-events:none;user-select:none;
+}
+
+/* ─── MODAL ─── */
+.overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(10,10,20,0.5);
+  backdrop-filter:blur(4px);
+  z-index:500;align-items:center;justify-content:center;
+}
+.overlay.open{display:flex}
+.modal{
+  background:white;border-radius:12px;
+  padding:28px 24px;max-width:360px;width:90%;
+  box-shadow:var(--shadow-lg);
+  animation:mIn 0.2s ease;
+}
+@keyframes mIn{from{opacity:0;transform:scale(0.92)}to{opacity:1;transform:scale(1)}}
+.modal-icon{text-align:center;font-size:2rem;margin-bottom:10px}
+.modal-title{font-family:'Lora',serif;font-size:1rem;font-weight:600;text-align:center;margin-bottom:6px}
+.modal-msg{font-size:0.82rem;color:var(--muted);text-align:center;line-height:1.6;margin-bottom:20px}
+.modal-btns{display:flex;gap:8px;justify-content:center}
+
+/* ─── TOAST ─── */
+.toast-tray{position:fixed;bottom:20px;right:20px;z-index:600;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.toast{
+  background:#1a1d2e;color:white;
+  padding:10px 16px;border-radius:8px;
+  font-size:0.8rem;font-weight:500;
+  box-shadow:var(--shadow-lg);
+  display:flex;align-items:center;gap:7px;
+  animation:tIn 0.22s ease;
+  pointer-events:auto;max-width:260px;
+}
+.toast.ok{background:var(--success)}
+.toast.err{background:var(--danger)}
+@keyframes tIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+@keyframes tOut{to{opacity:0;transform:translateX(16px)}}
+
+/* ─── SUMMARY CARD ─── */
+.summary-card{
+  background:var(--panel2);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px 16px;
+  font-size:0.82rem;line-height:2;
+}
+
+/* ─── PRINT STYLES ─── */
+@media print{
+  body{background:white}
+  .shell>*:not(.main){display:none!important}
+  .main{display:block!important;grid-template-columns:none!important}
+  .form-panel{display:none!important}
+  .preview-panel{padding:0!important;background:white!important;align-items:flex-start!important}
+  .preview-bar{display:none!important}
+  #quote-doc{box-shadow:none!important;width:100%!important;border-radius:0!important}
+  .doc-page{min-height:0!important}
+  @page{size:A4;margin:0}
+}
+</style>
+</head>
+<body>
+
+<!-- OVERLAY / MODAL -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-icon" id="m-icon">⚠️</div>
+    <div class="modal-title" id="m-title"></div>
+    <div class="modal-msg" id="m-msg"></div>
+    <div class="modal-btns">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn" id="m-ok">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div class="toast-tray" id="tray"></div>
+
+<div class="shell">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-mark">PQ</div>
+      ProQuote
+    </div>
+    <div class="topbar-right">
+      <button class="btn btn-ghost btn-sm" onclick="confirm_('↺ New Quote','All data will be cleared. Start fresh?','🆕','Start Fresh','btn-danger',resetAll)">↺ New</button>
+      <button class="btn btn-ghost btn-sm" onclick="gotoStep(5)">👁 Preview</button>
+      <button class="btn btn-outline btn-sm" onclick="window.print()">🖨 Print</button>
+      <button class="btn btn-primary btn-sm" onclick="confirm_('Export as PDF','Use browser print dialog → Save as PDF for best results.','📄','Open Print Dialog','btn-primary',doPrint)">⬇ PDF</button>
+    </div>
+  </div>
+
+  <!-- STEP BAR -->
+  <div class="stepbar">
+    <button class="step-tab active" id="stab-1" onclick="gotoStep(1)"><div class="step-badge">1</div>Company</button>
+    <div class="step-sep"></div>
+    <button class="step-tab" id="stab-2" onclick="gotoStep(2)"><div class="step-badge">2</div>Customer</button>
+    <div class="step-sep"></div>
+    <button class="step-tab" id="stab-3" onclick="gotoStep(3)"><div class="step-badge">3</div>Items</button>
+    <div class="step-sep"></div>
+    <button class="step-tab" id="stab-4" onclick="gotoStep(4)"><div class="step-badge">4</div>Pricing</button>
+    <div class="step-sep"></div>
+    <button class="step-tab" id="stab-5" onclick="gotoStep(5)"><div class="step-badge">5</div>Preview</button>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- FORM -->
+    <div class="form-panel">
+
+      <!-- ══ STEP 1: COMPANY ══ -->
+      <div class="pane active" id="pane-1">
+        <div class="pane-head">
+          <div class="pane-title">Your Company</div>
+          <div class="pane-sub">Basic company info shown in the quotation header</div>
+        </div>
+        <div class="pane-body">
+          <div class="fg">
+            <label class="fl">Company / Business Name *</label>
+            <input type="text" id="co-name" value="Acme Studio" oninput="r()" placeholder="Your Company Name">
+          </div>
+          <div class="fg">
+            <label class="fl">Location / City</label>
+            <input type="text" id="co-loc" value="Kathmandu, Nepal" oninput="r()" placeholder="Kathmandu, Nepal">
+          </div>
+          <div class="row2">
+            <div class="fg">
+              <label class="fl">Phone</label>
+              <input type="tel" id="co-phone" value="+977 1 4567890" oninput="r()">
+            </div>
+            <div class="fg">
+              <label class="fl">Email</label>
+              <input type="email" id="co-email" value="hello@acme.com" oninput="r()">
+            </div>
+          </div>
+
+          <hr class="divider">
+          <div class="sec-label">Logo (optional)</div>
+          <div class="logo-drop" id="logo-drop">
+            <input type="file" accept="image/*" onchange="uploadLogo(event)">
+            <div id="logo-drop-inner">
+              <div style="font-size:1.5rem;margin-bottom:4px">🏢</div>
+              <div class="logo-drop-label">Click or drag image here</div>
+              <div class="logo-drop-sub">PNG, JPG, SVG · max 2MB · will resize to fit</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:6px" id="logo-actions" style="display:none">
+            <button class="btn btn-sm btn-outline" onclick="triggerLogoResize()">✂ Resize Logo</button>
+            <button class="btn btn-sm btn-danger" onclick="confirm_('Remove Logo','Remove the company logo?','🗑️','Remove','btn-danger',removeLogo)">✕ Remove</button>
+          </div>
+          <div id="logo-resize-wrap" style="display:none;margin-top:10px">
+            <label class="fl">Logo Width (px)</label>
+            <input type="range" id="logo-size-range" min="40" max="160" value="70" oninput="resizeLogo(this.value)" style="width:100%;padding:0;border:none;background:none;box-shadow:none">
+            <div style="text-align:right;font-size:0.72rem;color:var(--muted)" id="logo-size-label">70px</div>
+          </div>
+
+          <hr class="divider">
+          <div class="sec-label">Brand Color</div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <input type="color" id="co-color" value="#1e40af" onchange="applyColor(this.value)">
+            <span style="font-size:0.78rem;color:var(--muted)">Table header & accent line color</span>
+          </div>
+          <div class="color-row">
+            <div class="cpick sel" style="background:#1e40af" data-c="#1e40af" onclick="pickColor(this)"></div>
+            <div class="cpick" style="background:#0f766e" data-c="#0f766e" onclick="pickColor(this)"></div>
+            <div class="cpick" style="background:#b45309" data-c="#b45309" onclick="pickColor(this)"></div>
+            <div class="cpick" style="background:#6d28d9" data-c="#6d28d9" onclick="pickColor(this)"></div>
+            <div class="cpick" style="background:#be123c" data-c="#be123c" onclick="pickColor(this)"></div>
+            <div class="cpick" style="background:#1a1d2e" data-c="#1a1d2e" onclick="pickColor(this)"></div>
+            <div class="cpick" style="background:#1d4e0a" data-c="#1d4e0a" onclick="pickColor(this)"></div>
+          </div>
+        </div>
+        <div class="pane-nav">
+          <button class="btn btn-primary btn-full" onclick="gotoStep(2)">Next: Customer →</button>
+        </div>
+      </div>
+
+      <!-- ══ STEP 2: CUSTOMER ══ -->
+      <div class="pane" id="pane-2">
+        <div class="pane-head">
+          <div class="pane-title">Customer / Client</div>
+          <div class="pane-sub">Who is this quotation for?</div>
+        </div>
+        <div class="pane-body">
+          <div class="fg">
+            <label class="fl">Customer / Company Name *</label>
+            <input type="text" id="cl-name" value="Horizon Brands Pvt. Ltd." oninput="r()" placeholder="Client Name">
+          </div>
+          <div class="row2">
+            <div class="fg">
+              <label class="fl">Contact Person</label>
+              <input type="text" id="cl-person" value="Mr. Rohan Shrestha" oninput="r()">
+            </div>
+            <div class="fg">
+              <label class="fl">Phone</label>
+              <input type="tel" id="cl-phone" value="+977 9800000000" oninput="r()">
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">Location / Address</label>
+            <textarea id="cl-addr" rows="2" oninput="r()">Lalitpur, Kathmandu 44700</textarea>
+          </div>
+
+          <hr class="divider">
+          <div class="sec-label">Quotation Reference</div>
+          <div class="row2">
+            <div class="fg">
+              <label class="fl">Quote Number</label>
+              <input type="text" id="q-no" value="" oninput="r()" id="q-no" placeholder="Auto">
+            </div>
+            <div class="fg">
+              <label class="fl">Status</label>
+              <select id="q-status" onchange="r()">
+                <option value="draft">Draft</option>
+                <option value="sent">Sent</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+          </div>
+          <div class="row2">
+            <div class="fg">
+              <label class="fl">Date *</label>
+              <input type="date" id="q-date" oninput="r()">
+            </div>
+            <div class="fg">
+              <label class="fl">Valid Until *</label>
+              <input type="date" id="q-valid" oninput="r()">
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">Subject / Project (optional)</label>
+            <input type="text" id="q-subj" oninput="r()" placeholder="e.g. Brand Identity Project">
+          </div>
+        </div>
+        <div class="pane-nav">
+          <button class="btn btn-outline" onclick="gotoStep(1)">← Back</button>
+          <button class="btn btn-primary" style="flex:1" onclick="gotoStep(3)">Next: Items →</button>
+        </div>
+      </div>
+
+      <!-- ══ STEP 3: ITEMS ══ -->
+      <div class="pane" id="pane-3">
+        <div class="pane-head">
+          <div class="pane-title">Line Items</div>
+          <div class="pane-sub">Add services or products. Toggle <span style="color:var(--warn);font-weight:600">%</span> per row for item-level discount.</div>
+        </div>
+        <div class="pane-body">
+          <div class="row2" style="margin-bottom:14px">
+            <div class="fg">
+              <label class="fl">Currency</label>
+              <select id="s-curr" onchange="r()">
+                <option value="रु">NPR — रु</option>
+                <option value="$">USD — $</option>
+                <option value="£">GBP — £</option>
+                <option value="€">EUR — €</option>
+                <option value="₹">INR — ₹</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label class="fl">Unit Type</label>
+              <select id="s-unit" onchange="r()">
+                <option value="">—</option>
+                <option value="hrs">Hours</option>
+                <option value="days">Days</option>
+                <option value="pcs">Pieces</option>
+                <option value="kg">Kg</option>
+                <option value="sqft">Sq.ft</option>
+                <option value="set">Set</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="items-wrap">
+            <div class="items-head">
+              <span>Description</span>
+              <span style="text-align:center">Qty</span>
+              <span style="text-align:right">Unit Price</span>
+              <span style="text-align:right">Disc%</span>
+              <span></span>
+            </div>
+            <div id="items-body"></div>
+          </div>
+          <button class="add-row-btn" onclick="addItem()">＋ Add Item</button>
+        </div>
+        <div class="pane-nav">
+          <button class="btn btn-outline" onclick="gotoStep(2)">← Back</button>
+          <button class="btn btn-primary" style="flex:1" onclick="gotoStep(4)">Next: Pricing →</button>
+        </div>
+      </div>
+
+      <!-- ══ STEP 4: PRICING ══ -->
+      <div class="pane" id="pane-4">
+        <div class="pane-head">
+          <div class="pane-title">Pricing & Settings</div>
+          <div class="pane-sub">Set discounts, tax, and what to show in the document</div>
+        </div>
+        <div class="pane-body">
+          <div class="sec-label">Default Discount & Tax</div>
+          <div class="row2">
+            <div class="fg">
+              <label class="fl">Default Discount %</label>
+              <input type="number" id="p-disc" value="0" min="0" max="100" step="0.5" oninput="r()">
+              <div style="font-size:0.7rem;color:var(--muted);margin-top:4px">Applied to items without individual discount</div>
+            </div>
+            <div class="fg">
+              <label class="fl">VAT %</label>
+              <select id="p-vat" onchange="r()">
+                <option value="0">0% (No VAT)</option>
+                <option value="13" selected>13% (Nepal VAT)</option>
+                <option value="5">5%</option>
+                <option value="18">18%</option>
+                <option value="custom">Custom...</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg" id="vat-custom-wrap" style="display:none">
+            <label class="fl">Custom VAT %</label>
+            <input type="number" id="p-vat-custom" value="0" min="0" max="100" oninput="r()">
+          </div>
+          <div class="row2">
+            <div class="fg">
+              <label class="fl">Shipping / Delivery</label>
+              <input type="number" id="p-ship" value="0" min="0" oninput="r()">
+            </div>
+            <div class="fg">
+              <label class="fl">Rounding</label>
+              <select id="p-round" onchange="r()">
+                <option value="none">None</option>
+                <option value="round">Round</option>
+                <option value="ceil">Round Up</option>
+                <option value="floor">Round Down</option>
+              </select>
+            </div>
+          </div>
+
+          <hr class="divider">
+          <div class="sec-label">Document Visibility</div>
+          <div class="toggle-item" onclick="tog('show-rates')">
+            <div class="toggle-text">
+              <div class="toggle-name">Show Unit Rate Column</div>
+              <div class="toggle-hint">Display the per-unit price in the table</div>
+            </div>
+            <div class="sw on" id="sw-show-rates"></div>
+          </div>
+          <div class="toggle-item" onclick="tog('show-disc-col')">
+            <div class="toggle-text">
+              <div class="toggle-name">Show Discount Column</div>
+              <div class="toggle-hint">Show the discount % column in the table</div>
+            </div>
+            <div class="sw on" id="sw-show-disc-col"></div>
+          </div>
+          <div class="toggle-item" onclick="tog('show-disc-savings')">
+            <div class="toggle-text">
+              <div class="toggle-name">Show Discount Savings Row</div>
+              <div class="toggle-hint">Show total savings in the summary</div>
+            </div>
+            <div class="sw on" id="sw-show-disc-savings"></div>
+          </div>
+          <div class="toggle-item" onclick="tog('show-total')">
+            <div class="toggle-text">
+              <div class="toggle-name">Show Grand Total</div>
+              <div class="toggle-hint">Hide for negotiable estimates</div>
+            </div>
+            <div class="sw on" id="sw-show-total"></div>
+          </div>
+          <div class="toggle-item" onclick="tog('show-vat-in-total')">
+            <div class="toggle-text">
+              <div class="toggle-name">Include VAT in Totals</div>
+              <div class="toggle-hint">Add VAT row to summary block</div>
+            </div>
+            <div class="sw on" id="sw-show-vat-in-total"></div>
+          </div>
+
+          <hr class="divider">
+          <div class="sec-label">Notes & Terms (Optional)</div>
+          <div class="toggle-item" onclick="tog('show-notes')">
+            <div class="toggle-text">
+              <div class="toggle-name">Include Notes</div>
+              <div class="toggle-hint">Show notes section in the document</div>
+            </div>
+            <div class="sw on" id="sw-show-notes"></div>
+          </div>
+          <div id="notes-wrap">
+            <div class="fg">
+              <label class="fl">Notes</label>
+              <textarea id="p-notes" rows="3" oninput="r()">All prices include default discount as applicable. VAT at 13% is charged on the taxable amount. 50% advance required to begin work.</textarea>
+            </div>
+          </div>
+
+          <div class="toggle-item" onclick="tog('show-payterms')">
+            <div class="toggle-text">
+              <div class="toggle-name">Include Payment Terms</div>
+              <div class="toggle-hint">Show payment terms in the document</div>
+            </div>
+            <div class="sw on" id="sw-show-payterms"></div>
+          </div>
+          <div id="payterms-wrap">
+            <div class="fg">
+              <label class="fl">Payment Terms</label>
+              <input type="text" id="p-payterms" value="50% advance, balance on completion" oninput="r()">
+            </div>
+            <div class="fg">
+              <label class="fl">Bank / Payment Details</label>
+              <textarea id="p-bank" rows="2" oninput="r()">Bank: Citizens Bank Int'l | A/C: 00100123456</textarea>
+            </div>
+          </div>
+
+          <div class="toggle-item" onclick="tog('show-sign')">
+            <div class="toggle-text">
+              <div class="toggle-name">Include Signature Block</div>
+            </div>
+            <div class="sw on" id="sw-show-sign"></div>
+          </div>
+        </div>
+        <div class="pane-nav">
+          <button class="btn btn-outline" onclick="gotoStep(3)">← Back</button>
+          <button class="btn btn-primary" style="flex:1" onclick="gotoStep(5)">Preview →</button>
+        </div>
+      </div>
+
+      <!-- ══ STEP 5: PREVIEW ══ -->
+      <div class="pane" id="pane-5">
+        <div class="pane-head">
+          <div class="pane-title">Preview & Export</div>
+          <div class="pane-sub">Check the live preview, then print or save as PDF</div>
+        </div>
+        <div class="pane-body">
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px">
+            <button class="btn btn-primary btn-full" onclick="confirm_('Export as PDF','Select "Save as PDF" in the print dialog for A4 size.','📄','Open Print Dialog','btn-primary',doPrint)">⬇ Download PDF</button>
+            <button class="btn btn-outline btn-full" onclick="window.print()">🖨 Print</button>
+          </div>
+
+          <hr class="divider">
+          <div class="sec-label">Quick Visibility</div>
+          <div class="toggle-item" onclick="tog('show-rates')">
+            <div class="toggle-text"><div class="toggle-name">Show Unit Rate Column</div></div>
+            <div class="sw on" id="sw-show-rates-2"></div>
+          </div>
+          <div class="toggle-item" onclick="tog('show-total')">
+            <div class="toggle-text"><div class="toggle-name">Show Grand Total</div></div>
+            <div class="sw on" id="sw-show-total-2"></div>
+          </div>
+
+          <hr class="divider">
+          <div class="sec-label">Summary</div>
+          <div class="summary-card" id="summary-box"></div>
+        </div>
+        <div class="pane-nav">
+          <button class="btn btn-outline" onclick="gotoStep(4)">← Edit</button>
+        </div>
+      </div>
+
+    </div><!-- /form-panel -->
+
+    <!-- PREVIEW -->
+    <div class="preview-panel" id="preview-panel">
+      <div class="preview-bar">
+        <div class="preview-bar-left">Live Preview</div>
+        <div class="preview-bar-right">
+          <div class="vis-group">
+            <span style="font-size:0.68rem;color:var(--muted);padding:0 4px;font-weight:600">SHOW</span>
+            <button class="vis-chip on" id="vc-rates" onclick="tog('show-rates')">Rates</button>
+            <button class="vis-chip on" id="vc-total" onclick="tog('show-total')">Total</button>
+            <button class="vis-chip on" id="vc-disc" onclick="tog('show-disc-col')">Disc%</button>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="window.print()">🖨</button>
+          <button class="btn btn-primary btn-sm" onclick="confirm_('Export as PDF','Select &quot;Save as PDF&quot; in the print dialog.','📄','Open Print','btn-primary',doPrint)">⬇ PDF</button>
+        </div>
+      </div>
+
+      <!-- THE DOCUMENT -->
+      <div id="quote-doc">
+        <div class="doc-page" id="doc-page-1">
+          <!-- HEADER -->
+          <div class="dh">
+            <div class="dh-left">
+              <img id="d-logo" class="dh-logo" src="" alt="">
+              <div class="dh-company">
+                <div class="dh-company-name" id="d-co-name"></div>
+                <div class="dh-company-loc" id="d-co-loc"></div>
+              </div>
+            </div>
+            <div class="dh-right">
+              <div class="dh-doc-title">QUOTATION</div>
+              <div id="d-status-chip"></div>
+              <div class="dh-dates">
+                <div class="dh-date-row">
+                  <span class="dh-date-label">Date:</span>
+                  <span class="dh-date-val" id="d-date"></span>
+                </div>
+                <div class="dh-date-row">
+                  <span class="dh-date-label">Valid Until:</span>
+                  <span class="dh-date-val" id="d-valid"></span>
+                </div>
+                <div class="dh-date-row" id="d-qno-row">
+                  <span class="dh-date-label">Quote No:</span>
+                  <span class="dh-date-val" id="d-qno"></span>
+                </div>
+                <div class="dh-date-row" id="d-subj-row" style="display:none">
+                  <span class="dh-date-label">Subject:</span>
+                  <span class="dh-date-val" id="d-subj"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ACCENT -->
+          <div class="doc-accent-bar" id="d-accent-bar"></div>
+
+          <!-- PARTIES -->
+          <div class="parties">
+            <div>
+              <div class="party-label">From</div>
+              <div class="party-name" id="d-from-name"></div>
+              <div class="party-detail" id="d-from-detail"></div>
+            </div>
+            <div>
+              <div class="party-label">Bill To</div>
+              <div class="party-name" id="d-to-name"></div>
+              <div class="party-detail" id="d-to-detail"></div>
+            </div>
+          </div>
+
+          <!-- TABLE -->
+          <table class="doc-table" id="d-table">
+            <thead>
+              <tr>
+                <th style="width:5%">SN</th>
+                <th style="width:38%">Description</th>
+                <th class="c" style="width:9%">Unit</th>
+                <th class="c" style="width:8%">Qty</th>
+                <th class="r rate-col" style="width:13%">Rate</th>
+                <th class="r disc-price-col" style="width:13%">Disc. Price</th>
+                <th class="r" style="width:14%">Total</th>
+              </tr>
+            </thead>
+            <tbody id="d-tbody"></tbody>
+          </table>
+
+          <!-- TOTALS flush below table -->
+          <div class="totals-wrap" id="d-totals-wrap">
+            <div class="totals-box" id="d-totals-box"></div>
+          </div>
+          <div id="d-vat-note-wrap"></div>
+
+          <!-- FOOTER -->
+          <div class="doc-footer" id="d-footer">
+            <div class="footer-col" id="d-notes-col" style="display:none">
+              <div class="footer-tag">Notes</div>
+              <div class="footer-text" id="d-notes-text"></div>
+            </div>
+            <div class="footer-col" id="d-payterms-col" style="display:none">
+              <div class="footer-tag">Payment Terms</div>
+              <div class="footer-text" id="d-payterms-text"></div>
+              <div class="footer-text" id="d-bank-text" style="margin-top:6px"></div>
+            </div>
+            <div class="footer-col">
+              <div class="footer-tag">Issued By</div>
+              <div class="footer-text" id="d-company-footer"></div>
+            </div>
+          </div>
+
+          <!-- SIGNATURE -->
+          <div class="sig-wrap" id="d-sig-wrap">
+            <div class="sig-box">
+              <div class="sig-line"></div>
+              <div class="sig-label">Authorized Signature</div>
+            </div>
+          </div>
+
+          <!-- WATERMARK -->
+          <div class="doc-watermark">ProQuote</div>
+        </div><!-- /doc-page -->
+      </div><!-- /quote-doc -->
+    </div><!-- /preview-panel -->
+
+  </div><!-- /main -->
+</div><!-- /shell -->
+
+<script>
+/* ══════════════════════════════════════
+   STATE
+══════════════════════════════════════ */
+let logoURL = null;
+let logoW = 70;
+let currentStep = 1;
+
+const sw = { // toggles
+  'show-rates': true,
+  'show-disc-col': true,
+  'show-disc-savings': true,
+  'show-total': true,
+  'show-vat-in-total': true,
+  'show-notes': true,
+  'show-payterms': true,
+  'show-sign': true,
+};
+
+let items = [
+  {id:uid(),desc:'Logo & Brand Identity Design',qty:1,price:25000,itemDisc:0,useItemDisc:false},
+  {id:uid(),desc:'Website Design & Development',qty:1,price:60000,itemDisc:0,useItemDisc:false},
+  {id:uid(),desc:'Social Media Templates',qty:10,price:1500,itemDisc:10,useItemDisc:true},
+];
+
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+window.onload = () => {
+  const today = new Date();
+  const valid = new Date(today); valid.setDate(valid.getDate()+30);
+  $('q-date').value = iso(today);
+  $('q-valid').value = iso(valid);
+  $('q-no').value = 'QT-'+today.getFullYear()+'-001';
+  buildItems();
+  r();
+  document.getElementById('p-vat').addEventListener('change', function(){
+    document.getElementById('vat-custom-wrap').style.display = this.value==='custom'?'':'none';
+  });
+};
+
+/* ══════════════════════════════════════
+   HELPERS
+══════════════════════════════════════ */
+function uid(){ return Math.random().toString(36).slice(2,7) }
+function $(i){ return document.getElementById(i) }
+function iso(d){ return d.toISOString().split('T')[0] }
+function fmtD(s){
+  if(!s) return '—';
+  const d = new Date(s+'T00:00:00');
+  return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+}
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') }
+function nl(s){ return esc(s).replace(/\n/g,'<br>') }
+function g(i){ return $(i)?$(i).value:'' }
+function curr(){ return g('s-curr')||'रु' }
+function fmt(n){ return Number(n).toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2}) }
+function round(n){
+  const m=g('p-round');
+  if(m==='round') return Math.round(n);
+  if(m==='ceil')  return Math.ceil(n);
+  if(m==='floor') return Math.floor(n);
+  return n;
+}
+function getVat(){
+  const v=g('p-vat');
+  if(v==='custom') return parseFloat(g('p-vat-custom'))||0;
+  return parseFloat(v)||0;
+}
+
+/* ══════════════════════════════════════
+   STEPS
+══════════════════════════════════════ */
+function gotoStep(n){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.step-tab').forEach(b=>b.classList.remove('active'));
+  $('pane-'+n).classList.add('active');
+  $('stab-'+n).classList.add('active');
+
+  for(let i=1;i<=5;i++){
+    const tab=$('stab-'+i);
+    const badge=tab.querySelector('.step-badge');
+    tab.classList.remove('done');
+    badge.textContent=i;
+  }
+  for(let i=1;i<n;i++){
+    const tab=$('stab-'+i);
+    tab.classList.add('done');
+    tab.querySelector('.step-badge').textContent='✓';
+  }
+  currentStep=n;
+  if(n===5) buildSummary();
+  document.querySelector('.form-panel').scrollTop=0;
+}
+
+/* ══════════════════════════════════════
+   ITEMS BUILD
+══════════════════════════════════════ */
+function buildItems(){
+  const c=$('items-body'); c.innerHTML='';
+  items.forEach((item,i)=>{
+    const el=document.createElement('div');
+    el.className='item-entry'+(item.useItemDisc?' has-disc':'');
+    el.id='ie-'+item.id;
+    const gDisc=parseFloat(g('p-disc'))||0;
+    const eff=item.useItemDisc?item.itemDisc:gDisc;
+    const lineTot=round(item.qty*item.price*(1-eff/100));
+    el.innerHTML=`
+      <div class="item-desc-wrap">
+        <input type="text" value="${esc(item.desc)}" placeholder="Description" onchange="upd('${item.id}','desc',this.value)" style="font-size:0.8rem">
+        <div class="item-disc-row" id="idr-${item.id}">
+          <span class="disc-tag">Item Disc:</span>
+          <input type="number" value="${item.itemDisc}" min="0" max="100" step="0.5" style="width:58px;font-size:0.76rem" onchange="upd('${item.id}','itemDisc',this.value)" placeholder="%">
+          <span style="font-size:0.7rem;color:var(--muted)">% (overrides global)</span>
+        </div>
+      </div>
+      <input type="number" value="${item.qty}" min="1" onchange="upd('${item.id}','qty',this.value)" style="text-align:center">
+      <input type="number" value="${item.price}" min="0" step="0.01" onchange="upd('${item.id}','price',this.value)">
+      <div style="display:flex;align-items:center;gap:3px">
+        <span style="font-size:0.72rem;color:var(--muted)">${eff>0?eff+'%':'—'}</span>
+        <button title="Toggle item discount" onclick="toggleItemDisc('${item.id}')" style="width:20px;height:20px;border-radius:3px;border:1px solid ${item.useItemDisc?'var(--warn)':'var(--border)'};background:${item.useItemDisc?'var(--warn-soft)':'transparent'};color:${item.useItemDisc?'var(--warn)':'var(--dim)'};cursor:pointer;font-size:0.65rem;font-weight:700">%</button>
+      </div>
+      <button class="item-del" onclick="confDelItem('${item.id}')">✕</button>
+    `;
+    c.appendChild(el);
+  });
+}
+
+function upd(id,key,val){
+  const item=items.find(x=>x.id===id);
+  if(!item)return;
+  if(['qty','price','itemDisc'].includes(key)) val=parseFloat(val)||0;
+  item[key]=val;
+  buildItems();
+  r();
+}
+
+function toggleItemDisc(id){
+  const item=items.find(x=>x.id===id);
+  if(!item)return;
+  item.useItemDisc=!item.useItemDisc;
+  buildItems();
+  r();
+  toast(item.useItemDisc?'Item discount enabled':'Using global discount', item.useItemDisc?'ok':'');
+}
+
+function addItem(){
+  items.push({id:uid(),desc:'New Item',qty:1,price:0,itemDisc:0,useItemDisc:false});
+  buildItems();
+  r();
+  toast('Item added','ok');
+}
+
+function confDelItem(id){
+  const item=items.find(x=>x.id===id);
+  confirm_('Remove Item',`Remove "${item?item.desc:'this item'}"?`,'🗑️','Remove','btn-danger',()=>delItem(id));
+}
+function delItem(id){
+  items=items.filter(x=>x.id!==id);
+  buildItems();
+  r();
+  toast('Item removed');
+}
+
+/* ══════════════════════════════════════
+   TOGGLES
+══════════════════════════════════════ */
+function tog(key){
+  sw[key]=!sw[key];
+  // sync all switch UIs for this key
+  const map={
+    'show-rates':['sw-show-rates','sw-show-rates-2'],
+    'show-total':['sw-show-total','sw-show-total-2'],
+    'show-disc-col':['sw-show-disc-col'],
+    'show-disc-savings':['sw-show-disc-savings'],
+    'show-vat-in-total':['sw-show-vat-in-total'],
+    'show-notes':['sw-show-notes'],
+    'show-payterms':['sw-show-payterms'],
+    'show-sign':['sw-show-sign'],
+  };
+  const vcMap={'show-rates':'vc-rates','show-total':'vc-total','show-disc-col':'vc-disc'};
+  (map[key]||[]).forEach(sid=>{const el=$(sid);if(el)el.className='sw'+(sw[key]?' on':'')});
+  if(vcMap[key]){const el=$(vcMap[key]);if(el)el.className='vis-chip'+(sw[key]?' on':'');}
+
+  // Show/hide conditional form sections
+  if(key==='show-notes') applyNoteWrap();
+  if(key==='show-payterms') applyPayWrap();
+  applyDoc();
+  r();
+}
+
+function applyNoteWrap(){
+  $('notes-wrap').style.display=sw['show-notes']?'':'none';
+}
+function applyPayWrap(){
+  $('payterms-wrap').style.display=sw['show-payterms']?'':'none';
+}
+function applyDoc(){
+  // rates column
+  document.querySelectorAll('.rate-col').forEach(el=>el.style.display=sw['show-rates']?'':'none');
+  // disc price col
+  document.querySelectorAll('.disc-price-col').forEach(el=>el.style.display=sw['show-disc-col']?'':'none');
+  // totals section
+  $('d-totals-wrap').style.display=sw['show-total']?'':'none';
+  // sign
+  $('d-sig-wrap').style.display=sw['show-sign']?'':'none';
+}
+
+/* ══════════════════════════════════════
+   LOGO
+══════════════════════════════════════ */
+function uploadLogo(e){
+  const f=e.target.files[0];
+  if(!f)return;
+  if(f.size>2*1024*1024){toast('Max 2MB','err');return;}
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    logoURL=ev.target.result;
+    $('logo-drop-inner').innerHTML=`<img src="${logoURL}" style="max-width:${logoW}px;max-height:50px;object-fit:contain;border-radius:3px">`;
+    $('logo-actions').style.display='flex';
+    $('logo-resize-wrap').style.display='none';
+    r();
+    toast('Logo uploaded','ok');
+  };
+  reader.readAsDataURL(f);
+}
+
+function triggerLogoResize(){
+  const wrap=$('logo-resize-wrap');
+  wrap.style.display=wrap.style.display==='none'?'block':'none';
+}
+
+function resizeLogo(v){
+  logoW=parseInt(v);
+  $('logo-size-label').textContent=v+'px';
+  const img=$('logo-drop-inner').querySelector('img');
+  if(img) img.style.maxWidth=v+'px';
+  r();
+}
+
+function removeLogo(){
+  logoURL=null;
+  $('logo-drop-inner').innerHTML=`
+    <div style="font-size:1.5rem;margin-bottom:4px">🏢</div>
+    <div class="logo-drop-label">Click or drag image here</div>
+    <div class="logo-drop-sub">PNG, JPG, SVG · max 2MB · will resize to fit</div>`;
+  $('logo-actions').style.display='none';
+  $('logo-resize-wrap').style.display='none';
+  r();
+  toast('Logo removed');
+}
+
+/* ══════════════════════════════════════
+   COLOR
+══════════════════════════════════════ */
+function applyColor(c){
+  document.documentElement.style.setProperty('--doc-color',c);
+  $('co-color').value=c;
+}
+function pickColor(el){
+  document.querySelectorAll('.cpick').forEach(x=>x.classList.remove('sel'));
+  el.classList.add('sel');
+  applyColor(el.dataset.c);
+}
+
+/* ══════════════════════════════════════
+   RENDER DOCUMENT
+══════════════════════════════════════ */
+function r(){
+  const coName=g('co-name')||'Your Company';
+
+  // Header
+  const dLogo=$('d-logo');
+  if(logoURL){dLogo.src=logoURL;dLogo.style.display='block';dLogo.style.maxWidth=logoW+'px';dLogo.style.maxHeight='60px';}
+  else{dLogo.style.display='none';}
+  $('d-co-name').textContent=coName;
+  $('d-co-loc').textContent=g('co-loc')||'';
+  $('d-date').textContent=fmtD(g('q-date'));
+  $('d-valid').textContent=fmtD(g('q-valid'));
+  const qno=g('q-no');
+  $('d-qno').textContent=qno||'—';
+
+  const subj=g('q-subj');
+  $('d-subj-row').style.display=subj?'':'none';
+  $('d-subj').textContent=subj;
+
+  // Status
+  const stMap={draft:'Draft',sent:'Sent',approved:'Approved',rejected:'Rejected'};
+  const stCls={draft:'s-draft',sent:'s-sent',approved:'s-approved',rejected:'s-rejected'};
+  const st=g('q-status')||'draft';
+  $('d-status-chip').innerHTML=`<div class="status-chip ${stCls[st]}">${stMap[st]||'Draft'}</div>`;
+
+  // Parties
+  $('d-from-name').textContent=coName;
+  const fromDetail=[g('co-loc'),g('co-phone'),g('co-email')].filter(Boolean).join('\n');
+  $('d-from-detail').innerHTML=nl(fromDetail);
+  $('d-to-name').textContent=g('cl-name')||'—';
+  const toDetail=[g('cl-person'),g('cl-addr'),g('cl-phone')].filter(Boolean).join('\n');
+  $('d-to-detail').innerHTML=nl(toDetail);
+
+  // Items table
+  const gDisc=parseFloat(g('p-disc'))||0;
+  const unitType=g('s-unit');
+  const tbody=$('d-tbody');
+  tbody.innerHTML='';
+  let subtotal=0;
+  let totalSaved=0;
+
+  items.forEach((item,i)=>{
+    const eff=item.useItemDisc?item.itemDisc:gDisc;
+    const rawLine=item.qty*item.price;
+    const discAmt=rawLine*(eff/100);
+    const discPrice=round(item.price*(1-eff/100)); // unit price after disc
+    const lineTotal=round(rawLine-discAmt);
+    subtotal+=lineTotal;
+    totalSaved+=discAmt;
+
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td>${i+1}</td>
+      <td>${esc(item.desc)}${unitType?`<div class="unit-type-badge">${unitType}</div>`:''}</td>
+      <td class="c">${unitType||'—'}</td>
+      <td class="c">${item.qty}</td>
+      <td class="r rate-col">${curr()} ${fmt(item.price)}</td>
+      <td class="r disc-price-col">${eff>0?curr()+' '+fmt(discPrice):'—'}</td>
+      <td class="r">${curr()} ${fmt(lineTotal)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Totals — Subtotal → Discount Savings → VAT → Grand Total
+  const vatPct=getVat();
+  const vatAmt=round(subtotal*vatPct/100);
+  const ship=parseFloat(g('p-ship'))||0;
+  const grandBase=subtotal+(sw['show-vat-in-total']?vatAmt:0)+ship;
+  const grand=round(grandBase);
+
+  let totHtml='';
+  totHtml+=totR('Subtotal',curr()+' '+fmt(subtotal));
+  if(sw['show-disc-savings']&&totalSaved>0) totHtml+=totR('Discount Savings','− '+curr()+' '+fmt(round(totalSaved)),'disc-row');
+  if(ship>0) totHtml+=totR('Shipping',curr()+' '+fmt(ship));
+  if(sw['show-vat-in-total']&&vatPct>0) totHtml+=totR(`VAT (${vatPct}%)`,curr()+' '+fmt(vatAmt),'vat-row');
+  totHtml+=totR('Grand Total',curr()+' '+fmt(grand),'grand');
+  $('d-totals-box').innerHTML=totHtml;
+
+  // vat note cleanup
+  const vn=$('d-vat-note-wrap');
+  if(vn) vn.innerHTML='';
+
+  // Footer — company address
+  const footerDetail=[g('co-name'),g('co-loc'),g('co-phone'),g('co-email')].filter(Boolean).join(' · ');
+  $('d-company-footer').innerHTML=nl(footerDetail);
+
+  // Notes
+  const nc=$('d-notes-col');
+  nc.style.display=sw['show-notes']?'':'none';
+  $('d-notes-text').innerHTML=nl(g('p-notes'));
+
+  // Payterms
+  const pc=$('d-payterms-col');
+  pc.style.display=sw['show-payterms']?'':'none';
+  $('d-payterms-text').textContent=g('p-payterms');
+  $('d-bank-text').textContent=g('p-bank');
+
+  applyDoc();
+}
+
+function totR(label,val,cls=''){
+  return `<div class="tot-row ${cls}"><span class="tot-label">${label}</span><span class="tot-val">${val}</span></div>`;
+}
+
+/* ══════════════════════════════════════
+   SUMMARY
+══════════════════════════════════════ */
+function buildSummary(){
+  const gDisc=parseFloat(g('p-disc'))||0;
+  let sub=0;
+  items.forEach(item=>{
+    const eff=item.useItemDisc?item.itemDisc:gDisc;
+    sub+=round(item.qty*item.price*(1-eff/100));
+  });
+  const vatPct=getVat();
+  const vat=round(sub*vatPct/100);
+  const grand=round(sub+vat);
+  $('summary-box').innerHTML=`
+    <div>Customer: <strong>${g('cl-name')||'—'}</strong></div>
+    <div>Quote No: <strong>${g('q-no')||'—'}</strong></div>
+    <div>Items: <strong>${items.length}</strong></div>
+    <div>Subtotal: <strong>${curr()} ${fmt(sub)}</strong></div>
+    <div>VAT (${vatPct}%): <strong>${curr()} ${fmt(vat)}</strong></div>
+    <div>Grand Total: <strong style="color:var(--accent)">${curr()} ${fmt(grand)}</strong></div>
+  `;
+}
+
+/* ══════════════════════════════════════
+   MODAL
+══════════════════════════════════════ */
+let _cb=null;
+function confirm_(title,msg,icon,okLabel,okCls,cb){
+  $('m-title').textContent=title;
+  $('m-msg').innerHTML=msg;
+  $('m-icon').textContent=icon;
+  const btn=$('m-ok');
+  btn.textContent=okLabel;
+  btn.className='btn '+okCls;
+  _cb=cb;
+  btn.onclick=()=>{closeModal();_cb&&_cb()};
+  $('overlay').classList.add('open');
+}
+function closeModal(){$('overlay').classList.remove('open')}
+$('overlay').addEventListener('click',e=>{if(e.target===$('overlay'))closeModal()});
+
+/* ══════════════════════════════════════
+   TOAST
+══════════════════════════════════════ */
+function toast(msg,type=''){
+  const tray=$('tray');
+  const el=document.createElement('div');
+  el.className='toast '+(type==='ok'?'ok':type==='err'?'err':'');
+  el.textContent=(type==='ok'?'✓ ':type==='err'?'✕ ':'• ')+msg;
+  tray.appendChild(el);
+  setTimeout(()=>{el.style.animation='tOut 0.25s ease forwards';setTimeout(()=>el.remove(),250)},2500);
+}
+
+/* ══════════════════════════════════════
+   PDF / PRINT
+══════════════════════════════════════ */
+function doPrint(){
+  const s=document.createElement('style');
+  s.id='pqs';
+  s.textContent=`
+    @media print{
+      .shell>*:not(.main){display:none!important}
+      .main{display:block!important}
+      .form-panel,.preview-bar{display:none!important}
+      .preview-panel{padding:0!important;background:white!important}
+      #quote-doc{box-shadow:none!important;width:100%!important}
+      .doc-page{min-height:0!important}
+      @page{size:A4;margin:0}
+    }`;
+  document.head.appendChild(s);
+  window.print();
+  setTimeout(()=>{const x=$('pqs');if(x)x.remove()},500);
+  toast('Print dialog opened — choose Save as PDF','ok');
+}
+
+/* ══════════════════════════════════════
+   RESET
+══════════════════════════════════════ */
+function resetAll(){
+  items=[];
+  logoURL=null;
+  ['co-name','co-loc','co-phone','co-email','cl-name','cl-person','cl-phone','cl-addr','q-subj','p-notes','p-payterms','p-bank'].forEach(id=>{const el=$(id);if(el)el.value=''});
+  $('p-disc').value='0';
+  $('p-vat').value='13';
+  $('p-ship').value='0';
+  $('s-curr').value='रु';
+  $('q-status').value='draft';
+  const t=new Date(),v=new Date(t);v.setDate(v.getDate()+30);
+  $('q-date').value=iso(t);$('q-valid').value=iso(v);
+  $('q-no').value='QT-'+t.getFullYear()+'-001';
+  removeLogo();
+  buildItems();
+  gotoStep(1);
+  r();
+  toast('New quotation started','ok');
+}
+</script>
+</body>
+</html>
