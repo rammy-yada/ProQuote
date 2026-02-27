@@ -222,19 +222,27 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
    PREVIEW PANEL
 ═══════════════════════════════ */
 .pp{
-  background:var(--bg);overflow-y:auto;overflow-x:hidden;
-  display:flex;flex-direction:column;align-items:center;
-  padding:20px;gap:14px;
-  scrollbar-width:thin;scrollbar-color:var(--border2) transparent;
+  background:var(--bg);
+  overflow-y:auto;
+  overflow-x:hidden;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:16px 16px 32px;
+  gap:12px;
+  scrollbar-width:thin;
+  scrollbar-color:var(--border2) transparent;
 }
-.pp::-webkit-scrollbar{width:5px}
+.pp::-webkit-scrollbar{width:6px}
 .pp::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
 
 .pvbar{
   width:100%;
   display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  flex-shrink:0;
 }
-.pvbar-l{font-size:0.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.pvbar-l{font-size:0.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
+.pg-pill{background:var(--accent-s);color:var(--accent);border:1px solid var(--border);border-radius:20px;padding:2px 10px;font-size:0.7rem;font-weight:700;letter-spacing:.04em}
 .pvbar-r{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .vg{display:flex;gap:3px;background:#fff;border:1px solid var(--border);border-radius:6px;padding:3px;align-items:center}
 .vc{
@@ -246,10 +254,9 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
 /* Document scaler — wraps #qdoc and scales it to fill the panel */
 .doc-scaler{
   width:100%;
-  display:flex;justify-content:center;
+  flex-shrink:0;
 }
 .doc-scaler-inner{
-  /* JS sets transform-origin and scale */
   transform-origin:top center;
   width:794px;
   flex-shrink:0;
@@ -529,7 +536,21 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
   <button class="stab" id="st5" onclick="goS(5)"><div class="sbadge">5</div>Preview</button>
 </div>
 
-<!-- MAIN -->
+<!-- PROFILES MODAL -->
+<div class="overlay" id="ov-profiles">
+  <div class="modal" style="max-width:480px;width:95%">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div style="font-family:Georgia,serif;font-size:1rem;font-weight:700">🏢 Company Profiles</div>
+      <button class="btn btn-ghost btn-sm" onclick="closeProfiles()" style="font-size:1rem;padding:4px 8px">✕</button>
+    </div>
+    <div id="profiles-list" style="display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto;margin-bottom:14px;padding-right:2px"></div>
+    <div style="font-size:0.75rem;color:var(--muted);text-align:center;padding-top:10px;border-top:1px solid var(--border)">
+      Profiles are saved in this browser only. Use <strong>Save as New Profile</strong> on Step 1 to add more.
+    </div>
+  </div>
+</div>
+
+
 <div class="main">
 
   <!-- FORM PANEL -->
@@ -593,8 +614,17 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
           <div class="cpick" style="background:#1a1d2e" data-c="#1a1d2e" onclick="pickCol(this)"></div>
           <div class="cpick" style="background:#1d6b0a" data-c="#1d6b0a" onclick="pickCol(this)"></div>
         </div>
+        <hr class="hr">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div class="sec-lbl" style="margin-bottom:0">Saved Profiles</div>
+          <button class="btn btn-sm btn-outline" onclick="openProfiles()" style="font-size:0.72rem;padding:4px 10px">🏢 Manage</button>
+        </div>
+        <div id="profile-bar" style="background:var(--panel2);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;font-size:0.78rem;color:var(--muted)">
+          No profile loaded — click <strong>Manage</strong> to save or load
+        </div>
       </div>
-      <div class="pnav">
+      <div class="pnav" style="flex-direction:column;gap:8px">
+        <button class="btn btn-outline btn-full" onclick="saveAsProfile()" style="border-color:var(--success);color:var(--success)">💾 Save as New Profile</button>
         <button class="btn btn-primary btn-full" onclick="goS(2)">Next: Customer →</button>
       </div>
     </div>
@@ -770,7 +800,7 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
     <div class="pane" id="pane-4">
       <div class="pane-head">
         <div class="pane-title">Line Items</div>
-        <div class="pane-sub">Add services or products. Tap <b style="color:var(--warn)">%</b> on a row for item-level discount.</div>
+        <div class="pane-sub">Add items or press <kbd style="background:var(--border);border-radius:3px;padding:1px 5px;font-size:0.72rem;font-family:monospace">Shift+T</kbd> anywhere to add quickly</div>
       </div>
       <div class="pane-body" id="items-pane-body" style="padding-bottom:0">
         <div class="r2" style="margin-bottom:12px">
@@ -786,16 +816,17 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
           </div>
           <div class="fg">
             <label class="fl">Unit Label</label>
-            <select id="s-unit" onchange="r()">
+            <select id="s-unit" onchange="unitChange()">
               <option value="">None</option>
-              <option value="hrs">Hours</option>
-              <option value="days">Days</option>
-              <option value="pcs">Pieces</option>
+              <option value="pcs">Pcs</option>
               <option value="kg">Kg</option>
+              <option value="mtr">Mtr</option>
               <option value="sqft">Sq.ft</option>
               <option value="set">Set</option>
-              <option value="month">Month</option>
+              <option value="custom">Custom…</option>
             </select>
+            <input type="text" id="s-unit-custom" placeholder="Enter unit name" oninput="r()"
+              style="display:none;margin-top:6px">
           </div>
         </div>
         <div class="items-wrap">
@@ -866,7 +897,10 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
   <!-- PREVIEW PANEL -->
   <div class="pp" id="pp">
     <div class="pvbar">
-      <div class="pvbar-l">📄 Live Preview</div>
+      <div class="pvbar-l">
+        📄 Live Preview
+        <span class="pg-pill" id="pg-pill">1 page</span>
+      </div>
       <div class="pvbar-r">
         <div class="vg">
           <span style="font-size:0.67rem;color:var(--muted);padding:0 4px;font-weight:700">SHOW</span>
@@ -906,12 +940,13 @@ window.onload=()=>{
   $('q-valid').value=iso(v);
   $('q-no').value='QT-'+t.getFullYear()+'-001';
   buildItems();
+  autoLoadCompany();
   r();
   applyNoteWrap(); applyPayWrap();
   initScaler();
 };
 
-/* Scale the 794px document to fill the preview panel with no horizontal scroll */
+/* Scale the 794px document to fill the preview panel — no horizontal scroll, pp scrolls vertically */
 function initScaler(){
   const pp=$('pp');
   const inner=document.getElementById('doc-scaler-inner');
@@ -919,30 +954,27 @@ function initScaler(){
   const DOC_W=794;
 
   function scale(){
-    const avail=pp.clientWidth-32; // 16px padding each side
+    const avail=pp.clientWidth-32;
     const s=Math.min(1, avail/DOC_W);
     inner.style.transform=`scale(${s})`;
-    inner.style.transformOrigin='top center';
-    // After scaling, the element still occupies 794px of layout space.
-    // We set the wrapper height to the scaled visual height so scrolling works right.
-    const wrapper=inner.parentElement;
-    // Reset first to measure natural height
-    wrapper.style.height='';
-    // Use rAF to let layout settle after transform
+    inner.style.transformOrigin='top left';
+    // When scaled down, the element still takes 794px of layout width.
+    // We set a negative right margin to cancel the extra space,
+    // and shrink the wrapper to the actual visual height.
+    const wrapper=inner.parentElement; // .doc-scaler
+    wrapper.style.width=(DOC_W*s)+'px';
+    // Height: need rAF so browser has applied the transform first
     requestAnimationFrame(()=>{
-      const naturalH=inner.scrollHeight;
+      const naturalH=inner.getBoundingClientRect().height / s; // unscaled
       wrapper.style.height=(naturalH*s)+'px';
-      wrapper.style.overflow='hidden';
+      wrapper.style.overflow='visible';
     });
   }
 
   scale();
+  window._scaleAfterRender=scale;
   const ro=new ResizeObserver(scale);
   ro.observe(pp);
-  // Also rescale after render updates the document
-  const origR=window.r;
-  // Hook into r() to rescale after each render
-  window._scaleAfterRender=scale;
   window.addEventListener('resize',scale);
 }
 
@@ -1130,10 +1162,192 @@ function applyPayWrap(){$('payterms-section').style.display=SW.payterms?'':'none
 
 function applyVisibility(){ /* visibility is baked into r() dynamically */ }
 
+function unitChange(){
+  const v=g('s-unit');
+  const ci=$('s-unit-custom');
+  ci.style.display=v==='custom'?'block':'none';
+  r();
+}
+function getUnit(){
+  const v=g('s-unit');
+  if(v==='custom') return g('s-unit-custom')||'';
+  return v;
+}
+
+/* ═══════════════════════════════
+   COMPANY PROFILES (localStorage)
+   Stores array under key 'pq_profiles'
+   Each: {id, name, loc, phone, email, color, logoURL, savedAt}
+═══════════════════════════════ */
+function getProfiles(){
+  try{ return JSON.parse(localStorage.getItem('pq_profiles')||'[]'); }
+  catch(e){ return []; }
+}
+function setProfiles(arr){
+  localStorage.setItem('pq_profiles',JSON.stringify(arr));
+}
+
+function saveAsProfile(){
+  const name=g('co-name');
+  if(!name.trim()){toast('Enter a company name first','err');return;}
+  const profiles=getProfiles();
+  // Check if one with same name already exists — ask to overwrite
+  const existing=profiles.find(p=>p.name.toLowerCase()===name.toLowerCase());
+  if(existing){
+    cfm(
+      'Update Profile?',
+      `A profile for "${esc(name)}" already exists. Overwrite it with current details?`,
+      '💾','Update','btn-primary',
+      ()=>doSaveProfile(true,existing.id)
+    );
+  } else {
+    doSaveProfile(false,null);
+  }
+}
+
+function doSaveProfile(overwrite,existingId){
+  const profiles=getProfiles();
+  const data={
+    id: overwrite ? existingId : uid(),
+    name:  g('co-name'),
+    loc:   g('co-loc'),
+    phone: g('co-phone'),
+    email: g('co-email'),
+    color: g('co-col')||'#1e40af',
+    logoURL: logoURL||null,
+    logoW:   logoW,
+    savedAt: new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})
+  };
+  if(overwrite){
+    const idx=profiles.findIndex(p=>p.id===existingId);
+    if(idx>=0) profiles[idx]=data; else profiles.push(data);
+  } else {
+    profiles.push(data);
+  }
+  setProfiles(profiles);
+  updateProfileBar(data.name);
+  toast((overwrite?'Profile updated':'Profile saved')+': '+data.name,'ok');
+}
+
+function loadProfileById(id){
+  const profiles=getProfiles();
+  const data=profiles.find(p=>p.id===id);
+  if(!data){toast('Profile not found','err');return;}
+  $('co-name').value=data.name||'';
+  $('co-loc').value=data.loc||'';
+  $('co-phone').value=data.phone||'';
+  $('co-email').value=data.email||'';
+  if(data.color){ setCol(data.color); $('co-col').value=data.color; }
+  if(data.logoURL){
+    logoURL=data.logoURL;
+    logoW=data.logoW||70;
+    $('ldrop-in').innerHTML=`<img src="${logoURL}" style="max-width:${logoW}px;max-height:48px;object-fit:contain;border-radius:3px">`;
+    $('logo-acts').style.display='flex';
+  }
+  r();
+  updateProfileBar(data.name);
+  closeProfiles();
+  toast('Loaded: '+data.name,'ok');
+}
+
+function deleteProfile(id){
+  const profiles=getProfiles();
+  const p=profiles.find(x=>x.id===id);
+  cfm(
+    'Delete Profile',
+    `Delete the saved profile for "${p?esc(p.name):'this company'}"? This cannot be undone.`,
+    '🗑️','Delete','btn-danger',
+    ()=>{
+      setProfiles(profiles.filter(x=>x.id!==id));
+      renderProfilesModal();
+      toast('Profile deleted');
+    }
+  );
+}
+
+function updateProfileBar(name){
+  const bar=$('profile-bar');
+  if(!bar)return;
+  bar.innerHTML=`<span style="color:var(--success);font-weight:600">✓ Active: ${esc(name)}</span> <span style="color:var(--muted);font-size:0.72rem">— details loaded above</span>`;
+}
+
+function openProfiles(){
+  renderProfilesModal();
+  $('ov-profiles').classList.add('open');
+}
+function closeProfiles(){
+  $('ov-profiles').classList.remove('open');
+}
+$('ov-profiles').addEventListener('click',e=>{if(e.target===$('ov-profiles'))closeProfiles();});
+
+function renderProfilesModal(){
+  const profiles=getProfiles();
+  const list=$('profiles-list');
+  if(!list)return;
+  if(profiles.length===0){
+    list.innerHTML=`<div style="text-align:center;padding:24px;color:var(--muted);font-size:0.82rem">
+      No profiles saved yet.<br>Fill in Step 1 and click <strong>Save as New Profile</strong>.
+    </div>`;
+    return;
+  }
+  list.innerHTML=profiles.map(p=>`
+    <div style="border:1px solid var(--border);border-radius:var(--r);overflow:hidden">
+      <div style="padding:10px 14px;display:flex;align-items:center;gap:10px">
+        <div style="width:32px;height:32px;border-radius:50%;background:${p.color||'#1e40af'};flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.75rem;font-weight:700">
+          ${(p.name||'?')[0].toUpperCase()}
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700;font-size:0.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(p.name)}</div>
+          <div style="font-size:0.72rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${[p.loc,p.phone,p.email].filter(Boolean).join(' · ')||'No details'}</div>
+        </div>
+        <div style="font-size:0.65rem;color:var(--dim);flex-shrink:0;text-align:right">${p.savedAt||''}</div>
+      </div>
+      <div style="display:flex;border-top:1px solid var(--border)">
+        <button class="btn btn-sm" onclick="loadProfileById('${p.id}')"
+          style="flex:1;border-radius:0;border:none;background:var(--accent-s);color:var(--accent);font-weight:600;padding:8px">
+          ⬆ Load
+        </button>
+        <div style="width:1px;background:var(--border)"></div>
+        <button class="btn btn-sm btn-danger" onclick="deleteProfile('${p.id}')"
+          style="border-radius:0;border:none;padding:8px 14px">
+          🗑
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function autoLoadCompany(){
+  // Auto-loads the most recently saved profile on startup
+  const profiles=getProfiles();
+  if(profiles.length===0)return;
+  const last=profiles[profiles.length-1];
+  loadProfileById(last.id);
+  // Don't show toast on auto-load
+}
+
+// Legacy stubs — keep for compatibility
+function saveCompany(){ saveAsProfile(); }
+function loadCompany(){ openProfiles(); }
+function clearSavedCompany(){ openProfiles(); }
+function renderSavedCard(){}
+
+/* Shift+T → add item */
+document.addEventListener('keydown',e=>{
+  if(e.shiftKey && e.key==='T'){
+    e.preventDefault();
+    // Switch to items pane if not already there
+    if(!$('pane-4').classList.contains('active')) goS(4);
+    addItem();
+    toast('Item added (Shift+T)','ok');
+  }
+});
+
 function vatChange(){
   $('vat-custom-row').style.display=g('p-vat')==='custom'?'':'none';
   r();
 }
+
 
 /* ═══════════════════════════════
    RENDER — dynamic multi-page builder
@@ -1153,7 +1367,7 @@ function r(){
   const dateStr  = fmtD(g('q-date'));
   const validStr = fmtD(g('q-valid'));
   const gd       = parseFloat(g('p-disc')) || 0;
-  const ut       = g('s-unit');
+  const ut       = getUnit();
   const vatPct   = getVat();
   const ship     = parseFloat(g('p-ship')) || 0;
   const docCol   = getComputedStyle(document.documentElement).getPropertyValue('--doc').trim() || '#1e40af';
@@ -1380,15 +1594,19 @@ function r(){
       html += footerHtml;
     }
 
-    // ── Watermark footer (every page, no page number) ──
+    // ── Watermark footer centered (every page) ──
     html += `
-      <div style="margin-top:auto;padding-top:10px;display:flex;justify-content:flex-end">
-        <span style="font-family:Georgia,'Times New Roman',serif;font-size:0.58rem;font-weight:600;letter-spacing:.12em;color:#dde0ea;text-transform:uppercase">ProQuote</span>
+      <div style="margin-top:auto;padding-top:12px;text-align:center">
+        <span style="font-family:Georgia,'Times New Roman',serif;font-size:0.62rem;font-weight:600;letter-spacing:.14em;color:#cdd0de;text-transform:uppercase">ProQuote</span>
       </div>`;
 
     div.innerHTML = html;
     qdoc.appendChild(div);
   });
+
+  // Update page count pill in preview bar
+  const pill=$('pg-pill');
+  if(pill) pill.textContent = totalPages===1?'1 page':totalPages+' pages';
 
   // Rescale document to fit panel after rebuild
   if(window._scaleAfterRender) requestAnimationFrame(window._scaleAfterRender);
