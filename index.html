@@ -2,590 +2,242 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
 <title>ProQuote — Quotation Maker</title>
-<!-- fully self-contained: no external dependencies -->
 <style>
-/* ═══════════════════════════════
-   RESET & TOKENS
-═══════════════════════════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#f0f2f7;
-  --panel:#fff;
-  --panel2:#f7f8fc;
-  --border:#e2e5ef;
-  --border2:#d0d4e4;
-  --text:#1a1d2e;
-  --muted:#7a7f9a;
-  --dim:#b0b5cc;
-  --accent:#2557d6;
-  --accent-s:#eef1fd;
-  --accent-h:#1a46c0;
-  --danger:#e53935;
-  --danger-s:#fdecea;
-  --success:#1b8a5a;
-  --success-s:#e6f4ee;
-  --warn:#d97706;
-  --warn-s:#fef3e0;
-  --r:8px;
-  --sh:0 2px 12px rgba(0,0,0,0.08);
-  --sh-lg:0 8px 32px rgba(0,0,0,0.14);
-  --doc:#1e40af;
+  --bg:#f0f2f7;--panel:#fff;--panel2:#f7f8fc;
+  --border:#e2e5ef;--border2:#d0d4e4;
+  --text:#1a1d2e;--muted:#7a7f9a;--dim:#b0b5cc;
+  --accent:#2557d6;--accent-s:#eef1fd;--accent-h:#1a46c0;
+  --danger:#e53935;--danger-s:#fdecea;
+  --success:#1b8a5a;--success-s:#e6f4ee;
+  --warn:#d97706;--warn-s:#fef3e0;
+  --r:8px;--sh:0 2px 12px rgba(0,0,0,.08);--sh-lg:0 8px 32px rgba(0,0,0,.14);--doc:#1e40af;
 }
 html{font-size:14px}
-body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;display:flex;flex-direction:column;transition:background .2s,color .2s}
+body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;display:flex;flex-direction:column}
 
-/* ── DARK MODE ── */
-body.dark{
-  --bg:#0f1117;--panel:#1a1d2e;--panel2:#1e2235;
-  --border:#2a2f45;--border2:#353c58;
-  --text:#e8eaf6;--muted:#8890b0;--dim:#4a5175;
-  --accent-s:#1a2456;--panel-hover:#232740;
-}
-body.dark .topbar,body.dark .stepbar{background:var(--panel);border-color:var(--border)}
+/* DARK MODE */
+body.dark{--bg:#0f1117;--panel:#1a1d2e;--panel2:#1e2235;--border:#2a2f45;--border2:#353c58;--text:#e8eaf6;--muted:#8890b0;--dim:#4a5175;--accent-s:#1a2456}
 body.dark input,body.dark textarea,body.dark select{background:var(--panel2);border-color:var(--border);color:var(--text)}
 body.dark .tog-row{background:var(--panel2);border-color:var(--border)}
 body.dark .tog-row:hover{background:#252a40}
-body.dark .items-wrap{border-color:var(--border)}
-body.dark .items-hd{background:#252a40;color:var(--muted)}
 body.dark .irow{background:var(--panel2);border-color:var(--border)}
 body.dark .irow:hover{background:#252a40}
+body.dark .irow-section{background:#252a40;border-color:var(--border)}
+body.dark .irow-section input{color:var(--text)}
+body.dark .items-hd{background:#252a40}
 body.dark .modal{background:var(--panel);color:var(--text)}
 body.dark .btn-outline{background:var(--panel2);border-color:var(--border);color:var(--text)}
 body.dark .btn-ghost{color:var(--muted)}
-body.dark .pvbar-r .vg{background:var(--panel2);border-color:var(--border)}
-body.dark .ldrop{background:var(--panel2);border-color:var(--border2)}
-body.dark .sum-card{background:var(--panel2);border-color:var(--border)}
-body.dark .pane-head{background:var(--panel2)}
-body.dark .pnav{background:var(--panel2)}
-body.dark .add-btn{border-color:var(--accent)}
-/* Profile capsule dark */
+body.dark .lib-item{background:var(--panel2);border-color:var(--border)}
+body.dark .theme-card{background:var(--panel2);border-color:var(--border)}
 body.dark .profile-capsule{background:var(--panel2);border-color:var(--border)}
-body.dark .profile-capsule:hover{background:#252a40;border-color:var(--border2)}
 
-/* ═══════════════════════════════
-   TOPBAR
-═══════════════════════════════ */
-.topbar{
-  height:54px;background:var(--panel);border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 16px;flex-shrink:0;z-index:100;
-}
-.logo{font-family:Georgia,'Times New Roman',serif;font-size:1.15rem;font-weight:700;display:flex;align-items:center;gap:8px}
-.logo-mark{width:26px;height:26px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.7rem;font-weight:700}
+/* TOPBAR */
+.topbar{height:54px;background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;flex-shrink:0;z-index:100}
+.logo{font-family:Georgia,serif;font-size:1.15rem;font-weight:700;display:flex;align-items:center;gap:8px}
+.logo-mark{width:26px;height:26px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.7rem;font-weight:700}
 .top-r{display:flex;gap:6px;align-items:center}
+.autosave-lbl{font-size:.68rem;color:var(--success);display:none;align-items:center;gap:4px}
+.autosave-dot{width:7px;height:7px;border-radius:50%;background:var(--success);display:inline-block}
 
-/* ═══════════════════════════════
-   STEPBAR
-═══════════════════════════════ */
-.stepbar{
-  height:46px;background:var(--panel);border-bottom:1px solid var(--border);
-  display:flex;align-items:stretch;padding:0 12px;gap:2px;
-  flex-shrink:0;overflow-x:auto;scrollbar-width:none;
-}
+/* STEPBAR */
+.stepbar{height:46px;background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:stretch;padding:0 12px;gap:2px;flex-shrink:0;overflow-x:auto;scrollbar-width:none}
 .stepbar::-webkit-scrollbar{display:none}
-.stab{
-  display:flex;align-items:center;gap:5px;padding:0 12px;
-  background:none;border:none;border-bottom:2px solid transparent;
-  font-family:-apple-system,'Segoe UI',system-ui,sans-serif;font-size:0.78rem;font-weight:500;
-  color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .15s;
-}
-.stab:hover{color:var(--text)}
-.stab.active{color:var(--accent);border-bottom-color:var(--accent)}
-.stab.done{color:var(--success)}
-.sbadge{
-  width:18px;height:18px;border-radius:50%;background:var(--border);
-  font-size:0.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;transition:all .15s;
-}
-.stab.active .sbadge{background:var(--accent);color:#fff}
-.stab.done .sbadge{background:var(--success);color:#fff}
+.stab{display:flex;align-items:center;gap:5px;padding:0 12px;background:none;border:none;border-bottom:2px solid transparent;font-family:-apple-system,system-ui,sans-serif;font-size:.78rem;font-weight:500;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .15s}
+.stab:hover{color:var(--text)}.stab.active{color:var(--accent);border-bottom-color:var(--accent)}.stab.done{color:var(--success)}
+.sbadge{width:18px;height:18px;border-radius:50%;background:var(--border);font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.stab.active .sbadge{background:var(--accent);color:#fff}.stab.done .sbadge{background:var(--success);color:#fff}
 .ssep{width:1px;background:var(--border);margin:12px 0;flex-shrink:0}
 
-/* ═══════════════════════════════
-   MAIN GRID
-═══════════════════════════════ */
+/* MAIN GRID */
 .main{display:grid;grid-template-columns:440px 1fr;flex:1;overflow:hidden;min-height:0}
 
-/* ═══════════════════════════════
-   FORM PANEL
-═══════════════════════════════ */
-.fp{
-  background:var(--panel);border-right:1px solid var(--border);
-  display:flex;flex-direction:column;overflow:hidden;
-}
+/* FORM PANEL */
+.fp{background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
 .pane{display:none;flex:1;flex-direction:column;min-height:0}
 .pane.active{display:flex}
-.pane-head{
-  padding:18px 22px 14px;border-bottom:1px solid var(--border);
-  background:var(--panel2);flex-shrink:0;
-}
-.pane-title{font-family:Georgia,'Times New Roman',serif;font-size:1.05rem;font-weight:700}
-.pane-sub{font-size:0.78rem;color:var(--muted);margin-top:3px}
+.pane-head{padding:18px 22px 14px;border-bottom:1px solid var(--border);background:var(--panel2);flex-shrink:0}
+.pane-title{font-family:Georgia,serif;font-size:1.05rem;font-weight:700}
+.pane-sub{font-size:.78rem;color:var(--muted);margin-top:3px}
 .pane-body{flex:1;overflow-y:auto;padding:20px 22px;scrollbar-width:thin;scrollbar-color:var(--border2) transparent}
-.pane-body::-webkit-scrollbar{width:5px}
-.pane-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
-.pnav{
-  display:flex;gap:10px;padding:14px 22px;
-  border-top:1px solid var(--border);background:var(--panel2);flex-shrink:0;
-}
+.pane-body::-webkit-scrollbar{width:5px}.pane-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+.pnav{display:flex;gap:10px;padding:14px 22px;border-top:1px solid var(--border);background:var(--panel2);flex-shrink:0}
 
-/* ═══════════════════════════════
-   FORM CONTROLS
-═══════════════════════════════ */
-.fg{margin-bottom:16px}
-.fg:last-child{margin-bottom:0}
-.fl{display:block;font-size:0.72rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+/* FORM CONTROLS */
+.fg{margin-bottom:16px}.fg:last-child{margin-bottom:0}
+.fl{display:block;font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
 input[type=text],input[type=number],input[type=date],input[type=email],input[type=tel],textarea,select{
   width:100%;padding:10px 13px;border:1px solid var(--border);border-radius:var(--r);
-  font-family:-apple-system,'Segoe UI',system-ui,sans-serif;font-size:0.9rem;color:var(--text);
-  background:var(--panel);outline:none;transition:border .15s,box-shadow .15s;appearance:none;
-}
+  font-family:-apple-system,system-ui,sans-serif;font-size:.9rem;color:var(--text);
+  background:var(--panel);outline:none;transition:border .15s,box-shadow .15s;appearance:none}
 input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-s)}
 input::placeholder,textarea::placeholder{color:var(--dim)}
 textarea{resize:vertical;min-height:64px;line-height:1.6}
-select{
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237a7f9a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer;
-}
-input[type=range]{
-  width:100%;padding:0;border:none;background:none;box-shadow:none;
-  accent-color:var(--accent);height:20px;cursor:pointer;
-}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237a7f9a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer}
+input[type=range]{width:100%;padding:0;border:none;background:none;box-shadow:none;accent-color:var(--accent);height:20px;cursor:pointer}
 input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:pointer;border:1px solid var(--border)}
 .r2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .hr{border:none;border-top:1px solid var(--border);margin:18px 0}
-.sec-lbl{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--dim);margin-bottom:12px}
+.sec-lbl{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:12px}
 
-/* ═══════════════════════════════
-   BUTTONS
-═══════════════════════════════ */
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:5px;
-  padding:8px 14px;border:none;border-radius:var(--r);
-  font-family:-apple-system,'Segoe UI',system-ui,sans-serif;font-size:0.8rem;font-weight:600;
-  cursor:pointer;transition:all .15s;white-space:nowrap;
-}
-.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent-h)}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:8px 14px;border-radius:var(--r);font-family:-apple-system,system-ui,sans-serif;font-size:.82rem;font-weight:600;border:1px solid transparent;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff;border:none}.btn-primary:hover{background:var(--accent-h)}
 .btn-outline{background:#fff;color:var(--text);border:1px solid var(--border)}.btn-outline:hover{border-color:var(--border2);background:var(--panel2)}
-.btn-ghost{background:transparent;color:var(--muted)}.btn-ghost:hover{color:var(--text);background:var(--panel2)}
+.btn-ghost{background:transparent;color:var(--muted);border:none}.btn-ghost:hover{color:var(--text);background:var(--panel2)}
 .btn-danger{background:var(--danger-s);color:var(--danger);border:1px solid rgba(229,57,53,.15)}.btn-danger:hover{background:var(--danger);color:#fff}
-.btn-sm{padding:5px 10px;font-size:0.74rem}
-.btn-full{width:100%}
+.btn-sm{padding:5px 10px;font-size:.74rem}.btn-full{width:100%}
 
-/* ═══════════════════════════════
-   TOGGLE SWITCH
-═══════════════════════════════ */
-.tog-row{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:9px 12px;border:1px solid var(--border);border-radius:var(--r);
-  margin-bottom:7px;cursor:pointer;user-select:none;
-  background:var(--panel2);transition:border .15s,background .15s;
-}
+/* TOGGLE */
+.tog-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border:1px solid var(--border);border-radius:var(--r);margin-bottom:7px;cursor:pointer;user-select:none;background:var(--panel2);transition:border .15s}
 .tog-row:hover{border-color:var(--border2);background:#fff}
-.tog-name{font-size:0.83rem;font-weight:500}
-.tog-hint{font-size:0.71rem;color:var(--muted);margin-top:2px}
+.tog-name{font-size:.83rem;font-weight:500}.tog-hint{font-size:.71rem;color:var(--muted);margin-top:2px}
 .sw{width:34px;height:19px;border-radius:10px;background:var(--border2);position:relative;transition:background .15s;flex-shrink:0;margin-left:10px}
 .sw::after{content:'';position:absolute;width:13px;height:13px;background:#fff;border-radius:50%;top:3px;left:3px;transition:left .15s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
 .sw.on{background:var(--accent)}.sw.on::after{left:18px}
 
-/* ═══════════════════════════════
-   ITEMS EDITOR
-═══════════════════════════════ */
+/* ITEMS EDITOR */
 .items-wrap{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:8px}
-.items-hd{
-  display:grid;grid-template-columns:20px 1fr 48px 80px 60px 26px;
-  gap:5px;padding:6px 10px;
-  background:var(--border);
-  font-size:0.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
-}
-.irow{
-  display:grid;grid-template-columns:20px 1fr 48px 80px 60px 26px;
-  gap:5px;padding:7px 10px;border-top:1px solid var(--border);
-  align-items:center;background:#fff;transition:background .1s;
-}
-.irow:first-of-type{border-top:none}
-.irow:hover{background:#fafbff}
-.irow input{padding:5px 7px;font-size:0.78rem;border-radius:5px}
+.items-hd{display:grid;grid-template-columns:20px 1fr 48px 80px 60px 26px;gap:5px;padding:6px 10px;background:var(--border);font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.irow{display:grid;grid-template-columns:20px 1fr 48px 80px 60px 26px;gap:5px;padding:7px 10px;border-top:1px solid var(--border);align-items:center;background:#fff;transition:background .1s}
+.irow:first-of-type{border-top:none}.irow:hover{background:#fafbff}
+.irow input{padding:5px 7px;font-size:.78rem;border-radius:5px}
 .idesc-wrap{display:flex;flex-direction:column;gap:3px}
-.idr{
-  display:none;grid-column:1/-1;
-  align-items:center;gap:7px;
-  padding:4px 0 2px;border-top:1px dashed var(--border);margin-top:3px;
-}
+.idr{display:none;align-items:center;gap:7px;padding:4px 0 2px;border-top:1px dashed var(--border);margin-top:3px}
 .irow.has-disc .idr{display:flex}
-.dtag{font-size:0.68rem;color:var(--warn);background:var(--warn-s);padding:2px 6px;border-radius:3px;font-weight:600;white-space:nowrap}
-.idel{background:none;border:none;width:24px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--dim);font-size:0.82rem;transition:all .12s}
+.dtag{font-size:.68rem;color:var(--warn);background:var(--warn-s);padding:2px 6px;border-radius:3px;font-weight:600;white-space:nowrap}
+.idel{background:none;border:none;width:24px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--dim);font-size:.82rem;transition:all .12s}
 .idel:hover{background:var(--danger-s);color:var(--danger)}
-.add-btn{
-  width:100%;padding:8px;background:none;border:1px dashed var(--accent);
-  border-radius:var(--r);color:var(--accent);font-family:-apple-system,'Segoe UI',system-ui,sans-serif;
-  font-size:0.78rem;font-weight:600;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s;
-}
+.irow-section{display:grid;grid-template-columns:20px 1fr 26px;gap:5px;padding:7px 10px;border-top:1px solid var(--border);align-items:center;background:var(--panel2)}
+.irow-section:first-of-type{border-top:none}
+.irow-section input[type=text]{font-weight:700;font-size:.82rem;background:transparent;border-color:transparent;padding:3px 6px}
+.irow-section input[type=text]:focus{background:var(--panel);border-color:var(--accent)}
+.add-btn{width:100%;padding:8px;background:none;border:1px dashed var(--accent);border-radius:var(--r);color:var(--accent);font-family:-apple-system,system-ui,sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s}
 .add-btn:hover{background:var(--accent-s)}
 
-/* ═══════════════════════════════
-   PROFILE CAPSULES
-═══════════════════════════════ */
-.profile-capsules{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-.profile-capsule{
-  display:flex;align-items:center;gap:6px;
-  padding:5px 10px 5px 6px;
-  background:var(--panel2);border:1px solid var(--border);border-radius:20px;
-  cursor:pointer;transition:all .15s;user-select:none;
-  font-size:0.78rem;
-}
-.profile-capsule:hover{border-color:var(--accent);background:var(--accent-s)}
-.profile-capsule.active-cap{border-color:var(--accent);background:var(--accent-s);color:var(--accent)}
-.cap-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.65rem;font-weight:700;flex-shrink:0}
-.cap-name{font-weight:600;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cap-edit{margin-left:2px;padding:1px 5px;border-radius:10px;font-size:0.65rem;color:var(--muted);background:none;border:none;cursor:pointer;transition:all .12s}
-.cap-edit:hover{background:var(--border);color:var(--text)}
-
-/* ═══════════════════════════════
-   SECTION / OPTIONAL ROW
-═══════════════════════════════ */
-.irow-section{
-  padding:6px 10px;background:var(--panel2);border-top:1px solid var(--border);
-  display:grid;grid-template-columns:20px 1fr 26px;gap:5px;align-items:center;
-}
-.irow-section input{font-size:0.78rem;font-weight:600;background:transparent;border:none;padding:2px 4px;outline:none;color:var(--text);}
-.irow-section input:focus{background:var(--panel);border-radius:4px}
-.sec-badge{font-size:0.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--border);padding:2px 6px;border-radius:3px;white-space:nowrap}
-.opt-badge{font-size:0.62rem;font-weight:700;color:var(--warn);background:var(--warn-s);padding:1px 5px;border-radius:3px}
-
-/* ═══════════════════════════════
-   THEME PICKER
-═══════════════════════════════ */
-.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
-.theme-card{
-  border:2px solid var(--border);border-radius:var(--r);padding:10px 10px 8px;cursor:pointer;
-  transition:all .15s;background:var(--panel2);
-}
-.theme-card:hover{border-color:var(--accent)}
-.theme-card.sel{border-color:var(--accent);background:var(--accent-s)}
-.theme-card-preview{height:40px;border-radius:4px;margin-bottom:6px;overflow:hidden;display:flex;flex-direction:column;gap:2px}
-.theme-card-name{font-size:0.74rem;font-weight:700;text-align:center}
-.theme-card-desc{font-size:0.64rem;color:var(--muted);text-align:center;margin-top:2px}
-
-/* ═══════════════════════════════
-   ITEM LIBRARY PANEL
-═══════════════════════════════ */
-.lib-item{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:8px 12px;border:1px solid var(--border);border-radius:var(--r);
-  margin-bottom:6px;background:var(--panel2);transition:all .12s;
-}
-.lib-item:hover{border-color:var(--accent);background:var(--accent-s)}
-.lib-item-info{flex:1;min-width:0}
-.lib-item-name{font-size:0.83rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lib-item-meta{font-size:0.71rem;color:var(--muted);margin-top:1px}
-.lib-item-cat{font-size:0.62rem;background:var(--border);padding:1px 6px;border-radius:10px;color:var(--muted);margin-left:6px}
-
-/* ═══════════════════════════════
-   AUTOSAVE INDICATOR
-═══════════════════════════════ */
-.autosave-dot{
-  width:7px;height:7px;border-radius:50%;background:var(--success);
-  display:inline-block;margin-right:4px;animation:pulse 2s infinite;
-}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.autosave-lbl{font-size:0.68rem;color:var(--muted);display:flex;align-items:center}
-.ldrop{
-  border:2px dashed var(--border2);border-radius:var(--r);
-  padding:14px;text-align:center;position:relative;cursor:pointer;
-  transition:all .15s;background:var(--panel2);
-}
+/* LOGO UPLOAD */
+.ldrop{border:2px dashed var(--border2);border-radius:var(--r);padding:14px;text-align:center;position:relative;cursor:pointer;transition:all .15s;background:var(--panel2)}
 .ldrop:hover{border-color:var(--accent);background:var(--accent-s)}
 .ldrop input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.ldrop-lbl{font-size:0.76rem;color:var(--muted)}
-.ldrop-sub{font-size:0.68rem;color:var(--dim);margin-top:2px}
+.ldrop-lbl{font-size:.76rem;color:var(--muted)}.ldrop-sub{font-size:.68rem;color:var(--dim);margin-top:2px}
 
-/* ═══════════════════════════════
-   COLOR PRESETS
-═══════════════════════════════ */
+/* COLOR PRESETS */
 .cpicks{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px}
 .cpick{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .12s;flex-shrink:0}
 .cpick:hover,.cpick.sel{border-color:var(--text);transform:scale(1.18)}
 
-/* ═══════════════════════════════
-   PREVIEW PANEL
-═══════════════════════════════ */
-.pp{
-  background:var(--bg);
-  overflow-y:auto;
-  overflow-x:hidden;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  padding:16px 16px 32px;
-  gap:12px;
-  scrollbar-width:thin;
-  scrollbar-color:var(--border2) transparent;
-}
-.pp::-webkit-scrollbar{width:6px}
-.pp::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+/* PROFILE CAPSULES */
+.profile-capsules{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px}
+.profile-capsule{display:flex;align-items:center;gap:6px;padding:5px 10px 5px 6px;background:var(--panel2);border:1px solid var(--border);border-radius:20px;cursor:pointer;transition:all .15s;user-select:none;font-size:.78rem}
+.profile-capsule:hover{border-color:var(--accent);background:var(--accent-s)}
+.profile-capsule.active-cap{border-color:var(--accent);background:var(--accent-s);color:var(--accent)}
+.cap-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.65rem;font-weight:700;flex-shrink:0}
+.cap-name{font-weight:600;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cap-edit{margin-left:2px;padding:2px 6px;border-radius:10px;font-size:.65rem;color:var(--muted);background:none;border:none;cursor:pointer;transition:all .12s}
+.cap-edit:hover{background:var(--border);color:var(--text)}
 
-.pvbar{
-  width:100%;
-  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
-  flex-shrink:0;
-}
-.pvbar-l{font-size:0.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
-.pg-pill{background:var(--accent-s);color:var(--accent);border:1px solid var(--border);border-radius:20px;padding:2px 10px;font-size:0.7rem;font-weight:700;letter-spacing:.04em}
+/* THEME PICKER */
+.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.theme-card{border:2px solid var(--border);border-radius:var(--r);padding:10px 10px 8px;cursor:pointer;transition:all .15s;background:var(--panel2)}
+.theme-card:hover{border-color:var(--accent)}.theme-card.sel{border-color:var(--accent);background:var(--accent-s)}
+.theme-preview{height:40px;border-radius:4px;margin-bottom:6px;overflow:hidden}
+.theme-name{font-size:.74rem;font-weight:700;text-align:center}
+.theme-desc{font-size:.64rem;color:var(--muted);text-align:center;margin-top:2px}
+
+/* ITEM LIBRARY */
+.lib-item{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;background:var(--panel2);transition:all .12s}
+.lib-item:hover{border-color:var(--accent)}
+.lib-item-name{font-size:.83rem;font-weight:600}
+.lib-item-meta{font-size:.71rem;color:var(--muted);margin-top:1px}
+
+/* PREVIEW PANEL */
+.pp{background:var(--bg);overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;align-items:center;padding:16px 16px 32px;gap:12px;scrollbar-width:thin;scrollbar-color:var(--border2) transparent}
+.pp::-webkit-scrollbar{width:6px}.pp::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+.pvbar{width:100%;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;flex-shrink:0}
+.pvbar-l{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
+.pg-pill{background:var(--accent-s);color:var(--accent);border:1px solid var(--border);border-radius:20px;padding:2px 10px;font-size:.7rem;font-weight:700}
 .pvbar-r{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .vg{display:flex;gap:3px;background:#fff;border:1px solid var(--border);border-radius:6px;padding:3px;align-items:center}
-.vc{
-  display:flex;align-items:center;gap:3px;padding:3px 8px;border-radius:4px;
-  font-size:0.7rem;font-weight:600;border:none;background:none;cursor:pointer;color:var(--muted);transition:all .12s;
-}
+.vc{display:flex;align-items:center;gap:3px;padding:3px 8px;border-radius:4px;font-size:.7rem;font-weight:600;border:none;background:none;cursor:pointer;color:var(--muted);transition:all .12s}
 .vc.on{background:var(--accent);color:#fff}
+.doc-scaler{width:100%;flex-shrink:0}
+.doc-scaler-inner{transform-origin:top left;width:794px;flex-shrink:0}
 
-/* Document scaler — wraps #qdoc and scales it to fill the panel */
-.doc-scaler{
-  width:100%;
-  flex-shrink:0;
-}
-.doc-scaler-inner{
-  transform-origin:top center;
-  width:794px;
-  flex-shrink:0;
-}
-
-/* ═══════════════════════════════
-   QUOTE DOCUMENT
-═══════════════════════════════ */
-#qdoc{
-  width:794px;background:#fff;
-  box-shadow:var(--sh-lg);border-radius:3px;
-  font-family:-apple-system,'Segoe UI',system-ui,sans-serif;color:#1a1d2e;
-}
-
-/* ── A4 page wrapper ── */
-.dpage{
-  width:794px;
-  min-height:1122px; /* A4 height preview */
-  padding:36px 48px 48px;
-  position:relative;
-  background:#fff;
-  display:flex;flex-direction:column;
-  border-bottom:3px dashed #d0d4e4; /* visual separator in preview */
-}
+/* DOCUMENT */
+#qdoc{width:794px;background:#fff;box-shadow:var(--sh-lg);border-radius:3px;font-family:-apple-system,system-ui,sans-serif;color:#1a1d2e}
+.dpage{width:794px;min-height:1122px;padding:36px 48px 48px;position:relative;background:#fff;display:flex;flex-direction:column;border-bottom:3px dashed #d0d4e4}
 .dpage:last-child{border-bottom:none}
 
-/* ── Page 1 main header ── */
+/* SUMMARY CARD */
+.sum-card{background:var(--panel2);border:1px solid var(--border);border-radius:var(--r);padding:13px 15px;font-size:.8rem;line-height:2}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(10,10,20,.55);backdrop-filter:blur(4px);z-index:500;align-items:center;justify-content:center}
+.overlay.open{display:flex}
+.modal{background:#fff;border-radius:12px;padding:26px 22px;max-width:400px;width:90%;box-shadow:var(--sh-lg);animation:mIn .2s ease}
+@keyframes mIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+.micon{text-align:center;font-size:1.8rem;margin-bottom:9px}
+.mtitle{font-family:Georgia,serif;font-size:.95rem;font-weight:700;text-align:center;margin-bottom:6px}
+.mmsg{font-size:.8rem;color:var(--muted);text-align:center;line-height:1.6;margin-bottom:18px}
+.mbtns{display:flex;gap:8px;justify-content:center}
+
+/* TOAST */
+.tray{position:fixed;bottom:18px;right:18px;z-index:600;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.toast{background:#1a1d2e;color:#fff;padding:9px 14px;border-radius:7px;font-size:.78rem;font-weight:500;box-shadow:var(--sh-lg);display:flex;align-items:center;gap:6px;animation:tIn .2s ease;pointer-events:auto;max-width:260px}
+.toast.ok{background:var(--success)}.toast.err{background:var(--danger)}
+@keyframes tIn{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:translateX(0)}}
+@keyframes tOut{to{opacity:0;transform:translateX(14px)}}
+
+/* MOBILE */
+@media(max-width:900px){.main{grid-template-columns:360px 1fr}}
+@media(max-width:768px){
+  body{overflow:auto;height:auto}.main{grid-template-columns:1fr;overflow:visible}
+  .fp{border-right:none;border-bottom:1px solid var(--border);max-height:none;overflow:visible}
+  .pane{max-height:none}.pane-body{overflow-y:visible;max-height:none}
+  .pp{padding:12px;overflow-x:hidden}.doc-scaler{width:100%;overflow:hidden}
+  .pvbar{flex-direction:column;align-items:flex-start}.r2{grid-template-columns:1fr}
+}
+
+/* DOCUMENT STYLES */
 .dhdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
 .dhdr-l{display:flex;flex-direction:column;align-items:flex-start;gap:5px}
-.dlogo{max-height:56px;object-fit:contain;border-radius:3px;display:none}
-.dco-name{font-family:Georgia,'Times New Roman',serif;font-size:1.15rem;font-weight:700;color:#0f1117;line-height:1.2}
-.dco-loc{font-size:0.73rem;color:#6a6f88;margin-top:1px}
+.dco-name{font-family:Georgia,serif;font-size:1.15rem;font-weight:700;color:#0f1117;line-height:1.2}
+.dco-loc{font-size:.73rem;color:#6a6f88;margin-top:1px}
 .dhdr-r{text-align:right}
-.dtitle{font-family:Georgia,'Times New Roman',serif;font-size:1rem;font-weight:700;color:var(--doc);letter-spacing:.02em}
+.dtitle{font-family:Georgia,serif;font-size:1rem;font-weight:700;color:var(--doc);letter-spacing:.02em}
 .dstatus{margin-top:5px}
-.schip{display:inline-block;padding:2px 9px;border-radius:20px;font-size:0.63rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.schip{display:inline-block;padding:2px 9px;border-radius:20px;font-size:.63rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
 .s-draft{background:#fff3cd;color:#856404;border:1px solid #ffc107}
 .s-sent{background:#cfe2ff;color:#0a58ca;border:1px solid #9ec5fe}
 .s-approved{background:#d1e7dd;color:#0f5132;border:1px solid #a3cfbb}
 .s-rejected{background:#f8d7da;color:#842029;border:1px solid #f1aeb5}
 .ddates{margin-top:8px}
 .ddate-row{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:3px}
-.ddate-lbl{font-size:0.68rem;color:#8a90a8;font-weight:500}
-.ddate-val{font-size:0.75rem;color:#1a1d2e;font-weight:600}
+.ddate-lbl{font-size:.68rem;color:#8a90a8;font-weight:500}
+.ddate-val{font-size:.75rem;color:#1a1d2e;font-weight:600}
+.dbar{height:3px;background:var(--doc);border-radius:2px;margin-bottom:16px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.parties{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:18px;padding:12px 14px;background:#f8f9fc;border-radius:6px;border:1px solid #eef0f8}
+.pty-lbl{font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#a0a5be;margin-bottom:4px}
+.pty-name{font-size:.88rem;font-weight:700;color:#0f1117;line-height:1.3}
+.pty-detail{font-size:.72rem;color:#6a6f88;margin-top:2px;line-height:1.7}
 
-/* ── Continuation header (page 2+) ── */
-.cont-hdr{
-  display:flex;align-items:center;justify-content:space-between;
-  padding-bottom:10px;margin-bottom:12px;
-  border-bottom:2px solid var(--doc);
-}
-.cont-hdr-l{display:flex;align-items:center;gap:10px}
-.cont-logo{max-height:32px;object-fit:contain;display:none}
-.cont-co{font-family:Georgia,'Times New Roman',serif;font-size:0.88rem;font-weight:700;color:#0f1117}
-.cont-hdr-r{text-align:right}
-.cont-qno{font-size:0.75rem;font-weight:700;color:var(--doc)}
-.cont-pg{font-size:0.68rem;color:#8a90a8;margin-top:2px}
-
-/* ── Page number footer (every page) ── */
-.pg-footer{
-  margin-top:auto;
-  padding-top:12px;
-  display:flex;align-items:center;justify-content:space-between;
-  border-top:1px solid #eef0f8;
-}
-.pg-watermark{font-family:Georgia,'Times New Roman',serif;font-size:0.6rem;font-weight:600;letter-spacing:.12em;color:#dde0ea;text-transform:uppercase}
-
-/* Accent bar */
-.dbar{height:3px;background:var(--doc);border-radius:2px;margin-bottom:16px}
-
-/* Parties */
-.parties{
-  display:grid;grid-template-columns:1fr 1fr;gap:20px;
-  margin-bottom:18px;padding:12px 14px;
-  background:#f8f9fc;border-radius:6px;border:1px solid #eef0f8;
-}
-.pty-lbl{font-size:0.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#a0a5be;margin-bottom:4px}
-.pty-name{font-size:0.88rem;font-weight:700;color:#0f1117;line-height:1.3}
-.pty-detail{font-size:0.72rem;color:#6a6f88;margin-top:2px;line-height:1.7}
-
-/* ── TABLE (Excel grid) ── */
-.dtable{
-  width:100%;border-collapse:collapse;font-size:0.78rem;
-  border:1px solid #c8cce0;margin-bottom:0;
-  /* CRITICAL: force colour rendering in print/PDF */
-  -webkit-print-color-adjust:exact;
-  print-color-adjust:exact;
-}
-.dtable thead{
-  -webkit-print-color-adjust:exact;
-  print-color-adjust:exact;
-}
-.dtable thead tr{background:var(--doc) !important}
-.dtable th{
-  padding:8px 10px;color:#fff !important;
-  font-size:0.67rem;font-weight:600;letter-spacing:.05em;text-align:left;
-  border-right:1px solid rgba(255,255,255,.2);
-  -webkit-print-color-adjust:exact;
-  print-color-adjust:exact;
-}
-.dtable th:last-child{border-right:none}
-.dtable th.r{text-align:right}
-.dtable th.c{text-align:center}
-.dtable tbody tr{background:#fff}
-.dtable tbody tr:nth-child(even){background:#f9fafc}
-.dtable td{
-  padding:8px 10px;color:#1a1d2e;vertical-align:middle;
-  border-right:1px solid #d8dce8;border-bottom:1px solid #d8dce8;
-}
-.dtable td:last-child{border-right:none}
-.dtable tbody tr:last-child td{border-bottom:none}
-.dtable td.r{text-align:right;font-variant-numeric:tabular-nums}
-.dtable td.c{text-align:center}
-.utype{font-size:0.65rem;color:#8a90a8;display:block;margin-top:2px}
-
-/* ── TOTALS (flush below table) ── */
-.totals-wrap{display:flex;justify-content:flex-end;margin:0 0 16px}
-.totals-box{
-  width:270px;
-  border:1px solid #c8cce0;border-top:none;
-  font-size:0.79rem;
-  -webkit-print-color-adjust:exact;
-  print-color-adjust:exact;
-}
-.trow{
-  display:grid;grid-template-columns:1fr auto;
-  padding:6px 10px;border-bottom:1px solid #d8dce8;align-items:center;
-}
-.trow:last-child{border-bottom:none}
-.trow.grand{
-  background:var(--doc) !important;color:#fff !important;
-  font-weight:700;font-size:0.84rem;
-  -webkit-print-color-adjust:exact;print-color-adjust:exact;
-}
-.tlbl{color:#5a5f78}
-.trow.grand .tlbl{color:rgba(255,255,255,.82) !important}
-.tval{text-align:right;font-weight:600;font-variant-numeric:tabular-nums;padding-left:16px}
-.trow.disc-row .tlbl,.trow.disc-row .tval{color:#b45309}
-.trow.vat-row{background:#f5f7ff}
-
-/* ── FOOTER ── */
-.dfooter{
-  margin-top:auto;padding-top:14px;
-  border-top:1px solid #eef0f8;
-  display:flex;gap:20px;align-items:flex-start;
-}
-.fcol{flex:1}
-.ftag{font-size:0.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#a0a5be;margin-bottom:4px}
-.ftxt{font-size:0.72rem;color:#6a6f88;line-height:1.7}
-
-/* ── SIGNATURE ── */
-.dsig{display:flex;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid #eef0f8}
-.sigbox{text-align:center;width:170px}
-.sigline{border-bottom:1px solid #1a1d2e;margin-bottom:6px;padding-bottom:26px}
-.siglbl{font-size:0.68rem;color:#8a90a8}
-
-/* ── WATERMARK ── */
-.dwm{
-  position:absolute;bottom:16px;right:18px;
-  font-family:Georgia,'Times New Roman',serif;font-size:0.58rem;font-weight:600;letter-spacing:.12em;
-  color:#dde0ea;text-transform:uppercase;pointer-events:none;user-select:none;
-}
-
-/* ═══════════════════════════════
-   SUMMARY CARD
-═══════════════════════════════ */
-.sum-card{background:var(--panel2);border:1px solid var(--border);border-radius:var(--r);padding:13px 15px;font-size:0.8rem;line-height:2}
-
-/* ═══════════════════════════════
-   MODAL
-═══════════════════════════════ */
-.overlay{display:none;position:fixed;inset:0;background:rgba(10,10,20,.55);backdrop-filter:blur(4px);z-index:500;align-items:center;justify-content:center}
-.overlay.open{display:flex}
-.modal{background:#fff;border-radius:12px;padding:26px 22px;max-width:350px;width:90%;box-shadow:var(--sh-lg);animation:mIn .2s ease}
-@keyframes mIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
-.micon{text-align:center;font-size:1.8rem;margin-bottom:9px}
-.mtitle{font-family:Georgia,'Times New Roman',serif;font-size:0.95rem;font-weight:700;text-align:center;margin-bottom:6px}
-.mmsg{font-size:0.8rem;color:var(--muted);text-align:center;line-height:1.6;margin-bottom:18px}
-.mbtns{display:flex;gap:8px;justify-content:center}
-
-/* ═══════════════════════════════
-   TOAST
-═══════════════════════════════ */
-.tray{position:fixed;bottom:18px;right:18px;z-index:600;display:flex;flex-direction:column;gap:6px;pointer-events:none}
-.toast{background:#1a1d2e;color:#fff;padding:9px 14px;border-radius:7px;font-size:0.78rem;font-weight:500;box-shadow:var(--sh-lg);display:flex;align-items:center;gap:6px;animation:tIn .2s ease;pointer-events:auto;max-width:250px}
-.toast.ok{background:var(--success)}.toast.err{background:var(--danger)}
-@keyframes tIn{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:translateX(0)}}
-@keyframes tOut{to{opacity:0;transform:translateX(14px)}}
-
-/* ═══════════════════════════════
-   MOBILE — RESPONSIVE
-═══════════════════════════════ */
-@media(max-width:900px){
-  .main{grid-template-columns:360px 1fr}
-}
-@media(max-width:768px){
-  body{overflow:auto;height:auto}
-  .main{grid-template-columns:1fr;overflow:visible}
-  .fp{border-right:none;border-bottom:1px solid var(--border);max-height:none;overflow:visible}
-  .pane{max-height:none}
-  .pane-body{overflow-y:visible;max-height:none}
-  .pp{padding:12px;overflow-x:hidden}
-  .doc-scaler{width:100%;overflow:hidden}
-  .pvbar{flex-direction:column;align-items:flex-start}
-  .logo span.logo-full{display:none}
-  .top-r .btn-ghost{display:none}
-  .r2{grid-template-columns:1fr}
-}
-@media(max-width:480px){
-  .stepbar{padding:0 6px}
-  .stab{padding:0 8px;font-size:0.72rem}
-  .topbar{padding:0 12px}
-  .top-r .btn{padding:6px 10px;font-size:0.74rem}
-  .pp{padding:8px}
-}
-
-/* ═══════════════════════════════
-   PRINT / PDF
-═══════════════════════════════ */
+/* PRINT */
 @media print{
-  body{height:auto;overflow:visible;background:#fff}
   .topbar,.stepbar,.fp,.pvbar{display:none !important}
-  .main{display:block}
-  .pp{padding:0;background:#fff;display:block}
+  .main{display:block}.pp{padding:0;background:#fff;display:block}
   #qdoc{box-shadow:none;border-radius:0;width:100%}
-  .dpage{border-bottom:none;page-break-after:always}
-  .dpage:last-child{page-break-after:avoid}
-  .dtable thead tr{background:var(--doc) !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .dtable th{color:#fff !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .trow.grand{background:var(--doc) !important;color:#fff !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .dpage{border-bottom:none;page-break-after:always}.dpage:last-child{page-break-after:avoid}
   @page{size:A4;margin:0}
 }
 </style>
 </head>
 <body>
 
-<!-- MODAL -->
+<!-- CONFIRM MODAL -->
 <div class="overlay" id="ov">
   <div class="modal">
     <div class="micon" id="m-ico">⚠️</div>
@@ -598,23 +250,63 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
   </div>
 </div>
 
+<!-- PROFILES MODAL -->
+<div class="overlay" id="ov-profiles">
+  <div class="modal" style="max-width:480px;width:95%">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div style="font-family:Georgia,serif;font-size:1rem;font-weight:700">🏢 Company Profiles</div>
+      <button class="btn btn-ghost btn-sm" onclick="$('ov-profiles').classList.remove('open')" style="font-size:1.1rem;padding:3px 8px">✕</button>
+    </div>
+    <div id="profiles-list" style="max-height:360px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:12px"></div>
+    <div style="font-size:.74rem;color:var(--muted);text-align:center;padding-top:10px;border-top:1px solid var(--border)">Use <b>Save as New Profile</b> in Step 1 to add more.</div>
+  </div>
+</div>
+
+<!-- CLIENTS MODAL -->
+<div class="overlay" id="ov-clients">
+  <div class="modal" style="max-width:480px;width:95%">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div style="font-family:Georgia,serif;font-size:1rem;font-weight:700">👥 Client Book</div>
+      <button class="btn btn-ghost btn-sm" onclick="$('ov-clients').classList.remove('open')" style="font-size:1.1rem;padding:3px 8px">✕</button>
+    </div>
+    <div id="clients-list" style="max-height:360px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:12px"></div>
+    <div style="font-size:.74rem;color:var(--muted);text-align:center;padding-top:10px;border-top:1px solid var(--border)">Use <b>Save as Client</b> in Step 2 to add clients.</div>
+  </div>
+</div>
+
+<!-- LIBRARY MODAL -->
+<div class="overlay" id="ov-library">
+  <div class="modal" style="max-width:520px;width:95%">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div style="font-family:Georgia,serif;font-size:1rem;font-weight:700">📦 Product Library</div>
+      <button class="btn btn-ghost btn-sm" onclick="$('ov-library').classList.remove('open')" style="font-size:1.1rem;padding:3px 8px">✕</button>
+    </div>
+    <div style="background:var(--panel2);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:12px">
+      <div class="sec-lbl" style="margin-bottom:8px">Add New Product</div>
+      <div class="r2" style="margin-bottom:8px">
+        <div class="fg" style="margin-bottom:0"><label class="fl">Name</label><input type="text" id="lib-name" placeholder="e.g. Logo Design"></div>
+        <div class="fg" style="margin-bottom:0"><label class="fl">Category</label><input type="text" id="lib-cat" placeholder="e.g. Design"></div>
+      </div>
+      <div class="r2" style="margin-bottom:8px">
+        <div class="fg" style="margin-bottom:0"><label class="fl">Rate</label><input type="number" id="lib-rate" placeholder="0" min="0"></div>
+        <div class="fg" style="margin-bottom:0"><label class="fl">Unit</label><input type="text" id="lib-unit" placeholder="pcs"></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="saveLibraryItem()" style="padding:8px;font-size:.82rem">💾 Save to Library</button>
+    </div>
+    <div id="library-list" style="max-height:280px;overflow-y:auto"></div>
+  </div>
+</div>
+
 <!-- TOASTS -->
 <div class="tray" id="tray"></div>
 
 <!-- TOPBAR -->
 <div class="topbar">
-  <div class="logo">
-    <div class="logo-mark">PQ</div>
-    <span class="logo-full">ProQuote</span>
-  </div>
-  <div style="display:flex;align-items:center;gap:8px">
-    <div class="autosave-lbl" id="autosave-lbl" style="display:none">
-      <span class="autosave-dot"></span>Saved
-    </div>
-  </div>
+  <div class="logo"><div class="logo-mark">PQ</div><span class="logo-full">ProQuote</span></div>
+  <div class="autosave-lbl" id="autosave-lbl"><span class="autosave-dot"></span>Saved</div>
   <div class="top-r">
-    <button class="btn btn-ghost btn-sm" onclick="toggleDark()" id="dark-btn" title="Toggle dark mode">🌙</button>
-    <button class="btn btn-ghost btn-sm" onclick="cfm('↺ New Quote','All data will be cleared. Start fresh?','🆕','Start Fresh','btn-danger',resetAll)">↺ New</button>
+    <button class="btn btn-ghost btn-sm" id="dark-btn" onclick="toggleDark()" title="Dark mode">🌙</button>
+    <button class="btn btn-ghost btn-sm" onclick="cfm('↺ New Quote','Clear everything and start fresh?','🆕','Start Fresh','btn-danger',resetAll)">↺ New</button>
     <button class="btn btn-ghost btn-sm" onclick="goS(5)">👁 Preview</button>
     <button class="btn btn-outline btn-sm" onclick="doPrint()">🖨 Print</button>
     <button class="btn btn-primary btn-sm" onclick="doExport()">⬇ PDF</button>
@@ -634,120 +326,39 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
   <button class="stab" id="st5" onclick="goS(5)"><div class="sbadge">5</div>Preview</button>
 </div>
 
-<!-- PROFILES MODAL -->
-<div class="overlay" id="ov-profiles">
-  <div class="modal" style="max-width:480px;width:95%">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-      <div style="font-family:Georgia,serif;font-size:1rem;font-weight:700">🏢 Company Profiles</div>
-      <button class="btn btn-ghost btn-sm" onclick="closeProfiles()" style="font-size:1rem;padding:4px 8px">✕</button>
-    </div>
-    <div id="profiles-list" style="display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto;margin-bottom:14px;padding-right:2px"></div>
-    <div style="font-size:0.75rem;color:var(--muted);text-align:center;padding-top:10px;border-top:1px solid var(--border)">
-      Use <strong>Save as New Profile</strong> on Step 1 to add more.
-    </div>
-  </div>
-</div>
-
-<!-- CLIENTS MODAL -->
-<div class="overlay" id="ov-clients">
-  <div class="modal" style="max-width:480px;width:95%">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-      <div style="font-family:Georgia,serif;font-size:1rem;font-weight:700">👥 Client Book</div>
-      <button class="btn btn-ghost btn-sm" onclick="closeClients()" style="font-size:1rem;padding:4px 8px">✕</button>
-    </div>
-    <div id="clients-list" style="display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto;margin-bottom:14px;padding-right:2px"></div>
-    <div style="font-size:0.75rem;color:var(--muted);text-align:center;padding-top:10px;border-top:1px solid var(--border)">
-      Use <strong>Save as Client</strong> on Step 2 to add clients.
-    </div>
-  </div>
-</div>
-
-<!-- LIBRARY MODAL -->
-<div class="overlay" id="ov-library">
-  <div class="modal" style="max-width:520px;width:95%">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-      <div style="font-family:Georgia,serif;font-size:1rem;font-weight:700">📦 Product Library</div>
-      <button class="btn btn-ghost btn-sm" onclick="closeLibrary()" style="font-size:1rem;padding:4px 8px">✕</button>
-    </div>
-    <!-- Add new product form -->
-    <div style="background:var(--panel2);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:12px">
-      <div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Save Current / New Product</div>
-      <div class="r2" style="margin-bottom:8px">
-        <div class="fg" style="margin-bottom:0">
-          <label class="fl">Product Name</label>
-          <input type="text" id="lib-name" placeholder="e.g. Logo Design">
-        </div>
-        <div class="fg" style="margin-bottom:0">
-          <label class="fl">Category</label>
-          <input type="text" id="lib-cat" placeholder="e.g. Design">
-        </div>
-      </div>
-      <div class="r2" style="margin-bottom:8px">
-        <div class="fg" style="margin-bottom:0">
-          <label class="fl">Default Rate</label>
-          <input type="number" id="lib-rate" placeholder="0" min="0">
-        </div>
-        <div class="fg" style="margin-bottom:0">
-          <label class="fl">Unit</label>
-          <input type="text" id="lib-unit" placeholder="e.g. pcs">
-        </div>
-      </div>
-      <button class="btn btn-primary btn-full" onclick="saveLibraryItem()" style="font-size:0.8rem;padding:8px">💾 Save to Library</button>
-    </div>
-    <!-- Saved items list -->
-    <div id="library-list" style="max-height:280px;overflow-y:auto"></div>
-  </div>
-</div>
-
+<!-- MAIN -->
 <div class="main">
-
   <!-- FORM PANEL -->
   <div class="fp">
 
-    <!-- ══ STEP 1: COMPANY ══ -->
+    <!-- STEP 1: COMPANY -->
     <div class="pane active" id="pane-1">
       <div class="pane-head">
         <div class="pane-title">Your Company</div>
         <div class="pane-sub">Appears at the top of the quotation</div>
       </div>
       <div class="pane-body">
-        <!-- PROFILE CAPSULES -->
+        <!-- Profile capsules -->
         <div id="profile-capsules-wrap" style="display:none;margin-bottom:14px">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
             <div class="sec-lbl" style="margin-bottom:0">Saved Profiles</div>
-            <button class="btn btn-ghost btn-sm" style="font-size:0.68rem;padding:3px 8px" onclick="openProfiles()">✏ Manage</button>
+            <button class="btn btn-ghost btn-sm" style="font-size:.7rem;padding:3px 8px" onclick="openProfilesModal()">✏ Manage</button>
           </div>
           <div class="profile-capsules" id="profile-capsules"></div>
         </div>
-        <div class="fg">
-          <label class="fl">Company / Business Name *</label>
-          <input type="text" id="co-name" oninput="r()" placeholder="e.g. Acme Studio Pvt. Ltd.">
-        </div>
-        <div class="fg">
-          <label class="fl">Location / City</label>
-          <input type="text" id="co-loc" oninput="r()" placeholder="e.g. Kathmandu, Nepal">
-        </div>
+        <div class="fg"><label class="fl">Company / Business Name *</label><input type="text" id="co-name" oninput="r()" placeholder="e.g. Acme Studio Pvt. Ltd."></div>
+        <div class="fg"><label class="fl">Location / City</label><input type="text" id="co-loc" oninput="r()" placeholder="e.g. Kathmandu, Nepal"></div>
         <div class="r2">
-          <div class="fg">
-            <label class="fl">Phone</label>
-            <input type="tel" id="co-phone" oninput="r()" placeholder="+977 1 4567890">
-          </div>
-          <div class="fg">
-            <label class="fl">Email</label>
-            <input type="email" id="co-email" oninput="r()" placeholder="hello@company.com">
-          </div>
+          <div class="fg"><label class="fl">Phone</label><input type="tel" id="co-phone" oninput="r()" placeholder="+977 98XXXXXXXX"></div>
+          <div class="fg"><label class="fl">Email</label><input type="email" id="co-email" oninput="r()" placeholder="hello@company.com"></div>
         </div>
         <hr class="hr">
         <div class="sec-lbl">Logo (optional)</div>
         <div class="ldrop" id="ldrop">
           <input type="file" accept="image/*" onchange="uploadLogo(event)">
-          <div id="ldrop-in">
-            <div style="font-size:1.4rem;margin-bottom:4px">🏢</div>
-            <div class="ldrop-lbl">Click or drag logo here</div>
-            <div class="ldrop-sub">PNG, JPG, SVG · max 2MB</div>
-          </div>
+          <div id="ldrop-in"><div style="font-size:1.4rem;margin-bottom:4px">🏢</div><div class="ldrop-lbl">Click or drag logo here</div><div class="ldrop-sub">PNG, JPG, SVG · max 2MB</div></div>
         </div>
-        <div id="logo-acts" style="display:none;display:flex;gap:6px;margin-top:7px;display:none">
+        <div id="logo-acts" style="display:none;gap:6px;margin-top:7px">
           <button class="btn btn-sm btn-outline" onclick="toggleResize()">✂ Resize</button>
           <button class="btn btn-sm btn-danger" onclick="cfm('Remove Logo','Remove the company logo?','🗑️','Remove','btn-danger',removeLogo)">✕ Remove</button>
         </div>
@@ -759,7 +370,7 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
         <div class="sec-lbl">Brand Colour</div>
         <div style="display:flex;align-items:center;gap:10px">
           <input type="color" id="co-col" value="#1e40af" onchange="setCol(this.value)">
-          <span style="font-size:0.76rem;color:var(--muted)">Table header & accent line</span>
+          <span style="font-size:.76rem;color:var(--muted)">Table header & accent</span>
         </div>
         <div class="cpicks">
           <div class="cpick sel" style="background:#1e40af" data-c="#1e40af" onclick="pickCol(this)"></div>
@@ -771,68 +382,25 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
           <div class="cpick" style="background:#1d6b0a" data-c="#1d6b0a" onclick="pickCol(this)"></div>
         </div>
         <hr class="hr">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-          <div class="sec-lbl" style="margin-bottom:0">Document Theme</div>
-        </div>
+        <!-- Document Theme -->
+        <div class="sec-lbl">Document Theme</div>
         <div class="theme-grid">
           <div class="theme-card sel" data-theme="classic" onclick="setTheme('classic',this)">
-            <div class="theme-card-preview" style="background:#f8f9fc">
-              <div style="height:10px;background:#1e40af;border-radius:2px 2px 0 0"></div>
-              <div style="flex:1;padding:3px 4px;display:flex;flex-direction:column;gap:2px">
-                <div style="height:3px;background:#d0d4e4;border-radius:2px;width:70%"></div>
-                <div style="height:3px;background:#d0d4e4;border-radius:2px;width:50%"></div>
-              </div>
-            </div>
-            <div class="theme-card-name">Classic</div>
-            <div class="theme-card-desc">Current style</div>
+            <div class="theme-preview" style="background:#f8f9fc"><div style="height:10px;background:#1e40af;border-radius:2px 2px 0 0"></div><div style="padding:4px 5px;display:flex;flex-direction:column;gap:2px"><div style="height:3px;background:#d0d4e4;border-radius:2px;width:70%"></div><div style="height:3px;background:#d0d4e4;border-radius:2px;width:50%"></div></div></div>
+            <div class="theme-name">Classic</div><div class="theme-desc">Clean header + bar</div>
           </div>
           <div class="theme-card" data-theme="minimal" onclick="setTheme('minimal',this)">
-            <div class="theme-card-preview" style="background:#fff;border:1px solid #e0e0e0">
-              <div style="height:8px;background:#fff;border-bottom:2px solid #1a1d2e;display:flex;align-items:center;padding:0 4px">
-                <div style="width:30px;height:3px;background:#1a1d2e;border-radius:1px"></div>
-              </div>
-              <div style="flex:1;padding:3px 4px;display:flex;flex-direction:column;gap:2px">
-                <div style="height:3px;background:#e0e0e0;border-radius:2px;width:80%"></div>
-                <div style="height:3px;background:#e0e0e0;border-radius:2px;width:55%"></div>
-              </div>
-            </div>
-            <div class="theme-card-name">Minimal</div>
-            <div class="theme-card-desc">Clean & simple</div>
+            <div class="theme-preview" style="background:#fff;border:1px solid #e0e0e0"><div style="height:8px;border-bottom:2px solid #1a1d2e;display:flex;align-items:center;padding:0 4px"><div style="width:30px;height:3px;background:#1a1d2e;border-radius:1px"></div></div><div style="padding:4px 5px;display:flex;flex-direction:column;gap:2px"><div style="height:3px;background:#ccc;border-radius:2px;width:80%"></div><div style="height:3px;background:#ccc;border-radius:2px;width:55%"></div></div></div>
+            <div class="theme-name">Minimal</div><div class="theme-desc">Clean & simple</div>
           </div>
           <div class="theme-card" data-theme="bold" onclick="setTheme('bold',this)">
-            <div class="theme-card-preview" style="background:#f8f9fc">
-              <div style="height:16px;background:#1e40af;border-radius:2px 2px 0 0;display:flex;align-items:center;padding:0 4px;gap:3px">
-                <div style="width:16px;height:16px;background:rgba(255,255,255,.25);border-radius:50%"></div>
-                <div style="flex:1;height:3px;background:rgba(255,255,255,.5);border-radius:2px"></div>
-              </div>
-              <div style="flex:1;padding:3px 4px;display:flex;flex-direction:column;gap:2px">
-                <div style="height:3px;background:#d0d4e4;border-radius:2px;width:75%"></div>
-                <div style="height:3px;background:#d0d4e4;border-radius:2px;width:50%"></div>
-              </div>
-            </div>
-            <div class="theme-card-name">Bold</div>
-            <div class="theme-card-desc">Strong header</div>
+            <div class="theme-preview" style="background:#f8f9fc"><div style="height:16px;background:#1e40af;border-radius:2px 2px 0 0;display:flex;align-items:center;padding:0 4px;gap:3px"><div style="width:12px;height:12px;background:rgba(255,255,255,.3);border-radius:50%"></div><div style="flex:1;height:3px;background:rgba(255,255,255,.5);border-radius:2px"></div></div><div style="padding:4px 5px;display:flex;flex-direction:column;gap:2px"><div style="height:3px;background:#d0d4e4;border-radius:2px;width:75%"></div><div style="height:3px;background:#d0d4e4;border-radius:2px;width:50%"></div></div></div>
+            <div class="theme-name">Bold</div><div class="theme-desc">Full colour header</div>
           </div>
           <div class="theme-card" data-theme="modern" onclick="setTheme('modern',this)">
-            <div class="theme-card-preview" style="background:#f8f9fc;display:grid;grid-template-columns:12px 1fr">
-              <div style="background:#1e40af;border-radius:2px 0 0 2px"></div>
-              <div style="padding:3px 4px;display:flex;flex-direction:column;gap:2px;justify-content:center">
-                <div style="height:3px;background:#d0d4e4;border-radius:2px;width:80%"></div>
-                <div style="height:3px;background:#d0d4e4;border-radius:2px;width:55%"></div>
-                <div style="height:3px;background:#d0d4e4;border-radius:2px;width:65%"></div>
-              </div>
-            </div>
-            <div class="theme-card-name">Modern</div>
-            <div class="theme-card-desc">Side accent</div>
+            <div class="theme-preview" style="background:#f8f9fc;display:grid;grid-template-columns:12px 1fr"><div style="background:#1e40af;border-radius:2px 0 0 2px"></div><div style="padding:4px 5px;display:flex;flex-direction:column;gap:2px;justify-content:center"><div style="height:3px;background:#d0d4e4;border-radius:2px;width:80%"></div><div style="height:3px;background:#d0d4e4;border-radius:2px;width:55%"></div></div></div>
+            <div class="theme-name">Modern</div><div class="theme-desc">Side accent bar</div>
           </div>
-        </div>
-        <hr class="hr">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-          <div class="sec-lbl" style="margin-bottom:0">Saved Profiles</div>
-          <button class="btn btn-ghost btn-sm" style="font-size:0.68rem;padding:3px 8px" onclick="openProfiles()">✏ Manage</button>
-        </div>
-        <div id="profile-bar" style="background:var(--panel2);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;font-size:0.78rem;color:var(--muted)">
-          No profile loaded — click <strong>Manage</strong> to save or load
         </div>
       </div>
       <div class="pnav" style="flex-direction:column;gap:8px">
@@ -841,70 +409,43 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
       </div>
     </div>
 
-    <!-- ══ STEP 2: CUSTOMER ══ -->
+    <!-- STEP 2: CUSTOMER -->
     <div class="pane" id="pane-2">
       <div class="pane-head">
         <div class="pane-title">Customer / Client</div>
         <div class="pane-sub">Who is this quotation for?</div>
       </div>
       <div class="pane-body">
-        <!-- CLIENT CAPSULES -->
+        <!-- Client capsules -->
         <div id="client-capsules-wrap" style="display:none;margin-bottom:14px">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
             <div class="sec-lbl" style="margin-bottom:0">Saved Clients</div>
-            <button class="btn btn-ghost btn-sm" style="font-size:0.68rem;padding:3px 8px" onclick="openClients()">✏ Manage</button>
+            <button class="btn btn-ghost btn-sm" style="font-size:.7rem;padding:3px 8px" onclick="openClientsModal()">✏ Manage</button>
           </div>
           <div class="profile-capsules" id="client-capsules"></div>
         </div>
-        <div class="fg">
-          <label class="fl">Customer / Company Name *</label>
-          <input type="text" id="cl-name" oninput="r()" placeholder="e.g. Horizon Brands Pvt. Ltd.">
-        </div>
+        <div class="fg"><label class="fl">Customer / Company Name *</label><input type="text" id="cl-name" oninput="r()" placeholder="e.g. Horizon Brands Pvt. Ltd."></div>
         <div class="r2">
-          <div class="fg">
-            <label class="fl">Contact Person</label>
-            <input type="text" id="cl-person" oninput="r()" placeholder="e.g. Mr. Ram Sharma">
-          </div>
-          <div class="fg">
-            <label class="fl">Phone</label>
-            <input type="tel" id="cl-phone" oninput="r()" placeholder="+977 98XXXXXXXX">
-          </div>
+          <div class="fg"><label class="fl">Contact Person</label><input type="text" id="cl-person" oninput="r()" placeholder="Mr. Ram Sharma"></div>
+          <div class="fg"><label class="fl">Phone</label><input type="tel" id="cl-phone" oninput="r()" placeholder="+977 98XXXXXXXX"></div>
         </div>
-        <div class="fg">
-          <label class="fl">Location / Address</label>
-          <textarea id="cl-addr" rows="2" oninput="r()" placeholder="e.g. New Road, Kathmandu 44600"></textarea>
-        </div>
+        <div class="fg"><label class="fl">Location / Address</label><textarea id="cl-addr" rows="2" oninput="r()" placeholder="New Road, Kathmandu 44600"></textarea></div>
         <hr class="hr">
         <div class="sec-lbl">Quotation Reference</div>
         <div class="r2">
-          <div class="fg">
-            <label class="fl">Quote Number</label>
-            <input type="text" id="q-no" oninput="r()" placeholder="Auto-generated">
-          </div>
-          <div class="fg">
-            <label class="fl">Status</label>
+          <div class="fg"><label class="fl">Quote Number</label><input type="text" id="q-no" oninput="r()" placeholder="Auto-generated"></div>
+          <div class="fg"><label class="fl">Status</label>
             <select id="q-status" onchange="r()">
-              <option value="draft">Draft</option>
-              <option value="sent">Sent</option>
-              <option value="approved">Approved</option>
-              <option value="rejected">Rejected</option>
+              <option value="draft">Draft</option><option value="sent">Sent</option>
+              <option value="approved">Approved</option><option value="rejected">Rejected</option>
             </select>
           </div>
         </div>
         <div class="r2">
-          <div class="fg">
-            <label class="fl">Date *</label>
-            <input type="date" id="q-date" oninput="r()">
-          </div>
-          <div class="fg">
-            <label class="fl">Valid Until *</label>
-            <input type="date" id="q-valid" oninput="r()">
-          </div>
+          <div class="fg"><label class="fl">Date *</label><input type="date" id="q-date" oninput="r()"></div>
+          <div class="fg"><label class="fl">Valid Until *</label><input type="date" id="q-valid" oninput="r()"></div>
         </div>
-        <div class="fg">
-          <label class="fl">Subject / Project (optional)</label>
-          <input type="text" id="q-subj" oninput="r()" placeholder="e.g. Brand Identity & Website Project">
-        </div>
+        <div class="fg"><label class="fl">Subject / Project (optional)</label><input type="text" id="q-subj" oninput="r()" placeholder="e.g. Brand Identity & Website Project"></div>
       </div>
       <div class="pnav" style="flex-direction:column;gap:8px">
         <button class="btn btn-outline btn-full" onclick="saveAsClient()" style="border-color:var(--success);color:var(--success)">💾 Save as Client</button>
@@ -915,28 +456,21 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
       </div>
     </div>
 
-    <!-- ══ STEP 3: PRICING ══ -->
+    <!-- STEP 3: PRICING -->
     <div class="pane" id="pane-3">
       <div class="pane-head">
         <div class="pane-title">Pricing & Settings</div>
-        <div class="pane-sub">Set discount, VAT and what to show in the document</div>
+        <div class="pane-sub">Discount, taxes and what to show</div>
       </div>
       <div class="pane-body">
         <div class="sec-lbl">Discount & Tax</div>
         <div class="r2">
-          <div class="fg">
-            <label class="fl">Default Discount %</label>
-            <input type="number" id="p-disc" value="0" min="0" max="100" step="0.5" oninput="r()" placeholder="0">
-            <div style="font-size:0.69rem;color:var(--muted);margin-top:3px">Applied to items with no individual discount</div>
-          </div>
-          <div class="fg">
-            <label class="fl">VAT %</label>
+          <div class="fg"><label class="fl">Default Discount %</label><input type="number" id="p-disc" value="0" min="0" max="100" step="0.5" oninput="r()" placeholder="0"></div>
+          <div class="fg"><label class="fl">VAT %</label>
             <select id="p-vat" onchange="vatChange()">
               <option value="0">0% — No VAT</option>
               <option value="13" selected>13% — Nepal VAT</option>
-              <option value="5">5%</option>
-              <option value="10">10%</option>
-              <option value="18">18%</option>
+              <option value="5">5%</option><option value="10">10%</option><option value="18">18%</option>
               <option value="custom">Custom...</option>
             </select>
           </div>
@@ -945,78 +479,37 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
           <label class="fl">Custom VAT %</label>
           <input type="number" id="p-vat-c" value="0" min="0" max="100" oninput="r()">
         </div>
-        <!-- EXTRA TAX LINES -->
-        <div id="extra-taxes">
-          <div id="tax-lines"></div>
-          <button class="btn btn-ghost btn-sm" onclick="addTaxLine()" style="font-size:0.75rem;margin-top:4px;color:var(--accent)">＋ Add Tax Line</button>
-        </div>
+        <!-- Extra tax lines -->
+        <div id="tax-lines"></div>
+        <button class="btn btn-ghost btn-sm" onclick="addTaxLine()" style="font-size:.76rem;color:var(--accent);margin-bottom:10px">＋ Add Tax Line</button>
         <div class="r2">
-          <div class="fg">
-            <label class="fl">Shipping / Delivery (रु)</label>
-            <input type="number" id="p-ship" value="0" min="0" oninput="r()" placeholder="0">
-          </div>
-          <div class="fg">
-            <label class="fl">Rounding</label>
+          <div class="fg"><label class="fl">Shipping / Delivery</label><input type="number" id="p-ship" value="0" min="0" oninput="r()" placeholder="0"></div>
+          <div class="fg"><label class="fl">Rounding</label>
             <select id="p-round" onchange="r()">
-              <option value="none">None</option>
-              <option value="round">Round</option>
-              <option value="ceil">Round Up</option>
-              <option value="floor">Round Down</option>
+              <option value="none">None</option><option value="round">Round</option>
+              <option value="ceil">Round Up</option><option value="floor">Round Down</option>
             </select>
           </div>
         </div>
         <hr class="hr">
         <div class="sec-lbl">Document Visibility</div>
-        <div class="tog-row" onclick="tog('rates')">
-          <div><div class="tog-name">Show Rate Column</div><div class="tog-hint">Display unit rate in table</div></div>
-          <div class="sw on" id="sw-rates"></div>
-        </div>
-        <div class="tog-row" onclick="tog('dscol')">
-          <div><div class="tog-name">Show Discounted Price Column</div><div class="tog-hint">Show per-unit price after discount</div></div>
-          <div class="sw on" id="sw-dscol"></div>
-        </div>
-        <div class="tog-row" onclick="tog('savings')">
-          <div><div class="tog-name">Show Discount Savings Row</div><div class="tog-hint">Show savings in the totals block</div></div>
-          <div class="sw on" id="sw-savings"></div>
-        </div>
-        <div class="tog-row" onclick="tog('vat')">
-          <div><div class="tog-name">Include VAT in Total</div><div class="tog-hint">Add VAT row and include in grand total</div></div>
-          <div class="sw on" id="sw-vat"></div>
-        </div>
-        <div class="tog-row" onclick="tog('grandtot')">
-          <div><div class="tog-name">Show Grand Total</div><div class="tog-hint">Hide for negotiable estimates</div></div>
-          <div class="sw on" id="sw-grandtot"></div>
-        </div>
+        <div class="tog-row" onclick="tog('rates')"><div><div class="tog-name">Show Rate Column</div><div class="tog-hint">Display unit rate in table</div></div><div class="sw on" id="sw-rates"></div></div>
+        <div class="tog-row" onclick="tog('dscol')"><div><div class="tog-name">Show Discounted Price Column</div></div><div class="sw on" id="sw-dscol"></div></div>
+        <div class="tog-row" onclick="tog('savings')"><div><div class="tog-name">Show Discount Savings Row</div></div><div class="sw on" id="sw-savings"></div></div>
+        <div class="tog-row" onclick="tog('vat')"><div><div class="tog-name">Include VAT in Total</div></div><div class="sw on" id="sw-vat"></div></div>
+        <div class="tog-row" onclick="tog('grandtot')"><div><div class="tog-name">Show Grand Total</div></div><div class="sw on" id="sw-grandtot"></div></div>
         <hr class="hr">
-        <div class="sec-lbl">Notes & Terms (Optional)</div>
-        <div class="tog-row" onclick="tog('notes')">
-          <div><div class="tog-name">Include Notes</div></div>
-          <div class="sw on" id="sw-notes"></div>
-        </div>
+        <div class="sec-lbl">Notes & Terms</div>
+        <div class="tog-row" onclick="tog('notes')"><div class="tog-name">Include Notes</div><div class="sw on" id="sw-notes"></div></div>
         <div id="notes-section">
-          <div class="fg">
-            <label class="fl">Notes</label>
-            <textarea id="p-notes" rows="3" oninput="r()" placeholder="e.g. All prices inclusive of default discount. 50% advance required to begin work. Revisions limited to 3 rounds."></textarea>
-          </div>
+          <div class="fg"><label class="fl">Notes</label><textarea id="p-notes" rows="3" oninput="r()" placeholder="e.g. 50% advance required. Revisions limited to 3 rounds."></textarea></div>
         </div>
-        <div class="tog-row" onclick="tog('payterms')">
-          <div><div class="tog-name">Include Payment Terms</div></div>
-          <div class="sw on" id="sw-payterms"></div>
-        </div>
+        <div class="tog-row" onclick="tog('payterms')"><div class="tog-name">Include Payment Terms</div><div class="sw on" id="sw-payterms"></div></div>
         <div id="payterms-section">
-          <div class="fg">
-            <label class="fl">Payment Terms</label>
-            <input type="text" id="p-payterms" oninput="r()" placeholder="e.g. 50% advance, balance on delivery">
-          </div>
-          <div class="fg">
-            <label class="fl">Bank / Payment Details</label>
-            <textarea id="p-bank" rows="2" oninput="r()" placeholder="e.g. Bank: Citizens Bank | A/C: 00100XXXXXXX | Branch: Kathmandu"></textarea>
-          </div>
+          <div class="fg"><label class="fl">Payment Terms</label><input type="text" id="p-payterms" oninput="r()" placeholder="e.g. 50% advance, balance on delivery"></div>
+          <div class="fg"><label class="fl">Bank / Payment Details</label><textarea id="p-bank" rows="2" oninput="r()" placeholder="Bank: Citizens Bank | A/C: 00100XXXXXXX"></textarea></div>
         </div>
-        <div class="tog-row" onclick="tog('sign')">
-          <div><div class="tog-name">Include Signature Block</div></div>
-          <div class="sw on" id="sw-sign"></div>
-        </div>
+        <div class="tog-row" onclick="tog('sign')"><div class="tog-name">Include Signature Block</div><div class="sw on" id="sw-sign"></div></div>
       </div>
       <div class="pnav">
         <button class="btn btn-outline" onclick="goS(2)">← Back</button>
@@ -1024,63 +517,48 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
       </div>
     </div>
 
-    <!-- ══ STEP 4: ITEMS ══ -->
+    <!-- STEP 4: ITEMS -->
     <div class="pane" id="pane-4">
       <div class="pane-head">
         <div class="pane-title">Line Items</div>
-        <div class="pane-sub">Add items or press <kbd style="background:var(--border);border-radius:3px;padding:1px 5px;font-size:0.72rem;font-family:monospace">Shift+A</kbd> to add quickly</div>
+        <div class="pane-sub">Press <kbd style="background:var(--border);border-radius:3px;padding:1px 5px;font-size:.72rem;font-family:monospace">Shift+A</kbd> to add · <kbd style="background:var(--border);border-radius:3px;padding:1px 5px;font-size:.72rem;font-family:monospace">Ctrl+Z</kbd> undo</div>
       </div>
       <div class="pane-body" id="items-pane-body" style="padding-bottom:0">
         <div class="r2" style="margin-bottom:12px">
-          <div class="fg">
-            <label class="fl">Currency</label>
+          <div class="fg"><label class="fl">Currency</label>
             <select id="s-curr" onchange="r()">
-              <option value="रु">NPR — रु</option>
-              <option value="$">USD — $</option>
-              <option value="£">GBP — £</option>
-              <option value="€">EUR — €</option>
-              <option value="₹">INR — ₹</option>
+              <option value="रु">NPR — रु</option><option value="$">USD — $</option>
+              <option value="£">GBP — £</option><option value="€">EUR — €</option><option value="₹">INR — ₹</option>
             </select>
           </div>
-          <div class="fg">
-            <label class="fl">Unit Label</label>
+          <div class="fg"><label class="fl">Unit Label</label>
             <select id="s-unit" onchange="unitChange()">
-              <option value="">None</option>
-              <option value="pcs">Pcs</option>
-              <option value="kg">Kg</option>
-              <option value="mtr">Mtr</option>
-              <option value="sqft">Sq.ft</option>
-              <option value="set">Set</option>
+              <option value="">None</option><option value="pcs">Pcs</option><option value="kg">Kg</option>
+              <option value="mtr">Mtr</option><option value="sqft">Sq.ft</option><option value="set">Set</option>
               <option value="custom">Custom…</option>
             </select>
-            <input type="text" id="s-unit-custom" placeholder="Enter unit name" oninput="r()"
-              style="display:none;margin-top:6px">
+            <input type="text" id="s-unit-custom" placeholder="Enter unit name" oninput="r()" style="display:none;margin-top:6px">
           </div>
         </div>
         <div class="items-wrap">
           <div class="items-hd" style="grid-template-columns:20px 1fr 48px 80px 60px 26px">
             <input type="checkbox" id="sel-all" title="Select all" onchange="toggleSelAll(this.checked)" style="width:14px;height:14px;cursor:pointer;accent-color:var(--danger)">
-            <span>Description</span>
-            <span style="text-align:center">Qty</span>
-            <span style="text-align:right">Rate</span>
-            <span style="text-align:right">Disc%</span>
-            <span></span>
+            <span>Description</span><span style="text-align:center">Qty</span>
+            <span style="text-align:right">Rate</span><span style="text-align:right">Disc%</span><span></span>
           </div>
           <div id="items-body"></div>
         </div>
-        <!-- Bulk delete bar — shown when items selected -->
-        <div id="bulk-bar" style="display:none;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--danger-s);border:1px solid rgba(229,57,53,.2);border-radius:var(--r);margin-top:8px">
-          <span id="bulk-count" style="font-size:0.78rem;font-weight:600;color:var(--danger)">0 selected</span>
+        <div id="bulk-bar" style="display:none;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--danger-s);border:1px solid rgba(229,57,53,.2);border-radius:var(--r);margin-bottom:8px">
+          <span id="bulk-count" style="font-size:.78rem;font-weight:600;color:var(--danger)">0 selected</span>
           <button class="btn btn-danger btn-sm" onclick="deleteSelected()">🗑 Delete Selected</button>
         </div>
       </div>
-      <!-- ADD ITEM + NAV — always fixed at bottom -->
       <div style="flex-shrink:0;border-top:1px solid var(--border);background:var(--panel)">
         <div style="padding:8px 12px;display:flex;gap:6px;flex-wrap:wrap">
-          <button class="add-btn" style="flex:1;min-width:100px" id="add-item-btn" onclick="addItem()">＋ Item</button>
-          <button class="btn btn-outline btn-sm" onclick="openLibrary()" title="Insert from product library" style="flex-shrink:0">📦 Library</button>
-          <button class="btn btn-outline btn-sm" onclick="addSection()" title="Add section header" style="flex-shrink:0">§ Section</button>
-          <button class="btn btn-outline btn-sm" onclick="addOptional()" title="Add optional item" style="flex-shrink:0;color:var(--warn);border-color:var(--warn)">? Optional</button>
+          <button class="add-btn" style="flex:1;min-width:80px" onclick="addItem()">＋ Item</button>
+          <button class="btn btn-outline btn-sm" onclick="openLibraryModal()" title="Product library">📦 Library</button>
+          <button class="btn btn-outline btn-sm" onclick="addSection()" title="Add section header">§ Section</button>
+          <button class="btn btn-outline btn-sm" onclick="addOptional()" title="Add optional item" style="color:var(--warn);border-color:var(--warn)">? Optional</button>
         </div>
         <div class="pnav" style="border-top:1px solid var(--border);padding-top:10px">
           <button class="btn btn-outline" onclick="goS(3)">← Back</button>
@@ -1089,12 +567,9 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
       </div>
     </div>
 
-    <!-- ══ STEP 5: PREVIEW ══ -->
+    <!-- STEP 5: PREVIEW -->
     <div class="pane" id="pane-5">
-      <div class="pane-head">
-        <div class="pane-title">Preview & Export</div>
-        <div class="pane-sub">Review then download or print</div>
-      </div>
+      <div class="pane-head"><div class="pane-title">Preview & Export</div><div class="pane-sub">Review then download or print</div></div>
       <div class="pane-body">
         <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:16px">
           <button class="btn btn-primary btn-full" onclick="doExport()" style="padding:11px">⬇ Download PDF</button>
@@ -1102,39 +577,24 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
         </div>
         <hr class="hr">
         <div class="sec-lbl">Quick Toggles</div>
-        <div class="tog-row" onclick="tog('rates')">
-          <div class="tog-name">Show Rate Column</div>
-          <div class="sw on" id="sw-rates-2"></div>
-        </div>
-        <div class="tog-row" onclick="tog('grandtot')">
-          <div class="tog-name">Show Grand Total</div>
-          <div class="sw on" id="sw-grandtot-2"></div>
-        </div>
-        <div class="tog-row" onclick="tog('dscol')">
-          <div class="tog-name">Show Disc. Price Column</div>
-          <div class="sw on" id="sw-dscol-2"></div>
-        </div>
+        <div class="tog-row" onclick="tog('rates')"><div class="tog-name">Show Rate Column</div><div class="sw on" id="sw-rates-2"></div></div>
+        <div class="tog-row" onclick="tog('grandtot')"><div class="tog-name">Show Grand Total</div><div class="sw on" id="sw-grandtot-2"></div></div>
+        <div class="tog-row" onclick="tog('dscol')"><div class="tog-name">Show Disc. Price Column</div><div class="sw on" id="sw-dscol-2"></div></div>
         <hr class="hr">
         <div class="sec-lbl">Summary</div>
         <div class="sum-card" id="sum-box"></div>
       </div>
-      <div class="pnav">
-        <button class="btn btn-outline" onclick="goS(4)">← Edit Items</button>
-      </div>
+      <div class="pnav"><button class="btn btn-outline" onclick="goS(4)">← Edit Items</button></div>
     </div>
-
   </div><!-- /fp -->
 
   <!-- PREVIEW PANEL -->
   <div class="pp" id="pp">
     <div class="pvbar">
-      <div class="pvbar-l">
-        📄 Live Preview
-        <span class="pg-pill" id="pg-pill">1 page</span>
-      </div>
+      <div class="pvbar-l">📄 Live Preview <span class="pg-pill" id="pg-pill">1 page</span></div>
       <div class="pvbar-r">
         <div class="vg">
-          <span style="font-size:0.67rem;color:var(--muted);padding:0 4px;font-weight:700">SHOW</span>
+          <span style="font-size:.67rem;color:var(--muted);padding:0 4px;font-weight:700">SHOW</span>
           <button class="vc on" id="vc-rates" onclick="tog('rates')">Rates</button>
           <button class="vc on" id="vc-grandtot" onclick="tog('grandtot')">Total</button>
           <button class="vc on" id="vc-dscol" onclick="tog('dscol')">Disc.Price</button>
@@ -1143,74 +603,67 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
         <button class="btn btn-primary btn-sm" onclick="doExport()">⬇ PDF</button>
       </div>
     </div>
-
-    <!-- QUOTE DOCUMENT — pages built dynamically by JS -->
     <div class="doc-scaler">
       <div class="doc-scaler-inner" id="doc-scaler-inner">
         <div id="qdoc"></div>
       </div>
     </div>
-  </div><!-- /pp -->
-
+  </div>
 </div><!-- /main -->
 
 <script>
-/* ═══════════════════════════════
-   STATE
-═══════════════════════════════ */
+/* ═══ STATE ═══ */
 let logoURL=null, logoW=70;
 const SW={rates:true,dscol:true,savings:true,vat:true,grandtot:true,notes:true,payterms:true,sign:true};
 let items=[];
-let extraTaxes=[]; // [{id,name,rate}]
+let extraTaxes=[];
 let currentTheme='classic';
 let undoStack=[], redoStack=[];
 let autosaveTimer=null;
 
-/* ═══════════════════════════════
-   INIT
-═══════════════════════════════ */
+/* ═══ INIT ═══ */
 window.onload=()=>{
   const t=new Date(), v=new Date(t); v.setDate(v.getDate()+30);
-  $('q-date').value=iso(t);
-  $('q-valid').value=iso(v);
+  $('q-date').value=iso(t); $('q-valid').value=iso(v);
   $('q-no').value='QT-'+t.getFullYear()+'-001';
-  buildItems();
-  autoLoadCompany();
-  renderCapsules();
-  renderClientCapsules();
-  restoreDraft();
-  r();
-  applyNoteWrap(); applyPayWrap();
-  initScaler();
   // Restore dark mode pref
   if(localStorage.getItem('pq_dark')==='1') applyDark(true);
+  // Restore draft or auto-load last company profile
+  if(!restoreDraft()) autoLoadLastProfile();
+  buildItems(); renderTaxLines();
+  renderProfileCapsules(); renderClientCapsules();
+  r(); applyNoteWrap(); applyPayWrap();
+  initScaler();
+  // Overlay close on backdrop click
+  ['ov-profiles','ov-clients','ov-library'].forEach(id=>{
+    $(id).addEventListener('click',e=>{ if(e.target===$(id)) $(id).classList.remove('open'); });
+  });
+  // Keyboard shortcuts
+  document.addEventListener('keydown',e=>{
+    if(e.shiftKey && e.key==='A'){e.preventDefault();if(!$('pane-4').classList.contains('active'))goS(4);addItem();}
+    if((e.ctrlKey||e.metaKey)&&e.key==='z'){e.preventDefault();doUndo();}
+    if((e.ctrlKey||e.metaKey)&&(e.key==='y'||(e.shiftKey&&e.key==='Z'))){e.preventDefault();doRedo();}
+  });
 };
 
-/* Scale the 794px document to fill the preview panel — no horizontal scroll, pp scrolls vertically */
+/* ═══ SCALER ═══ */
 function initScaler(){
-  const pp=$('pp');
-  const inner=document.getElementById('doc-scaler-inner');
+  const pp=$('pp'), inner=document.getElementById('doc-scaler-inner');
   if(!pp||!inner)return;
   const DOC_W=794;
-
   function scale(){
     const avail=pp.clientWidth-32;
-    const s=Math.min(1, avail/DOC_W);
+    const s=Math.min(1,avail/DOC_W);
     inner.style.transform=`scale(${s})`;
     inner.style.transformOrigin='top left';
-    // When scaled down, the element still takes 794px of layout width.
-    // We set a negative right margin to cancel the extra space,
-    // and shrink the wrapper to the actual visual height.
-    const wrapper=inner.parentElement; // .doc-scaler
+    const wrapper=inner.parentElement;
     wrapper.style.width=(DOC_W*s)+'px';
-    // Height: need rAF so browser has applied the transform first
     requestAnimationFrame(()=>{
-      const naturalH=inner.getBoundingClientRect().height / s; // unscaled
+      const naturalH=inner.getBoundingClientRect().height/s;
       wrapper.style.height=(naturalH*s)+'px';
       wrapper.style.overflow='visible';
     });
   }
-
   scale();
   window._scaleAfterRender=scale;
   const ro=new ResizeObserver(scale);
@@ -1218,9 +671,7 @@ function initScaler(){
   window.addEventListener('resize',scale);
 }
 
-/* ═══════════════════════════════
-   UTILS
-═══════════════════════════════ */
+/* ═══ UTILS ═══ */
 const $=id=>document.getElementById(id);
 const g=id=>$(id)?$(id).value:'';
 const iso=d=>d.toISOString().split('T')[0];
@@ -1232,141 +683,97 @@ function fmtD(s){if(!s)return'—';const d=new Date(s+'T00:00:00');return d.toLo
 function uid(){return Math.random().toString(36).slice(2,8)}
 function round(n){const m=g('p-round');if(m==='round')return Math.round(n);if(m==='ceil')return Math.ceil(n);if(m==='floor')return Math.floor(n);return n;}
 function getVat(){const v=g('p-vat');return v==='custom'?parseFloat(g('p-vat-c'))||0:parseFloat(v)||0;}
+function getUnit(){const v=g('s-unit');return v==='custom'?g('s-unit-custom')||'':v;}
 
-/* ═══════════════════════════════
-   STEPS
-═══════════════════════════════ */
+/* ═══ STEPS ═══ */
 function goS(n){
   document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.stab').forEach(b=>b.classList.remove('active'));
   $('pane-'+n).classList.add('active');
   $('st'+n).classList.add('active');
-  for(let i=1;i<=5;i++){
-    const tab=$('st'+i),b=tab.querySelector('.sbadge');
-    tab.classList.remove('done');b.textContent=i;
-  }
+  for(let i=1;i<=5;i++){const tab=$('st'+i),b=tab.querySelector('.sbadge');tab.classList.remove('done');b.textContent=i;}
   for(let i=1;i<n;i++){$('st'+i).classList.add('done');$('st'+i).querySelector('.sbadge').textContent='✓';}
   if(n===5)buildSum();
   document.querySelector('.fp').scrollTop=0;
 }
 
-/* ═══════════════════════════════
-   ITEMS UI
-═══════════════════════════════ */
+/* ═══ ITEMS UI ═══ */
 function buildItems(){
   const c=$('items-body'); c.innerHTML='';
-  items.forEach((item)=>{
-    // SECTION ROW
+  items.forEach(item=>{
     if(item.type==='section'){
       const el=document.createElement('div');
-      el.className='irow-section';
-      el.id='ir-'+item.id;
-      el.innerHTML=`
-        <span></span>
+      el.className='irow-section'; el.id='ir-'+item.id;
+      el.style.gridTemplateColumns='20px 1fr 26px';
+      el.innerHTML=`<span></span>
         <input type="text" value="${esc(item.desc)}" placeholder="Section heading…"
-          onchange="upd('${item.id}','desc',this.value)"
-          style="font-weight:700;font-size:0.82rem;color:var(--text)">
+          onchange="upd('${item.id}','desc',this.value)">
         <button class="idel" onclick="cfmDelItem('${item.id}')">✕</button>`;
       c.appendChild(el); return;
     }
-    // REGULAR / OPTIONAL ROW
     const gd=parseFloat(g('p-disc'))||0;
     const eff=item.useD?item.d:gd;
     const el=document.createElement('div');
-    el.className='irow'+(item.useD?' has-disc':'')+(item.sel?' sel-row':'')+(item.optional?' opt-row':'');
-    el.id='ir-'+item.id;
+    el.className='irow'+(item.useD?' has-disc':''); el.id='ir-'+item.id;
     if(item.sel) el.style.background='#fff3f3';
-    if(item.optional) el.style.opacity='0.8';
+    if(item.optional) el.style.borderLeft='3px solid var(--warn)';
     el.innerHTML=`
       <input type="checkbox" ${item.sel?'checked':''} onchange="selItem('${item.id}',this.checked)"
         style="width:14px;height:14px;cursor:pointer;accent-color:var(--danger);flex-shrink:0">
       <div class="idesc-wrap">
         <div style="display:flex;align-items:center;gap:5px">
           <input type="text" value="${esc(item.desc)}" placeholder="Item description"
-            onchange="upd('${item.id}','desc',this.value)" style="font-size:0.77rem;flex:1">
-          ${item.optional?'<span class="opt-badge">Optional</span>':''}
+            onchange="upd('${item.id}','desc',this.value)" style="font-size:.77rem;flex:1">
+          ${item.optional?'<span style="font-size:.62rem;background:var(--warn-s);color:var(--warn);padding:1px 5px;border-radius:3px;font-weight:700;white-space:nowrap">Optional</span>':''}
         </div>
-        <input type="text" value="${esc(item.note||'')}" placeholder="Note (optional)…"
+        <input type="text" value="${esc(item.note||'')}" placeholder="Note…"
           onchange="upd('${item.id}','note',this.value)"
-          style="font-size:0.71rem;color:var(--muted);margin-top:2px;border-color:transparent;background:transparent;padding:2px 4px">
+          style="font-size:.72rem;color:var(--muted);border-color:transparent;background:transparent;padding:2px 4px;margin-top:1px">
         <div class="idr">
           <span class="dtag">Item Disc:</span>
           <input type="number" value="${item.d}" min="0" max="100" step="0.5"
-            style="width:54px;font-size:0.74rem"
-            onchange="upd('${item.id}','d',this.value)" placeholder="%">
-          <span style="font-size:0.68rem;color:var(--muted)">% override</span>
+            style="width:54px;font-size:.74rem" onchange="upd('${item.id}','d',this.value)" placeholder="%">
+          <span style="font-size:.68rem;color:var(--muted)">% override</span>
         </div>
       </div>
-      <input type="number" value="${item.qty}" min="1"
-        onchange="upd('${item.id}','qty',this.value)"
-        style="text-align:center;font-size:0.78rem">
+      <input type="number" value="${item.qty}" min="1" onchange="upd('${item.id}','qty',this.value)"
+        style="text-align:center;font-size:.78rem">
       <input type="number" value="${item.rate}" min="0" step="0.01"
-        onchange="upd('${item.id}','rate',this.value)"
-        style="font-size:0.78rem">
+        onchange="upd('${item.id}','rate',this.value)" style="font-size:.78rem">
       <div style="display:flex;align-items:center;justify-content:flex-end;gap:3px">
-        <span style="font-size:0.7rem;color:${eff>0?'var(--warn)':'var(--dim)'}">${eff>0?eff+'%':'—'}</span>
+        <span style="font-size:.7rem;color:${eff>0?'var(--warn)':'var(--dim)'}">${eff>0?eff+'%':'—'}</span>
         <button title="Per-item discount" onclick="togItemD('${item.id}')"
-          style="width:18px;height:18px;border-radius:3px;border:1px solid ${item.useD?'var(--warn)':'var(--border)'};background:${item.useD?'var(--warn-s)':'transparent'};color:${item.useD?'var(--warn)':'var(--dim)'};cursor:pointer;font-size:0.6rem;font-weight:700">%</button>
+          style="width:18px;height:18px;border-radius:3px;border:1px solid ${item.useD?'var(--warn)':'var(--border)'};background:${item.useD?'var(--warn-s)':'transparent'};color:${item.useD?'var(--warn)':'var(--dim)'};cursor:pointer;font-size:.6rem;font-weight:700">%</button>
       </div>
-      <button class="idel" onclick="cfmDelItem('${item.id}')">✕</button>
-    `;
+      <button class="idel" onclick="cfmDelItem('${item.id}')">✕</button>`;
     c.appendChild(el);
   });
   updateBulkBar();
 }
 
-function selItem(id, checked){
+function selItem(id,checked){
   const it=items.find(x=>x.id===id); if(!it)return;
   it.sel=checked;
-  // tint row
   const row=$('ir-'+id);
-  if(row) row.style.background=checked?'#fff3f3':'';
+  if(row) row.style.background=checked?'#fff3f3':(it.optional?'':'');
   updateBulkBar();
-  // update select-all state
   const allCb=$('sel-all');
-  if(allCb){
-    const total=items.length, sel=items.filter(x=>x.sel).length;
-    allCb.checked = sel===total && total>0;
-    allCb.indeterminate = sel>0 && sel<total;
-  }
+  if(allCb){const t=items.filter(x=>x.type!=='section').length,s=items.filter(x=>x.sel).length;allCb.checked=s===t&&t>0;allCb.indeterminate=s>0&&s<t;}
 }
-
-function toggleSelAll(checked){
-  items.forEach(it=>it.sel=checked);
-  buildItems();
-}
-
+function toggleSelAll(checked){items.forEach(it=>{if(it.type!=='section')it.sel=checked;});buildItems();}
 function updateBulkBar(){
-  const selCount=items.filter(x=>x.sel).length;
-  const bar=$('bulk-bar');
-  if(!bar)return;
-  if(selCount>0){
-    bar.style.display='flex';
-    $('bulk-count').textContent=selCount+' item'+(selCount>1?'s':'')+' selected';
-  } else {
-    bar.style.display='none';
-  }
-  // sync select-all checkbox
+  const sel=items.filter(x=>x.sel).length;
+  const bar=$('bulk-bar'); if(!bar)return;
+  bar.style.display=sel>0?'flex':'none';
+  if(sel>0)$('bulk-count').textContent=sel+' item'+(sel>1?'s':'')+' selected';
   const allCb=$('sel-all');
-  if(allCb){
-    allCb.checked=selCount===items.length && items.length>0;
-    allCb.indeterminate=selCount>0 && selCount<items.length;
-  }
+  if(allCb){const t=items.filter(x=>x.type!=='section').length;allCb.checked=sel===t&&t>0;allCb.indeterminate=sel>0&&sel<t;}
 }
-
 function deleteSelected(){
-  const selCount=items.filter(x=>x.sel).length;
-  if(selCount===0)return;
-  cfm(
-    'Delete '+selCount+' Item'+(selCount>1?'s':''),
-    'Remove the '+selCount+' selected item'+(selCount>1?'s':'')+' from the quotation?',
-    '🗑️','Delete All','btn-danger',
-    ()=>{
-      items=items.filter(x=>!x.sel);
-      buildItems(); r();
-      toast(selCount+' item'+(selCount>1?'s':'')+' deleted');
-    }
-  );
+  const n=items.filter(x=>x.sel).length; if(!n)return;
+  cfm('Delete '+n+' Item'+(n>1?'s':''),'Remove selected items?','🗑️','Delete','btn-danger',()=>{
+    pushUndo(); items=items.filter(x=>!x.sel); buildItems(); r();
+  });
 }
 
 function upd(id,k,v){
@@ -1374,7 +781,6 @@ function upd(id,k,v){
   if(['qty','rate','d'].includes(k)) v=parseFloat(v)||0;
   it[k]=v; buildItems(); r();
 }
-
 function togItemD(id){
   const it=items.find(x=>x.id===id); if(!it)return;
   it.useD=!it.useD; buildItems(); r();
@@ -1385,242 +791,265 @@ function addItem(){
   pushUndo();
   items.push({id:uid(),type:'item',desc:'',qty:1,rate:0,d:0,useD:false,sel:false,optional:false,note:''});
   buildItems(); r();
-  const pb=$('items-pane-body');
-  setTimeout(()=>{ pb.scrollTop=pb.scrollHeight; },50);
+  setTimeout(()=>{const pb=$('items-pane-body');pb.scrollTop=pb.scrollHeight;},50);
 }
-
 function addSection(){
   pushUndo();
   items.push({id:uid(),type:'section',desc:'',sel:false});
   buildItems(); r();
-  const pb=$('items-pane-body');
-  setTimeout(()=>{ pb.scrollTop=pb.scrollHeight; },50);
+  setTimeout(()=>{const pb=$('items-pane-body');pb.scrollTop=pb.scrollHeight;},50);
   toast('Section added');
 }
-
 function addOptional(){
   pushUndo();
   items.push({id:uid(),type:'item',desc:'',qty:1,rate:0,d:0,useD:false,sel:false,optional:true,note:''});
   buildItems(); r();
-  const pb=$('items-pane-body');
-  setTimeout(()=>{ pb.scrollTop=pb.scrollHeight; },50);
+  setTimeout(()=>{const pb=$('items-pane-body');pb.scrollTop=pb.scrollHeight;},50);
   toast('Optional item added','ok');
 }
-
-/* ═══════════════════════════════
-   UNDO / REDO
-═══════════════════════════════ */
-function pushUndo(){
-  undoStack.push(JSON.stringify(items));
-  if(undoStack.length>40) undoStack.shift();
-  redoStack=[];
-}
-function doUndo(){
-  if(!undoStack.length){toast('Nothing to undo');return;}
-  redoStack.push(JSON.stringify(items));
-  items=JSON.parse(undoStack.pop());
-  buildItems(); r(); toast('Undo');
-}
-function doRedo(){
-  if(!redoStack.length){toast('Nothing to redo');return;}
-  undoStack.push(JSON.stringify(items));
-  items=JSON.parse(redoStack.pop());
-  buildItems(); r(); toast('Redo');
+function cfmDelItem(id){
+  const it=items.find(x=>x.id===id);
+  cfm('Remove Item',`Remove "${it&&it.desc?it.desc:'this item'}"?`,'🗑️','Remove','btn-danger',()=>{pushUndo();items=items.filter(x=>x.id!==id);buildItems();r();});
 }
 
-/* ═══════════════════════════════
-   DARK MODE
-═══════════════════════════════ */
-function toggleDark(){
-  const isDark=document.body.classList.toggle('dark');
-  applyDark(isDark);
-}
-function applyDark(on){
-  if(on){
-    document.body.classList.add('dark');
-    $('dark-btn').textContent='☀️';
-    localStorage.setItem('pq_dark','1');
-  } else {
-    document.body.classList.remove('dark');
-    $('dark-btn').textContent='🌙';
-    localStorage.setItem('pq_dark','0');
-  }
-}
+/* ═══ UNDO / REDO ═══ */
+function pushUndo(){undoStack.push(JSON.stringify(items));if(undoStack.length>40)undoStack.shift();redoStack=[];}
+function doUndo(){if(!undoStack.length){toast('Nothing to undo');return;}redoStack.push(JSON.stringify(items));items=JSON.parse(undoStack.pop());buildItems();r();toast('Undo');}
+function doRedo(){if(!redoStack.length){toast('Nothing to redo');return;}undoStack.push(JSON.stringify(items));items=JSON.parse(redoStack.pop());buildItems();r();toast('Redo');}
 
-/* ═══════════════════════════════
-   THEMES
-═══════════════════════════════ */
-function setTheme(name, el){
-  currentTheme=name;
-  document.querySelectorAll('.theme-card').forEach(c=>c.classList.remove('sel'));
-  if(el) el.classList.add('sel');
-  r(); toast('Theme: '+name[0].toUpperCase()+name.slice(1));
-}
-
-/* ═══════════════════════════════
-   EXTRA TAX LINES
-═══════════════════════════════ */
-function addTaxLine(){
-  const id=uid();
-  extraTaxes.push({id,name:'Tax',rate:0});
-  renderTaxLines(); r();
-}
-function removeTaxLine(id){
-  extraTaxes=extraTaxes.filter(t=>t.id!==id);
-  renderTaxLines(); r();
-}
-function updTax(id,k,v){
-  const t=extraTaxes.find(x=>x.id===id);
-  if(!t)return;
-  t[k]=k==='rate'?parseFloat(v)||0:v;
+/* ═══ TOGGLES ═══ */
+function tog(k){
+  SW[k]=!SW[k];
+  const swIds={rates:['sw-rates','sw-rates-2'],dscol:['sw-dscol','sw-dscol-2'],savings:['sw-savings'],vat:['sw-vat'],grandtot:['sw-grandtot','sw-grandtot-2'],notes:['sw-notes'],payterms:['sw-payterms'],sign:['sw-sign']};
+  const vcIds={rates:'vc-rates',grandtot:'vc-grandtot',dscol:'vc-dscol'};
+  (swIds[k]||[]).forEach(sid=>{const e=$(sid);if(e)e.className='sw'+(SW[k]?' on':'');});
+  if(vcIds[k]){const e=$(vcIds[k]);if(e)e.className='vc'+(SW[k]?' on':'');}
+  if(k==='notes')applyNoteWrap();
+  if(k==='payterms')applyPayWrap();
   r();
 }
+function applyNoteWrap(){$('notes-section').style.display=SW.notes?'':'none';}
+function applyPayWrap(){$('payterms-section').style.display=SW.payterms?'':'none';}
+
+function vatChange(){$('vat-custom-row').style.display=g('p-vat')==='custom'?'':'none';r();}
+function unitChange(){$('s-unit-custom').style.display=g('s-unit')==='custom'?'block':'none';r();}
+
+/* ═══ EXTRA TAX LINES ═══ */
+function addTaxLine(){extraTaxes.push({id:uid(),name:'Tax',rate:0});renderTaxLines();r();}
+function removeTaxLine(id){extraTaxes=extraTaxes.filter(t=>t.id!==id);renderTaxLines();r();}
+function updTax(id,k,v){const t=extraTaxes.find(x=>x.id===id);if(!t)return;t[k]=k==='rate'?parseFloat(v)||0:v;r();}
 function renderTaxLines(){
   const c=$('tax-lines'); if(!c)return;
   c.innerHTML=extraTaxes.map(t=>`
-    <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
-      <input type="text" value="${esc(t.name)}" placeholder="Tax name" onchange="updTax('${t.id}','name',this.value)"
-        style="flex:1;padding:8px 10px;font-size:0.85rem">
-      <input type="number" value="${t.rate}" min="0" max="100" step="0.1" onchange="updTax('${t.id}','rate',this.value)"
-        style="width:70px;padding:8px 10px;font-size:0.85rem" placeholder="%">
-      <span style="font-size:0.8rem;color:var(--muted)">%</span>
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+      <input type="text" value="${esc(t.name)}" placeholder="Tax name" onchange="updTax('${t.id}','name',this.value)" style="flex:1">
+      <input type="number" value="${t.rate}" min="0" max="100" step="0.1" onchange="updTax('${t.id}','rate',this.value)" style="width:70px" placeholder="%">
+      <span style="font-size:.82rem;color:var(--muted)">%</span>
       <button class="idel" onclick="removeTaxLine('${t.id}')" style="color:var(--danger)">✕</button>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-/* ═══════════════════════════════
-   AUTOSAVE DRAFT
-═══════════════════════════════ */
-function scheduleSave(){
-  clearTimeout(autosaveTimer);
-  autosaveTimer=setTimeout(()=>{ saveDraft(); showAutosave(); },1500);
+/* ═══ DARK MODE ═══ */
+function toggleDark(){applyDark(!document.body.classList.contains('dark'));}
+function applyDark(on){
+  document.body.classList.toggle('dark',on);
+  $('dark-btn').textContent=on?'☀️':'🌙';
+  localStorage.setItem('pq_dark',on?'1':'0');
+}
+
+/* ═══ THEMES ═══ */
+function setTheme(name,el){
+  currentTheme=name;
+  document.querySelectorAll('.theme-card').forEach(c=>c.classList.remove('sel'));
+  if(el)el.classList.add('sel');
+  r(); toast('Theme: '+name[0].toUpperCase()+name.slice(1));
+}
+
+/* ═══ AUTOSAVE ═══ */
+function scheduleSave(){clearTimeout(autosaveTimer);autosaveTimer=setTimeout(()=>{saveDraft();showAutosaveIndicator();},1500);}
+function showAutosaveIndicator(){
+  const lbl=$('autosave-lbl'); if(!lbl)return;
+  lbl.style.display='flex';
+  clearTimeout(window._saveHide);
+  window._saveHide=setTimeout(()=>lbl.style.display='none',2500);
 }
 function saveDraft(){
   try{
-    const draft={
+    const d={
       items,extraTaxes,currentTheme,logoURL,logoW,
       coName:g('co-name'),coLoc:g('co-loc'),coPhone:g('co-phone'),coEmail:g('co-email'),coCol:g('co-col'),
       clName:g('cl-name'),clPerson:g('cl-person'),clPhone:g('cl-phone'),clAddr:g('cl-addr'),
       qNo:g('q-no'),qStatus:g('q-status'),qDate:g('q-date'),qValid:g('q-valid'),qSubj:g('q-subj'),
       pDisc:g('p-disc'),pVat:g('p-vat'),pVatC:g('p-vat-c'),pShip:g('p-ship'),pRound:g('p-round'),
       pNotes:g('p-notes'),pPay:g('p-payterms'),pBank:g('p-bank'),
-      sCurr:g('s-curr'),sUnit:g('s-unit'),sUnitCustom:g('s-unit-custom'),
-      sw:JSON.stringify(SW)
+      sCurr:g('s-curr'),sUnit:g('s-unit'),sUnitCustom:g('s-unit-custom'),sw:JSON.stringify(SW)
     };
-    localStorage.setItem('pq_draft',JSON.stringify(draft));
+    localStorage.setItem('pq_draft',JSON.stringify(d));
   }catch(e){}
 }
 function restoreDraft(){
   try{
-    const raw=localStorage.getItem('pq_draft');
-    if(!raw)return;
+    const raw=localStorage.getItem('pq_draft'); if(!raw)return false;
     const d=JSON.parse(raw);
-    if(d.items&&d.items.length){
-      items=d.items;
-      if(d.extraTaxes) extraTaxes=d.extraTaxes;
-      if(d.currentTheme){ currentTheme=d.currentTheme; document.querySelector(`.theme-card[data-theme="${currentTheme}"]`)?.click(); }
-      if(d.logoURL){logoURL=d.logoURL;logoW=d.logoW||70;$('ldrop-in').innerHTML=`<img src="${logoURL}" style="max-width:${logoW}px;max-height:48px;object-fit:contain">`;$('logo-acts').style.display='flex';}
-      const set=(id,v)=>{const e=$(id);if(e&&v!==undefined)e.value=v;};
-      set('co-name',d.coName);set('co-loc',d.coLoc);set('co-phone',d.coPhone);set('co-email',d.coEmail);
-      if(d.coCol){setCol(d.coCol);$('co-col').value=d.coCol;}
-      set('cl-name',d.clName);set('cl-person',d.clPerson);set('cl-phone',d.clPhone);set('cl-addr',d.clAddr);
-      set('q-no',d.qNo);set('q-status',d.qStatus);set('q-date',d.qDate);set('q-valid',d.qValid);set('q-subj',d.qSubj);
-      set('p-disc',d.pDisc);set('p-vat',d.pVat);set('p-vat-c',d.pVatC);set('p-ship',d.pShip);set('p-round',d.pRound);
-      set('p-notes',d.pNotes);set('p-payterms',d.pPay);set('p-bank',d.pBank);
-      set('s-curr',d.sCurr);set('s-unit',d.sUnit);set('s-unit-custom',d.sUnitCustom);
-      if(d.sw){const sw=JSON.parse(d.sw);Object.keys(sw).forEach(k=>{SW[k]=sw[k];});}
-      buildItems(); renderTaxLines();
-      toast('Draft restored','ok');
-    }
-  }catch(e){}
-}
-function showAutosave(){
-  const lbl=$('autosave-lbl');
-  if(!lbl)return;
-  lbl.style.display='flex';
-  clearTimeout(window._saveHide);
-  window._saveHide=setTimeout(()=>lbl.style.display='none',2500);
+    if(!d.items||!d.items.length)return false;
+    items=d.items; extraTaxes=d.extraTaxes||[];
+    if(d.currentTheme){currentTheme=d.currentTheme;const tc=document.querySelector(`.theme-card[data-theme="${currentTheme}"]`);if(tc){document.querySelectorAll('.theme-card').forEach(c=>c.classList.remove('sel'));tc.classList.add('sel');}}
+    if(d.logoURL){logoURL=d.logoURL;logoW=d.logoW||70;$('ldrop-in').innerHTML=`<img src="${logoURL}" style="max-width:${logoW}px;max-height:48px;object-fit:contain">`;$('logo-acts').style.display='flex';}
+    const set=(id,v)=>{const e=$(id);if(e&&v!==undefined&&v!==null)e.value=v;};
+    set('co-name',d.coName);set('co-loc',d.coLoc);set('co-phone',d.coPhone);set('co-email',d.coEmail);
+    if(d.coCol){setCol(d.coCol);$('co-col').value=d.coCol;}
+    set('cl-name',d.clName);set('cl-person',d.clPerson);set('cl-phone',d.clPhone);set('cl-addr',d.clAddr);
+    set('q-no',d.qNo);set('q-status',d.qStatus);set('q-date',d.qDate);set('q-valid',d.qValid);set('q-subj',d.qSubj);
+    set('p-disc',d.pDisc);set('p-vat',d.pVat);set('p-vat-c',d.pVatC);set('p-ship',d.pShip);set('p-round',d.pRound);
+    set('p-notes',d.pNotes);set('p-payterms',d.pPay);set('p-bank',d.pBank);
+    set('s-curr',d.sCurr);set('s-unit',d.sUnit);set('s-unit-custom',d.sUnitCustom);
+    if(d.sw){const sw=JSON.parse(d.sw);Object.assign(SW,sw);}
+    toast('Draft restored ✓','ok');
+    return true;
+  }catch(e){return false;}
 }
 
-/* ═══════════════════════════════
-   CLIENT BOOK
-═══════════════════════════════ */
-function getClients(){
-  try{return JSON.parse(localStorage.getItem('pq_clients')||'[]');}catch(e){return[];}
+/* ═══ COMPANY PROFILES ═══ */
+function getProfiles(){try{return JSON.parse(localStorage.getItem('pq_profiles')||'[]');}catch(e){return[];}}
+function setProfiles(a){localStorage.setItem('pq_profiles',JSON.stringify(a));}
+
+function saveAsProfile(){
+  const name=g('co-name'); if(!name.trim()){toast('Enter company name first','err');return;}
+  const profiles=getProfiles();
+  const existing=profiles.find(p=>p.name.toLowerCase()===name.toLowerCase());
+  if(existing){
+    cfm('Update Profile?',`A profile for "${name}" already exists. Overwrite it?`,'💾','Update','btn-primary',()=>doSaveProfile(true,existing.id));
+  } else doSaveProfile(false,null);
 }
-function setClients(arr){localStorage.setItem('pq_clients',JSON.stringify(arr));}
+function doSaveProfile(overwrite,existingId){
+  const profiles=getProfiles();
+  const data={
+    id:overwrite?existingId:uid(),name:g('co-name'),loc:g('co-loc'),phone:g('co-phone'),email:g('co-email'),
+    color:g('co-col')||'#1e40af',logoURL:logoURL||null,logoW,
+    savedAt:new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})
+  };
+  if(overwrite){const i=profiles.findIndex(p=>p.id===existingId);if(i>=0)profiles[i]=data;else profiles.push(data);}
+  else profiles.push(data);
+  setProfiles(profiles);
+  renderProfileCapsules();
+  toast((overwrite?'Updated':'Saved')+': '+data.name,'ok');
+}
+function loadProfile(id){
+  const p=getProfiles().find(x=>x.id===id); if(!p)return;
+  $('co-name').value=p.name||''; $('co-loc').value=p.loc||'';
+  $('co-phone').value=p.phone||''; $('co-email').value=p.email||'';
+  if(p.color){setCol(p.color);$('co-col').value=p.color;}
+  if(p.logoURL){logoURL=p.logoURL;logoW=p.logoW||70;$('ldrop-in').innerHTML=`<img src="${logoURL}" style="max-width:${logoW}px;max-height:48px;object-fit:contain;border-radius:3px">`;$('logo-acts').style.display='flex';}
+  r();
+  // Mark active capsule
+  document.querySelectorAll('#profile-capsules .profile-capsule').forEach(el=>el.classList.toggle('active-cap',el.dataset.id===id));
+  $('ov-profiles').classList.remove('open');
+  toast('Loaded: '+p.name,'ok');
+}
+function deleteProfile(id){
+  const p=getProfiles().find(x=>x.id===id);
+  cfm('Delete Profile',`Delete profile for "${p?p.name:'this company'}"?`,'🗑️','Delete','btn-danger',()=>{
+    setProfiles(getProfiles().filter(x=>x.id!==id));
+    renderProfileCapsules(); renderProfilesModal(); toast('Profile deleted');
+  });
+}
+function openProfilesModal(){renderProfilesModal();$('ov-profiles').classList.add('open');}
+function renderProfilesModal(){
+  const list=$('profiles-list'); if(!list)return;
+  const profiles=getProfiles();
+  if(!profiles.length){list.innerHTML=`<div style="text-align:center;padding:24px;color:var(--muted);font-size:.82rem">No profiles yet. Fill Step 1 and click <b>Save as New Profile</b>.</div>`;return;}
+  list.innerHTML=profiles.map(p=>`
+    <div style="border:1px solid var(--border);border-radius:var(--r);overflow:hidden">
+      <div style="padding:10px 14px;display:flex;align-items:center;gap:10px">
+        <div style="width:32px;height:32px;border-radius:50%;background:${p.color||'#1e40af'};flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:700">${(p.name||'?')[0].toUpperCase()}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700;font-size:.88rem">${esc(p.name)}</div>
+          <div style="font-size:.72rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${[p.loc,p.phone,p.email].filter(Boolean).join(' · ')||'No details'}</div>
+        </div>
+        <div style="font-size:.65rem;color:var(--dim);flex-shrink:0">${p.savedAt||''}</div>
+      </div>
+      <div style="display:flex;border-top:1px solid var(--border)">
+        <button class="btn btn-sm" onclick="loadProfile('${p.id}')" style="flex:1;border-radius:0;border:none;background:var(--accent-s);color:var(--accent);font-weight:600;padding:8px">⬆ Load</button>
+        <div style="width:1px;background:var(--border)"></div>
+        <button class="btn btn-sm btn-danger" onclick="deleteProfile('${p.id}')" style="border-radius:0;border:none;padding:8px 14px">🗑</button>
+      </div>
+    </div>`).join('');
+}
+function renderProfileCapsules(){
+  const profiles=getProfiles();
+  const wrap=$('profile-capsules-wrap'),caps=$('profile-capsules');
+  if(!wrap||!caps)return;
+  wrap.style.display=profiles.length?'block':'none';
+  caps.innerHTML=profiles.map(p=>`
+    <div class="profile-capsule" data-id="${p.id}" onclick="loadProfile('${p.id}')" title="Click to load ${esc(p.name)}">
+      <div class="cap-dot" style="background:${p.color||'#1e40af'}">${(p.name||'?')[0].toUpperCase()}</div>
+      <span class="cap-name">${esc(p.name)}</span>
+      <button class="cap-edit" onclick="event.stopPropagation();loadProfile('${p.id}')" title="Load & edit">✏</button>
+    </div>`).join('');
+}
+function autoLoadLastProfile(){
+  const profiles=getProfiles(); if(!profiles.length)return;
+  const p=profiles[profiles.length-1];
+  $('co-name').value=p.name||''; $('co-loc').value=p.loc||'';
+  $('co-phone').value=p.phone||''; $('co-email').value=p.email||'';
+  if(p.color){setCol(p.color);$('co-col').value=p.color;}
+  if(p.logoURL){logoURL=p.logoURL;logoW=p.logoW||70;$('ldrop-in').innerHTML=`<img src="${logoURL}" style="max-width:${logoW}px;max-height:48px;object-fit:contain;border-radius:3px">`;$('logo-acts').style.display='flex';}
+}
+
+/* ═══ CLIENT BOOK ═══ */
+function getClients(){try{return JSON.parse(localStorage.getItem('pq_clients')||'[]');}catch(e){return[];}}
+function setClients(a){localStorage.setItem('pq_clients',JSON.stringify(a));}
 
 function saveAsClient(){
-  const name=g('cl-name');
-  if(!name.trim()){toast('Enter a client name first','err');return;}
+  const name=g('cl-name'); if(!name.trim()){toast('Enter client name first','err');return;}
   const clients=getClients();
   const existing=clients.find(c=>c.name.toLowerCase()===name.toLowerCase());
   if(existing){
-    cfm('Update Client?',`Update saved profile for "${esc(name)}"?`,'💾','Update','btn-primary',()=>doSaveClient(true,existing.id));
-  } else {
-    doSaveClient(false,null);
-  }
+    cfm('Update Client?',`Update saved profile for "${name}"?`,'💾','Update','btn-primary',()=>doSaveClient(true,existing.id));
+  } else doSaveClient(false,null);
 }
 function doSaveClient(overwrite,existingId){
   const clients=getClients();
-  const data={
-    id:overwrite?existingId:uid(),
-    name:g('cl-name'),person:g('cl-person'),
-    phone:g('cl-phone'),addr:g('cl-addr'),
-    savedAt:new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric'})
-  };
+  const data={id:overwrite?existingId:uid(),name:g('cl-name'),person:g('cl-person'),phone:g('cl-phone'),addr:g('cl-addr'),savedAt:new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric'})};
   if(overwrite){const i=clients.findIndex(c=>c.id===existingId);if(i>=0)clients[i]=data;else clients.push(data);}
   else clients.push(data);
   setClients(clients);
   renderClientCapsules();
-  toast((overwrite?'Client updated':'Client saved')+': '+data.name,'ok');
+  toast((overwrite?'Updated':'Saved')+': '+data.name,'ok');
 }
-function loadClientById(id){
-  const data=getClients().find(c=>c.id===id);
-  if(!data)return;
-  $('cl-name').value=data.name||'';
-  $('cl-person').value=data.person||'';
-  $('cl-phone').value=data.phone||'';
-  $('cl-addr').value=data.addr||'';
+function loadClient(id){
+  const c=getClients().find(x=>x.id===id); if(!c)return;
+  $('cl-name').value=c.name||''; $('cl-person').value=c.person||'';
+  $('cl-phone').value=c.phone||''; $('cl-addr').value=c.addr||'';
   r();
-  // mark active capsule
-  document.querySelectorAll('#client-capsules .profile-capsule').forEach(el=>{
-    el.classList.toggle('active-cap',el.dataset.id===id);
-  });
-  closeClients();
-  toast('Loaded: '+data.name,'ok');
+  document.querySelectorAll('#client-capsules .profile-capsule').forEach(el=>el.classList.toggle('active-cap',el.dataset.id===id));
+  $('ov-clients').classList.remove('open');
+  toast('Loaded: '+c.name,'ok');
 }
 function deleteClient(id){
   const c=getClients().find(x=>x.id===id);
-  cfm('Delete Client',`Delete "${c?esc(c.name):'this client'}"?`,'🗑️','Delete','btn-danger',()=>{
+  cfm('Delete Client',`Delete "${c?c.name:'this client'}"?`,'🗑️','Delete','btn-danger',()=>{
     setClients(getClients().filter(x=>x.id!==id));
-    renderClientsModal(); renderClientCapsules();
-    toast('Client deleted');
+    renderClientCapsules(); renderClientsModal(); toast('Client deleted');
   });
 }
-function openClients(){renderClientsModal();$('ov-clients').classList.add('open');}
-function closeClients(){$('ov-clients').classList.remove('open');}
-$('ov-clients').addEventListener('click',e=>{if(e.target===$('ov-clients'))closeClients();});
+function openClientsModal(){renderClientsModal();$('ov-clients').classList.add('open');}
 function renderClientsModal(){
-  const clients=getClients();
   const list=$('clients-list'); if(!list)return;
-  if(!clients.length){
-    list.innerHTML=`<div style="text-align:center;padding:24px;color:var(--muted);font-size:0.82rem">No clients saved yet.<br>Fill Step 2 and click <strong>Save as Client</strong>.</div>`;
-    return;
-  }
+  const clients=getClients();
+  if(!clients.length){list.innerHTML=`<div style="text-align:center;padding:24px;color:var(--muted);font-size:.82rem">No clients yet. Fill Step 2 and click <b>Save as Client</b>.</div>`;return;}
   list.innerHTML=clients.map(c=>`
     <div style="border:1px solid var(--border);border-radius:var(--r);overflow:hidden">
       <div style="padding:10px 14px;display:flex;align-items:center;gap:10px">
-        <div style="width:32px;height:32px;border-radius:50%;background:var(--accent);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.75rem;font-weight:700">${(c.name||'?')[0].toUpperCase()}</div>
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--accent);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:700">${(c.name||'?')[0].toUpperCase()}</div>
         <div style="flex:1;min-width:0">
-          <div style="font-weight:700;font-size:0.88rem">${esc(c.name)}</div>
-          <div style="font-size:0.72rem;color:var(--muted)">${[c.person,c.phone].filter(Boolean).join(' · ')||'No details'}</div>
+          <div style="font-weight:700;font-size:.88rem">${esc(c.name)}</div>
+          <div style="font-size:.72rem;color:var(--muted)">${[c.person,c.phone].filter(Boolean).join(' · ')||'No details'}</div>
         </div>
-        <div style="font-size:0.65rem;color:var(--dim)">${c.savedAt||''}</div>
+        <div style="font-size:.65rem;color:var(--dim)">${c.savedAt||''}</div>
       </div>
       <div style="display:flex;border-top:1px solid var(--border)">
-        <button class="btn btn-sm" onclick="loadClientById('${c.id}')" style="flex:1;border-radius:0;border:none;background:var(--accent-s);color:var(--accent);font-weight:600;padding:8px">⬆ Load</button>
+        <button class="btn btn-sm" onclick="loadClient('${c.id}')" style="flex:1;border-radius:0;border:none;background:var(--accent-s);color:var(--accent);font-weight:600;padding:8px">⬆ Load</button>
         <div style="width:1px;background:var(--border)"></div>
         <button class="btn btn-sm btn-danger" onclick="deleteClient('${c.id}')" style="border-radius:0;border:none;padding:8px 14px">🗑</button>
       </div>
@@ -1632,65 +1061,51 @@ function renderClientCapsules(){
   if(!wrap||!caps)return;
   wrap.style.display=clients.length?'block':'none';
   caps.innerHTML=clients.map(c=>`
-    <div class="profile-capsule" data-id="${c.id}" onclick="loadClientById('${c.id}')" title="${esc(c.name)}">
+    <div class="profile-capsule" data-id="${c.id}" onclick="loadClient('${c.id}')" title="Load ${esc(c.name)}">
       <div class="cap-dot" style="background:var(--accent)">${(c.name||'?')[0].toUpperCase()}</div>
       <span class="cap-name">${esc(c.name)}</span>
     </div>`).join('');
 }
 
-/* ═══════════════════════════════
-   PRODUCT LIBRARY
-═══════════════════════════════ */
-function getLibrary(){
-  try{return JSON.parse(localStorage.getItem('pq_library')||'[]');}catch(e){return[];}
-}
-function setLibrary(arr){localStorage.setItem('pq_library',JSON.stringify(arr));}
+/* ═══ PRODUCT LIBRARY ═══ */
+function getLibrary(){try{return JSON.parse(localStorage.getItem('pq_library')||'[]');}catch(e){return[];}}
+function setLibrary(a){localStorage.setItem('pq_library',JSON.stringify(a));}
 function saveLibraryItem(){
-  const name=g('lib-name');
-  if(!name.trim()){toast('Enter a product name','err');return;}
+  const name=g('lib-name'); if(!name.trim()){toast('Enter product name','err');return;}
   const lib=getLibrary();
   lib.push({id:uid(),name,cat:g('lib-cat')||'General',rate:parseFloat(g('lib-rate'))||0,unit:g('lib-unit')||''});
   setLibrary(lib);
   $('lib-name').value='';$('lib-cat').value='';$('lib-rate').value='';$('lib-unit').value='';
-  renderLibraryModal();
-  toast('Saved to library','ok');
+  renderLibraryModal(); toast('Saved to library','ok');
 }
 function insertLibraryItem(id){
   const it=getLibrary().find(x=>x.id===id); if(!it)return;
   pushUndo();
   items.push({id:uid(),type:'item',desc:it.name,qty:1,rate:it.rate,d:0,useD:false,sel:false,optional:false,note:''});
   buildItems(); r();
-  closeLibrary();
+  $('ov-library').classList.remove('open');
   toast('Added: '+it.name,'ok');
 }
 function deleteLibraryItem(id){
-  setLibrary(getLibrary().filter(x=>x.id!==id));
-  renderLibraryModal();
-  toast('Removed from library');
+  cfm('Delete Product','Remove from library?','🗑️','Delete','btn-danger',()=>{
+    setLibrary(getLibrary().filter(x=>x.id!==id));
+    renderLibraryModal(); toast('Removed from library');
+  });
 }
-function openLibrary(){renderLibraryModal();$('ov-library').classList.add('open');}
-function closeLibrary(){$('ov-library').classList.remove('open');}
-$('ov-library').addEventListener('click',e=>{if(e.target===$('ov-library'))closeLibrary();});
+function openLibraryModal(){renderLibraryModal();$('ov-library').classList.add('open');}
 function renderLibraryModal(){
-  const lib=getLibrary();
   const list=$('library-list'); if(!list)return;
-  if(!lib.length){
-    list.innerHTML=`<div style="text-align:center;padding:20px;color:var(--muted);font-size:0.82rem">No products saved yet. Add one above.</div>`;
-    return;
-  }
-  // Group by category
+  const lib=getLibrary();
+  if(!lib.length){list.innerHTML=`<div style="text-align:center;padding:20px;color:var(--muted);font-size:.82rem">No products yet. Add one above.</div>`;return;}
   const cats={};
   lib.forEach(it=>{(cats[it.cat||'General']=cats[it.cat||'General']||[]).push(it);});
-  list.innerHTML=Object.entries(cats).map(([cat,items])=>`
+  list.innerHTML=Object.entries(cats).map(([cat,its])=>`
     <div style="margin-bottom:10px">
-      <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:5px;padding:0 2px">${esc(cat)}</div>
-      ${items.map(it=>`
+      <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:5px">${esc(cat)}</div>
+      ${its.map(it=>`
         <div class="lib-item">
-          <div class="lib-item-info">
-            <div class="lib-item-name">${esc(it.name)}</div>
-            <div class="lib-item-meta">${curr()} ${fmt(it.rate)}${it.unit?' · '+esc(it.unit):''}</div>
-          </div>
-          <div style="display:flex;gap:5px;flex-shrink:0">
+          <div><div class="lib-item-name">${esc(it.name)}</div><div class="lib-item-meta">${curr()} ${fmt(it.rate)}${it.unit?' · '+esc(it.unit):''}</div></div>
+          <div style="display:flex;gap:5px">
             <button class="btn btn-sm btn-primary" onclick="insertLibraryItem('${it.id}')" style="padding:5px 10px">＋ Add</button>
             <button class="btn btn-sm btn-danger" onclick="deleteLibraryItem('${it.id}')" style="padding:5px 8px">🗑</button>
           </div>
@@ -1698,877 +1113,326 @@ function renderLibraryModal(){
     </div>`).join('');
 }
 
-/* Keyboard shortcuts */
-document.addEventListener('keydown',e=>{
-  if(e.shiftKey && e.key==='A'){
-    e.preventDefault();
-    if(!$('pane-4').classList.contains('active')) goS(4);
-    addItem();
-  }
-  if((e.ctrlKey||e.metaKey)&&e.key==='z'){e.preventDefault();doUndo();}
-  if((e.ctrlKey||e.metaKey)&&e.key==='y'){e.preventDefault();doRedo();}
-});
-
-/* ═══════════════════════════════
-   TOGGLES
-═══════════════════════════════ */
-function tog(k){
-  SW[k]=!SW[k];
-  // all switch elements for this key
-  const swIds={
-    rates:['sw-rates','sw-rates-2'],
-    dscol:['sw-dscol','sw-dscol-2'],
-    savings:['sw-savings'],
-    vat:['sw-vat'],
-    grandtot:['sw-grandtot','sw-grandtot-2'],
-    notes:['sw-notes'],
-    payterms:['sw-payterms'],
-    sign:['sw-sign'],
-  };
-  const vcIds={rates:'vc-rates',grandtot:'vc-grandtot',dscol:'vc-dscol'};
-  (swIds[k]||[]).forEach(sid=>{const e=$(sid);if(e)e.className='sw'+(SW[k]?' on':'')});
-  if(vcIds[k]){const e=$(vcIds[k]);if(e)e.className='vc'+(SW[k]?' on':'');}
-  if(k==='notes') applyNoteWrap();
-  if(k==='payterms') applyPayWrap();
-  applyVisibility(); r();
-}
-function applyNoteWrap(){$('notes-section').style.display=SW.notes?'':'none'}
-function applyPayWrap(){$('payterms-section').style.display=SW.payterms?'':'none'}
-
-function applyVisibility(){ /* visibility is baked into r() dynamically */ }
-
-function unitChange(){
-  const v=g('s-unit');
-  const ci=$('s-unit-custom');
-  ci.style.display=v==='custom'?'block':'none';
-  r();
-}
-function getUnit(){
-  const v=g('s-unit');
-  if(v==='custom') return g('s-unit-custom')||'';
-  return v;
-}
-
-/* ═══════════════════════════════
-   COMPANY PROFILES (localStorage)
-   Stores array under key 'pq_profiles'
-   Each: {id, name, loc, phone, email, color, logoURL, savedAt}
-═══════════════════════════════ */
-function getProfiles(){
-  try{ return JSON.parse(localStorage.getItem('pq_profiles')||'[]'); }
-  catch(e){ return []; }
-}
-function setProfiles(arr){
-  localStorage.setItem('pq_profiles',JSON.stringify(arr));
-}
-
-function saveAsProfile(){
-  const name=g('co-name');
-  if(!name.trim()){toast('Enter a company name first','err');return;}
-  const profiles=getProfiles();
-  // Check if one with same name already exists — ask to overwrite
-  const existing=profiles.find(p=>p.name.toLowerCase()===name.toLowerCase());
-  if(existing){
-    cfm(
-      'Update Profile?',
-      `A profile for "${esc(name)}" already exists. Overwrite it with current details?`,
-      '💾','Update','btn-primary',
-      ()=>doSaveProfile(true,existing.id)
-    );
-  } else {
-    doSaveProfile(false,null);
-  }
-}
-
-function doSaveProfile(overwrite,existingId){
-  const profiles=getProfiles();
-  const data={
-    id: overwrite ? existingId : uid(),
-    name:  g('co-name'),
-    loc:   g('co-loc'),
-    phone: g('co-phone'),
-    email: g('co-email'),
-    color: g('co-col')||'#1e40af',
-    logoURL: logoURL||null,
-    logoW:   logoW,
-    savedAt: new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})
-  };
-  if(overwrite){
-    const idx=profiles.findIndex(p=>p.id===existingId);
-    if(idx>=0) profiles[idx]=data; else profiles.push(data);
-  } else {
-    profiles.push(data);
-  }
-  setProfiles(profiles);
-  updateProfileBar(data.name);
-  renderCapsules();
-  toast((overwrite?'Profile updated':'Profile saved')+': '+data.name,'ok');
-}
-
-function loadProfileById(id){
-  const profiles=getProfiles();
-  const data=profiles.find(p=>p.id===id);
-  if(!data){toast('Profile not found','err');return;}
-  $('co-name').value=data.name||'';
-  $('co-loc').value=data.loc||'';
-  $('co-phone').value=data.phone||'';
-  $('co-email').value=data.email||'';
-  if(data.color){ setCol(data.color); $('co-col').value=data.color; }
-  if(data.logoURL){
-    logoURL=data.logoURL;
-    logoW=data.logoW||70;
-    $('ldrop-in').innerHTML=`<img src="${logoURL}" style="max-width:${logoW}px;max-height:48px;object-fit:contain;border-radius:3px">`;
-    $('logo-acts').style.display='flex';
-  }
-  r();
-  updateProfileBar(data.name);
-  // Mark active capsule
-  document.querySelectorAll('#profile-capsules .profile-capsule').forEach(el=>{
-    el.classList.toggle('active-cap', el.dataset.id===id);
-  });
-  closeProfiles();
-  toast('Loaded: '+data.name,'ok');
-}
-
-function deleteProfile(id){
-  const profiles=getProfiles();
-  const p=profiles.find(x=>x.id===id);
-  cfm(
-    'Delete Profile',
-    `Delete the saved profile for "${p?esc(p.name):'this company'}"? This cannot be undone.`,
-    '🗑️','Delete','btn-danger',
-    ()=>{
-      setProfiles(profiles.filter(x=>x.id!==id));
-      renderProfilesModal();
-      renderCapsules();
-      toast('Profile deleted');
-    }
-  );
-}
-
-function updateProfileBar(name){
-  const bar=$('profile-bar');
-  if(!bar)return;
-  bar.innerHTML=`<span style="color:var(--success);font-weight:600">✓ Active: ${esc(name)}</span> <span style="color:var(--muted);font-size:0.72rem">— details loaded above</span>`;
-}
-
-function openProfiles(){
-  renderProfilesModal();
-  $('ov-profiles').classList.add('open');
-}
-function closeProfiles(){
-  $('ov-profiles').classList.remove('open');
-}
-$('ov-profiles').addEventListener('click',e=>{if(e.target===$('ov-profiles'))closeProfiles();});
-
-function renderProfilesModal(){
-  const profiles=getProfiles();
-  const list=$('profiles-list');
-  if(!list)return;
-  if(profiles.length===0){
-    list.innerHTML=`<div style="text-align:center;padding:24px;color:var(--muted);font-size:0.82rem">
-      No profiles saved yet.<br>Fill in Step 1 and click <strong>Save as New Profile</strong>.
-    </div>`;
-    return;
-  }
-  list.innerHTML=profiles.map(p=>`
-    <div style="border:1px solid var(--border);border-radius:var(--r);overflow:hidden">
-      <div style="padding:10px 14px;display:flex;align-items:center;gap:10px">
-        <div style="width:32px;height:32px;border-radius:50%;background:${p.color||'#1e40af'};flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.75rem;font-weight:700">
-          ${(p.name||'?')[0].toUpperCase()}
-        </div>
-        <div style="flex:1;min-width:0">
-          <div style="font-weight:700;font-size:0.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(p.name)}</div>
-          <div style="font-size:0.72rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${[p.loc,p.phone,p.email].filter(Boolean).join(' · ')||'No details'}</div>
-        </div>
-        <div style="font-size:0.65rem;color:var(--dim);flex-shrink:0;text-align:right">${p.savedAt||''}</div>
-      </div>
-      <div style="display:flex;border-top:1px solid var(--border)">
-        <button class="btn btn-sm" onclick="loadProfileById('${p.id}')"
-          style="flex:1;border-radius:0;border:none;background:var(--accent-s);color:var(--accent);font-weight:600;padding:8px">
-          ⬆ Load
-        </button>
-        <div style="width:1px;background:var(--border)"></div>
-        <button class="btn btn-sm btn-danger" onclick="deleteProfile('${p.id}')"
-          style="border-radius:0;border:none;padding:8px 14px">
-          🗑
-        </button>
-      </div>
-    </div>
-  `).join('');
-}
-
-function autoLoadCompany(){
-  // Auto-loads the most recently saved profile on startup
-  const profiles=getProfiles();
-  if(profiles.length===0)return;
-  const last=profiles[profiles.length-1];
-  loadProfileById(last.id);
-  // Don't show toast on auto-load
-}
-
-// Legacy stubs — keep for compatibility
-function saveCompany(){ saveAsProfile(); }
-function loadCompany(){ openProfiles(); }
-function clearSavedCompany(){ openProfiles(); }
-function renderSavedCard(){}
-
-function delItem(id){pushUndo();items=items.filter(x=>x.id!==id);buildItems();r();toast('Item removed');}
-function cfmDelItem(id){
-  const it=items.find(x=>x.id===id);
-  cfm('Remove Item',`Remove "${it&&it.desc?it.desc:'this item'}"?`,'🗑️','Remove','btn-danger',()=>delItem(id));
-}
-
-/* renderCapsules — profile capsules shown at top of Step 1 */
-function renderCapsules(){
-  const profiles=getProfiles();
-  const wrap=$('profile-capsules-wrap'),caps=$('profile-capsules');
-  if(!wrap||!caps)return;
-  wrap.style.display=profiles.length?'block':'none';
-  caps.innerHTML=profiles.map(p=>`
-    <div class="profile-capsule" data-id="${p.id}" onclick="loadProfileById('${p.id}')" title="${esc(p.name)}">
-      <div class="cap-dot" style="background:${p.color||'#1e40af'}">${(p.name||'?')[0].toUpperCase()}</div>
-      <span class="cap-name">${esc(p.name)}</span>
-      <button class="cap-edit" onclick="event.stopPropagation();editProfile('${p.id}')" title="Edit">✏</button>
-    </div>`).join('');
-}
-
-function editProfile(id){
-  // Load profile into fields and open manage modal — user edits fields then saves as profile (overwrites)
-  loadProfileById(id);
-  toast('Edit details above, then click Save as New Profile to update','ok');
-}
-
-
-  $('vat-custom-row').style.display=g('p-vat')==='custom'?'':'none';
-  r();
-}
-
-
-/* ═══════════════════════════════
-   RENDER — dynamic multi-page builder
-   A4 = 794px wide, 1122px tall (96dpi)
-   Usable content height per page:
-     Page 1: 1122 - 36top - 48bot - headerH - barH - partiesH - tableHeadH - pgFooterH
-     Page 2+: 1122 - 36top - 48bot - contHdrH - tableHeadH - pgFooterH
-═══════════════════════════════ */
-function r(){
-  const coName   = g('co-name') || 'Your Company';
-  const coLoc    = g('co-loc');
-  const coPhone  = g('co-phone');
-  const coEmail  = g('co-email');
-  const clName   = g('cl-name') || '—';
-  const qno      = g('q-no') || '—';
-  const subj     = g('q-subj');
-  const dateStr  = fmtD(g('q-date'));
-  const validStr = fmtD(g('q-valid'));
-  const gd       = parseFloat(g('p-disc')) || 0;
-  const ut       = getUnit();
-  const vatPct   = getVat();
-  const ship     = parseFloat(g('p-ship')) || 0;
-  const docCol   = getComputedStyle(document.documentElement).getPropertyValue('--doc').trim() || '#1e40af';
-
-  // Status chip HTML
-  const sm = {draft:'Draft',sent:'Sent',approved:'Approved',rejected:'Rejected'};
-  const sc = {draft:'s-draft',sent:'s-sent',approved:'s-approved',rejected:'s-rejected'};
-  const st = g('q-status') || 'draft';
-  const chipHtml = `<div class="schip ${sc[st]}">${sm[st]}</div>`;
-
-  // Logo img tag
-  const logoHtml = logoURL
-    ? `<img class="dlogo" src="${logoURL}" style="display:block;max-width:${logoW}px;max-height:56px;object-fit:contain;border-radius:3px" alt="">`
-    : '';
-  const contLogoHtml = logoURL
-    ? `<img class="cont-logo" src="${logoURL}" style="display:block;max-height:32px;object-fit:contain" alt="">`
-    : '';
-
-  // ── Build all table rows (calculated) ──
-  let subtotal = 0, totalSaved = 0, rowSerial = 0;
-  const rowsData = items.map((item,i)=>{
-    if(item.type==='section') return {type:'section',item};
-    const eff      = item.useD ? item.d : gd;
-    const raw      = item.qty * item.rate;
-    const discAmt  = raw * (eff / 100);
-    const discUnit = round(item.rate * (1 - eff/100));
-    const lineTotal= round(raw - discAmt);
-    // optional items don't add to total
-    if(!item.optional){ subtotal += lineTotal; totalSaved += discAmt; }
-    rowSerial++;
-    return {type:'item',sn:rowSerial, item, eff, discUnit, lineTotal};
-  });
-
-  // ── Totals HTML (with extra taxes) ──
-  const vatAmt = round(subtotal * vatPct / 100);
-  let extraTaxTotal = 0;
-  extraTaxes.forEach(tx=>{ extraTaxTotal += round(subtotal * tx.rate / 100); });
-  const grand  = round(subtotal + (SW.vat ? vatAmt : 0) + extraTaxTotal + ship);
-  let totHtml  = '';
-  totHtml += trow('Subtotal', curr()+' '+fmt(subtotal));
-  if(SW.savings && totalSaved>0) totHtml += trow('Discount Savings','− '+curr()+' '+fmt(round(totalSaved)),'disc-row');
-  if(ship>0) totHtml += trow('Shipping', curr()+' '+fmt(ship));
-  if(SW.vat && vatPct>0) totHtml += trow(`VAT (${vatPct}%)`, curr()+' '+fmt(vatAmt),'vat-row');
-  extraTaxes.forEach(tx=>{ if(tx.rate>0) totHtml += trow(`${tx.name} (${tx.rate}%)`, curr()+' '+fmt(round(subtotal*tx.rate/100)),'vat-row'); });
-  totHtml += trow('Grand Total', curr()+' '+fmt(grand),'grand');
-
-  // ── Table head HTML ──
-  const showRates = SW.rates;
-  const showDs    = SW.dscol;
-  const thHtml = `<thead>
-    <tr style="background:${docCol}">
-      <th style="width:4%;padding:8px 10px;color:#fff;font-size:0.67rem;font-weight:600;letter-spacing:.05em;border-right:1px solid rgba(255,255,255,.2)">SN</th>
-      <th style="width:${showRates&&showDs?'34':showRates||showDs?'40':'48'}%;padding:8px 10px;color:#fff;font-size:0.67rem;font-weight:600;letter-spacing:.05em;border-right:1px solid rgba(255,255,255,.2)">Description</th>
-      <th style="width:8%;text-align:center;padding:8px 10px;color:#fff;font-size:0.67rem;font-weight:600;letter-spacing:.05em;border-right:1px solid rgba(255,255,255,.2)">Unit</th>
-      <th style="width:7%;text-align:center;padding:8px 10px;color:#fff;font-size:0.67rem;font-weight:600;letter-spacing:.05em;border-right:1px solid rgba(255,255,255,.2)">Qty</th>
-      ${showRates?`<th style="width:13%;text-align:right;padding:8px 10px;color:#fff;font-size:0.67rem;font-weight:600;letter-spacing:.05em;border-right:1px solid rgba(255,255,255,.2)">Rate</th>`:''}
-      ${showDs?`<th style="width:13%;text-align:right;padding:8px 10px;color:#fff;font-size:0.67rem;font-weight:600;letter-spacing:.05em;border-right:1px solid rgba(255,255,255,.2)">Disc. Price</th>`:''}
-      <th style="width:14%;text-align:right;padding:8px 10px;color:#fff;font-size:0.67rem;font-weight:600">Total</th>
-    </tr>
-  </thead>`;
-
-  // ── Row HTML builder ──
-  function buildRowHtml(d, idx){
-    if(d.type==='section'){
-      const colspan = 4 + (showRates?1:0) + (showDs?1:0);
-      return `<tr><td colspan="${colspan}" style="padding:7px 10px;background:#f0f2f7;font-weight:700;font-size:0.74rem;letter-spacing:.04em;color:#3a3f5a;border-bottom:1px solid #d0d4e4">${esc(d.item.desc)||'SECTION'}</td></tr>`;
-    }
-    const bgStyle = idx%2===1 ? 'background:#f9fafc' : 'background:#fff';
-    const bgOpt   = d.item.optional ? 'background:#fffdf5' : bgStyle;
-    const cellBase = `padding:8px 10px;vertical-align:top;border-right:1px solid #d8dce8;border-bottom:1px solid #d8dce8;color:#1a1d2e;font-size:0.78rem`;
-    const cellLast = `padding:8px 10px;vertical-align:middle;border-bottom:1px solid #d8dce8;color:#1a1d2e;font-size:0.78rem;text-align:right;font-variant-numeric:tabular-nums`;
-    const noteHtml = d.item.note ? `<div style="font-size:0.67rem;color:#8a90a8;margin-top:2px;line-height:1.5">${esc(d.item.note)}</div>` : '';
-    const optBadge = d.item.optional ? `<span style="font-size:0.6rem;background:#fef3e0;color:#d97706;padding:1px 5px;border-radius:3px;margin-left:5px;font-weight:700">Optional</span>` : '';
-    return `<tr style="${bgOpt}">
-      <td style="${cellBase};vertical-align:middle">${d.sn}</td>
-      <td style="${cellBase}">${esc(d.item.desc)||'—'}${optBadge}${noteHtml}</td>
-      <td style="${cellBase};text-align:center;vertical-align:middle">${ut||'—'}</td>
-      <td style="${cellBase};text-align:center;vertical-align:middle">${d.item.qty}</td>
-      ${showRates?`<td style="${cellBase};text-align:right;font-variant-numeric:tabular-nums;vertical-align:middle">${curr()} ${fmt(d.item.rate)}</td>`:''}
-      ${showDs?`<td style="${cellBase};text-align:right;font-variant-numeric:tabular-nums;vertical-align:middle">${d.eff>0?curr()+' '+fmt(d.discUnit):'—'}</td>`:''}
-      <td style="${cellLast}">${d.item.optional?'<span style="color:#d97706">Optional</span>':curr()+' '+fmt(d.lineTotal)}</td>
-    </tr>`;
-  }
-
-  // ── Footer HTML (last page only) ──
-  const footerHtml = `
-    <div style="padding-top:14px;border-top:1px solid #eef0f8;display:flex;gap:20px;align-items:flex-start;margin-top:16px">
-      ${SW.notes && g('p-notes') ? `<div style="flex:1"><div style="font-size:0.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#a0a5be;margin-bottom:4px">Notes</div><div style="font-size:0.72rem;color:#6a6f88;line-height:1.7">${nl(g('p-notes'))}</div></div>` : ''}
-      ${SW.payterms && (g('p-payterms')||g('p-bank')) ? `<div style="flex:1"><div style="font-size:0.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#a0a5be;margin-bottom:4px">Payment Terms</div><div style="font-size:0.72rem;color:#6a6f88;line-height:1.7">${esc(g('p-payterms'))}</div>${g('p-bank')?`<div style="font-size:0.72rem;color:#6a6f88;line-height:1.7;margin-top:5px">${nl(g('p-bank'))}</div>`:''}</div>` : ''}
-      <div style="flex:1"><div style="font-size:0.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#a0a5be;margin-bottom:4px">Issued By</div><div style="font-size:0.72rem;color:#6a6f88;line-height:1.7">${nl([coName,coLoc,coPhone,coEmail].filter(Boolean).join('\n'))}</div></div>
-    </div>
-    ${SW.sign ? `<div style="display:flex;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid #eef0f8"><div style="text-align:center;width:170px"><div style="border-bottom:1px solid #1a1d2e;margin-bottom:6px;padding-bottom:26px"></div><div style="font-size:0.68rem;color:#8a90a8">Authorized Signature</div></div></div>` : ''}`;
-
-  // ── Totals wrap HTML ──
-  const totalsWrapHtml = SW.grandtot ? `
-    <div style="display:flex;justify-content:flex-end;margin:0 0 0">
-      <div style="width:270px;border:1px solid #c8cce0;border-top:none;font-size:0.79rem">
-        ${totHtml}
-      </div>
-    </div>` : '';
-
-  // ════════════════════════════════
-  // PAGINATION LOGIC
-  // A4 usable px (96dpi, 0 margins in print):
-  //   total = 1122px, padding top=36 bot=48 → content = 1038px
-  //   But we leave room for pg-footer (28px) → 1010px usable
-  // We measure actual rendered heights of fixed sections.
-  // For safety we use conservative estimates.
-  // ════════════════════════════════
-  const PAGE_H     = 1010; // usable px per page after padding + pg-footer
-  const PAGE1_FIXED = 280; // estimate: header + bar + parties + table-head
-  const PAGE_N_FIXED = 80; // estimate: cont-header + table-head
-  const ROW_H      = 38;   // avg row height px
-  const TOTALS_H   = SW.grandtot ? (4 + (SW.savings&&totalSaved>0?1:0) + (ship>0?1:0) + (SW.vat&&vatPct>0?1:0)) * 30 : 0;
-  const FOOTER_H   = (SW.notes||SW.payterms) ? 120 : 80;
-
-  // Distribute rows into pages
-  const pages = []; // each page: {rows:[...], isFirst, isLast}
-  let remaining = [...rowsData];
-  let isFirst = true;
-
-  while(remaining.length > 0 || isFirst){
-    const fixedH  = isFirst ? PAGE1_FIXED : PAGE_N_FIXED;
-    let available = PAGE_H - fixedH;
-
-    // On the last potential page, reserve space for totals + footer
-    // We figure out how many rows fit
-    let rowCount = 0;
-    let usedH    = 0;
-    const isCouldBeLast = remaining.length <= Math.floor(available / ROW_H);
-
-    if(isCouldBeLast){
-      available -= (TOTALS_H + FOOTER_H);
-    }
-
-    while(rowCount < remaining.length){
-      if(usedH + ROW_H > available) break;
-      usedH += ROW_H;
-      rowCount++;
-    }
-
-    // Always take at least 1 row to avoid infinite loop
-    if(rowCount === 0) rowCount = 1;
-
-    pages.push({
-      rows: remaining.slice(0, rowCount),
-      isFirst,
-      isLast: false
-    });
-    remaining = remaining.slice(rowCount);
-    isFirst = false;
-
-    // Break if nothing left
-    if(remaining.length === 0) break;
-  }
-
-  // Mark last page
-  if(pages.length > 0) pages[pages.length-1].isLast = true;
-  // Edge: if no items, still render 1 page
-  if(pages.length === 0) pages.push({rows:[], isFirst:true, isLast:true});
-
-  const totalPages = pages.length;
-
-  // ── Build page HTML ──
-  const qdoc = $('qdoc');
-  qdoc.innerHTML = '';
-
-  pages.forEach((pg, pi)=>{
-    const pageNum = pi + 1;
-    const div = document.createElement('div');
-    div.className = 'dpage';
-
-    let html = '';
-
-    if(pg.isFirst){
-      // ── Page 1 full header — theme-aware ──
-      if(currentTheme==='bold'){
-        html += `
-          <div style="background:${docCol};margin:-36px -48px 20px;padding:24px 48px 20px;display:flex;align-items:center;justify-content:space-between;-webkit-print-color-adjust:exact;print-color-adjust:exact">
-            <div style="display:flex;align-items:center;gap:12px">
-              ${logoURL?`<img src="${logoURL}" style="max-height:42px;object-fit:contain;border-radius:3px;background:rgba(255,255,255,.15);padding:3px">`:''}
-              <div>
-                <div style="font-family:Georgia,serif;font-size:1.2rem;font-weight:700;color:#fff">${esc(coName)}</div>
-                <div style="font-size:0.72rem;color:rgba(255,255,255,.75);margin-top:2px">${esc(coLoc)}</div>
-              </div>
-            </div>
-            <div style="text-align:right">
-              <div style="font-family:Georgia,serif;font-size:1.1rem;font-weight:700;color:#fff;letter-spacing:.05em">QUOTATION</div>
-              <div style="margin-top:4px">${chipHtml}</div>
-              <div style="font-size:0.72rem;color:rgba(255,255,255,.8);margin-top:6px">No: ${esc(qno)} &nbsp;·&nbsp; ${dateStr}</div>
-            </div>
-          </div>
-          <div class="parties">
-            <div><div class="pty-lbl">From</div><div class="pty-name">${esc(coName)}</div><div class="pty-detail">${nl([coLoc,coPhone,coEmail].filter(Boolean).join('\n'))}</div></div>
-            <div><div class="pty-lbl">Bill To</div><div class="pty-name">${esc(clName)}</div><div class="pty-detail">${nl([g('cl-person'),g('cl-addr'),g('cl-phone')].filter(Boolean).join('\n'))}</div></div>
-          </div>`;
-      } else if(currentTheme==='minimal'){
-        html += `
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;padding-bottom:14px;border-bottom:2px solid #1a1d2e">
-            <div>
-              ${logoURL?`<img src="${logoURL}" style="max-height:44px;object-fit:contain;margin-bottom:6px;display:block">`:''}
-              <div style="font-family:Georgia,serif;font-size:1.1rem;font-weight:700;color:#0f1117">${esc(coName)}</div>
-              <div style="font-size:0.72rem;color:#6a6f88;margin-top:2px">${[coLoc,coPhone,coEmail].filter(Boolean).join(' · ')}</div>
-            </div>
-            <div style="text-align:right">
-              <div style="font-size:1.5rem;font-weight:800;letter-spacing:.04em;color:#0f1117">QUOTATION</div>
-              <div style="font-size:0.78rem;color:#6a6f88;margin-top:4px">No: ${esc(qno)}</div>
-              <div style="font-size:0.75rem;color:#6a6f88">Date: ${dateStr}</div>
-              <div style="font-size:0.75rem;color:#6a6f88">Valid: ${validStr}</div>
-            </div>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:18px">
-            <div><div style="font-size:0.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#a0a5be;margin-bottom:3px">Bill To</div><div style="font-size:0.88rem;font-weight:700">${esc(clName)}</div><div style="font-size:0.72rem;color:#6a6f88">${nl([g('cl-person'),g('cl-addr'),g('cl-phone')].filter(Boolean).join('\n'))}</div></div>
-            <div><div style="font-size:0.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#a0a5be;margin-bottom:3px">Status</div><div style="margin-top:3px">${chipHtml}</div>${subj?`<div style="font-size:0.72rem;color:#6a6f88;margin-top:5px">${esc(subj)}</div>`:''}</div>
-          </div>`;
-      } else if(currentTheme==='modern'){
-        html += `
-          <div style="display:flex;margin:-36px -48px 20px;min-height:130px">
-            <div style="width:56px;background:${docCol};flex-shrink:0;-webkit-print-color-adjust:exact;print-color-adjust:exact"></div>
-            <div style="flex:1;padding:22px 24px 18px">
-              <div style="display:flex;align-items:flex-start;justify-content:space-between">
-                <div>
-                  ${logoURL?`<img src="${logoURL}" style="max-height:42px;object-fit:contain;margin-bottom:6px;display:block">`:''}
-                  <div style="font-family:Georgia,serif;font-size:1.1rem;font-weight:700;color:#0f1117">${esc(coName)}</div>
-                  <div style="font-size:0.72rem;color:#6a6f88">${[coLoc,coPhone,coEmail].filter(Boolean).join(' · ')}</div>
-                </div>
-                <div style="text-align:right">
-                  <div style="font-family:Georgia,serif;font-size:1rem;font-weight:700;color:${docCol}">QUOTATION</div>
-                  <div style="font-size:0.75rem;color:#6a6f88;margin-top:4px">No: ${esc(qno)}</div>
-                  <div style="font-size:0.75rem;color:#6a6f88">${dateStr}</div>
-                  <div style="margin-top:4px">${chipHtml}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="parties" style="margin-bottom:18px">
-            <div><div class="pty-lbl">From</div><div class="pty-name">${esc(coName)}</div><div class="pty-detail">${nl([coLoc,coPhone,coEmail].filter(Boolean).join('\n'))}</div></div>
-            <div><div class="pty-lbl">Bill To</div><div class="pty-name">${esc(clName)}</div><div class="pty-detail">${nl([g('cl-person'),g('cl-addr'),g('cl-phone')].filter(Boolean).join('\n'))}</div></div>
-          </div>`;
-      } else {
-        // Classic (default)
-        html += `
-          <div class="dhdr">
-            <div class="dhdr-l">
-              ${logoHtml}
-              <div>
-                <div class="dco-name">${esc(coName)}</div>
-                <div class="dco-loc">${esc(coLoc)}</div>
-              </div>
-            </div>
-            <div class="dhdr-r">
-              <div class="dtitle">QUOTATION</div>
-              <div class="dstatus" style="margin-top:5px">${chipHtml}</div>
-              <div class="ddates">
-                <div class="ddate-row"><span class="ddate-lbl">Date:</span><span class="ddate-val">${dateStr}</span></div>
-                <div class="ddate-row"><span class="ddate-lbl">Valid Until:</span><span class="ddate-val">${validStr}</span></div>
-                <div class="ddate-row"><span class="ddate-lbl">Quote No:</span><span class="ddate-val">${esc(qno)}</span></div>
-                ${subj?`<div class="ddate-row"><span class="ddate-lbl">Subject:</span><span class="ddate-val">${esc(subj)}</span></div>`:''}
-              </div>
-            </div>
-          </div>
-          <div class="dbar" style="background:${docCol}"></div>
-          <div class="parties">
-            <div>
-              <div class="pty-lbl">From</div>
-              <div class="pty-name">${esc(coName)}</div>
-              <div class="pty-detail">${nl([coLoc,coPhone,coEmail].filter(Boolean).join('\n'))}</div>
-            </div>
-            <div>
-              <div class="pty-lbl">Bill To</div>
-              <div class="pty-name">${esc(clName)}</div>
-              <div class="pty-detail">${nl([g('cl-person'),g('cl-addr'),g('cl-phone')].filter(Boolean).join('\n'))}</div>
-            </div>
-          </div>`;
-      }
-    } else {
-      // ── Page 2+ compact header ──
-      html += `
-        <div class="cont-hdr" style="border-bottom:2px solid ${docCol}">
-          <div class="cont-hdr-l">
-            ${contLogoHtml}
-            <div class="cont-co">${esc(coName)}</div>
-          </div>
-          <div class="cont-hdr-r">
-            <div class="cont-qno" style="color:${docCol}">Quote No: ${esc(qno)}</div>
-            <div class="cont-pg">Continued — Page ${pageNum} of ${totalPages}</div>
-          </div>
-        </div>`;
-    }
-
-    // ── Table for this page's rows ──
-    const rowsHtml = pg.rows.map((d,i)=>buildRowHtml(d,i)).join('');
-    html += `
-      <table class="dtable" style="width:100%;border-collapse:collapse;border:1px solid #c8cce0;margin-bottom:0">
-        ${thHtml}
-        <tbody>${rowsHtml}</tbody>
-      </table>`;
-
-    // ── Totals + Footer on last page ──
-    if(pg.isLast){
-      html += totalsWrapHtml;
-      html += footerHtml;
-    }
-
-    // ── Watermark footer centered (every page) ──
-    html += `
-      <div style="margin-top:auto;padding-top:12px;text-align:center">
-        <span style="font-family:Georgia,'Times New Roman',serif;font-size:0.62rem;font-weight:600;letter-spacing:.14em;color:#cdd0de;text-transform:uppercase">ProQuote</span>
-      </div>`;
-
-    div.innerHTML = html;
-    qdoc.appendChild(div);
-  });
-
-  // Update page count pill in preview bar
-  const pill=$('pg-pill');
-  if(pill) pill.textContent = totalPages===1?'1 page':totalPages+' pages';
-
-  // Apply theme class to qdoc
-  qdoc.dataset.theme = currentTheme;
-
-  // Rescale document to fit panel after rebuild
-  if(window._scaleAfterRender) requestAnimationFrame(window._scaleAfterRender);
-
-  // Autosave draft
-  scheduleSave();
-}
-
-function trow(l,v,cls=''){
-  const grand = cls==='grand';
-  const disc  = cls==='disc-row';
-  const vat   = cls==='vat-row';
-  const docCol= getComputedStyle(document.documentElement).getPropertyValue('--doc').trim()||'#1e40af';
-  const bg    = grand ? `background:${docCol}` : vat ? 'background:#f5f7ff' : '';
-  const lclr  = grand ? 'color:rgba(255,255,255,.82)' : disc ? 'color:#b45309' : 'color:#5a5f78';
-  const vclr  = grand ? 'color:#fff' : disc ? 'color:#b45309' : 'color:#1a1d2e';
-  const fw    = grand ? 'font-weight:700;font-size:0.84rem' : '';
-  return `<div style="display:grid;grid-template-columns:1fr auto;padding:6px 10px;border-bottom:1px solid #d8dce8;align-items:center;${bg};${fw}">
-    <span style="${lclr}">${l}</span>
-    <span style="${vclr};text-align:right;font-weight:600;padding-left:16px;font-variant-numeric:tabular-nums">${v}</span>
-  </div>`;
-}
-
-/* ═══════════════════════════════
-   SUMMARY
-═══════════════════════════════ */
-function buildSum(){
-  const gd=parseFloat(g('p-disc'))||0;
-  let sub=0;
-  items.forEach(it=>{const eff=it.useD?it.d:gd;sub+=round(it.qty*it.rate*(1-eff/100));});
-  const vp=getVat(), va=round(sub*vp/100), grand=round(sub+va);
-  $('sum-box').innerHTML=`
-    <div>Customer: <strong>${g('cl-name')||'—'}</strong></div>
-    <div>Quote No: <strong>${g('q-no')||'—'}</strong></div>
-    <div>Items: <strong>${items.length}</strong></div>
-    <div>Subtotal: <strong>${curr()} ${fmt(sub)}</strong></div>
-    ${vp>0?`<div>VAT (${vp}%): <strong>${curr()} ${fmt(va)}</strong></div>`:''}
-    <div>Grand Total: <strong style="color:var(--accent)">${curr()} ${fmt(grand)}</strong></div>
-  `;
-}
-
-/* ═══════════════════════════════
-   LOGO
-═══════════════════════════════ */
+/* ═══ LOGO ═══ */
 function uploadLogo(e){
   const f=e.target.files[0]; if(!f)return;
   if(f.size>2*1024*1024){toast('Max 2MB','err');return;}
   const rd=new FileReader();
-  rd.onload=ev=>{
-    logoURL=ev.target.result;
-    $('ldrop-in').innerHTML=`<img src="${logoURL}" style="max-width:${logoW}px;max-height:48px;object-fit:contain;border-radius:3px">`;
-    $('logo-acts').style.display='flex';
-    r(); toast('Logo uploaded','ok');
-  };
+  rd.onload=ev=>{logoURL=ev.target.result;$('ldrop-in').innerHTML=`<img src="${logoURL}" style="max-width:${logoW}px;max-height:48px;object-fit:contain;border-radius:3px">`;$('logo-acts').style.display='flex';r();toast('Logo uploaded','ok');};
   rd.readAsDataURL(f);
 }
-function toggleResize(){
-  const w=$('logo-resize');
-  w.style.display=w.style.display==='none'?'block':'none';
-}
-function resizeLogo(v){
-  logoW=parseInt(v); $('lsize-lbl').textContent=v;
-  const img=$('ldrop-in').querySelector('img');
-  if(img)img.style.maxWidth=v+'px';
-  r();
-}
-function removeLogo(){
-  logoURL=null;
-  $('ldrop-in').innerHTML=`<div style="font-size:1.4rem;margin-bottom:4px">🏢</div><div class="ldrop-lbl">Click or drag logo here</div><div class="ldrop-sub">PNG, JPG, SVG · max 2MB</div>`;
-  $('logo-acts').style.display='none';
-  $('logo-resize').style.display='none';
-  r(); toast('Logo removed');
-}
+function toggleResize(){const w=$('logo-resize');w.style.display=w.style.display==='none'?'block':'none';}
+function resizeLogo(v){logoW=parseInt(v);$('lsize-lbl').textContent=v;const img=$('ldrop-in').querySelector('img');if(img)img.style.maxWidth=v+'px';r();}
+function removeLogo(){logoURL=null;logoW=70;$('ldrop-in').innerHTML='<div style="font-size:1.4rem;margin-bottom:4px">🏢</div><div class="ldrop-lbl">Click or drag logo here</div><div class="ldrop-sub">PNG, JPG, SVG · max 2MB</div>';$('logo-acts').style.display='none';$('logo-resize').style.display='none';r();}
 
-/* ═══════════════════════════════
-   COLOUR
-═══════════════════════════════ */
-function setCol(c){
-  document.documentElement.style.setProperty('--doc',c);
-  $('co-col').value=c;
-  // re-apply inline bgcolor on table header (for PDF)
-  document.querySelectorAll('.dtable thead tr').forEach(tr=>tr.style.background=c);
-  document.querySelectorAll('.trow.grand').forEach(tr=>tr.style.background=c);
-  document.querySelectorAll('.dbar').forEach(b=>b.style.background=c);
-}
-function pickCol(el){
-  document.querySelectorAll('.cpick').forEach(x=>x.classList.remove('sel'));
-  el.classList.add('sel');
-  setCol(el.dataset.c);
-}
+/* ═══ COLOR ═══ */
+function setCol(v){document.documentElement.style.setProperty('--doc',v);r();}
+function pickCol(el){setCol(el.dataset.c);$('co-col').value=el.dataset.c;document.querySelectorAll('.cpick').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');}
 
-/* ═══════════════════════════════
-   MODAL
-═══════════════════════════════ */
-let _cb=null;
-function cfm(title,msg,ico,okLbl,okCls,cb){
-  $('m-ttl').textContent=title;
-  $('m-msg').innerHTML=msg;
-  $('m-ico').textContent=ico;
-  const btn=$('m-ok');
-  btn.textContent=okLbl; btn.className='btn '+okCls;
-  _cb=cb;
-  btn.onclick=()=>{closeM();_cb&&_cb();};
-  $('ov').classList.add('open');
+/* ═══ MODAL / TOAST ═══ */
+let _mCb=null;
+function cfm(title,msg,ico,okLabel,okCls,cb){
+  $('m-ttl').textContent=title;$('m-msg').textContent=msg;$('m-ico').textContent=ico;
+  const ok=$('m-ok');ok.textContent=okLabel;ok.className='btn '+okCls;
+  _mCb=cb;$('ov').classList.add('open');
 }
-function closeM(){$('ov').classList.remove('open')}
+function closeM(){$('ov').classList.remove('open');_mCb=null;}
+$('m-ok').onclick=()=>{closeM();if(_mCb)_mCb();};
 $('ov').addEventListener('click',e=>{if(e.target===$('ov'))closeM();});
-
-/* ═══════════════════════════════
-   TOAST
-═══════════════════════════════ */
 function toast(msg,type=''){
-  const tray=$('tray');
-  const el=document.createElement('div');
-  el.className='toast'+(type==='ok'?' ok':type==='err'?' err':'');
-  el.textContent=(type==='ok'?'✓ ':type==='err'?'✕ ':'• ')+msg;
-  tray.appendChild(el);
-  setTimeout(()=>{el.style.animation='tOut .25s ease forwards';setTimeout(()=>el.remove(),250)},2600);
+  const t=document.createElement('div');t.className='toast'+(type?' '+type:'');t.textContent=msg;
+  $('tray').appendChild(t);
+  setTimeout(()=>{t.style.animation='tOut .2s ease forwards';setTimeout(()=>t.remove(),200);},2500);
 }
 
-/* ═══════════════════════════════
-   PRINT (direct — clean UI-less)
-═══════════════════════════════ */
-function doPrint(){
-  // Use same clean window approach so UI chrome doesn't print
-  doExport();
+/* ═══ SUMMARY ═══ */
+function buildSum(){
+  const gd=parseFloat(g('p-disc'))||0;
+  let sub=0;
+  items.forEach(it=>{if(it.type==='section'||it.optional)return;const eff=it.useD?it.d:gd;sub+=round(it.qty*it.rate*(1-eff/100));});
+  const vp=getVat(),va=round(sub*vp/100),ship=parseFloat(g('p-ship'))||0;
+  let extTax=0; extraTaxes.forEach(tx=>{extTax+=round(sub*tx.rate/100);});
+  const grand=round(sub+(SW.vat?va:0)+extTax+ship);
+  $('sum-box').innerHTML=`
+    <div>Customer: <strong>${g('cl-name')||'—'}</strong></div>
+    <div>Quote No: <strong>${g('q-no')||'—'}</strong></div>
+    <div>Items: <strong>${items.filter(x=>x.type!=='section').length}</strong></div>
+    <div>Subtotal: <strong>${curr()} ${fmt(sub)}</strong></div>
+    ${vp>0?`<div>VAT (${vp}%): <strong>${curr()} ${fmt(va)}</strong></div>`:''}
+    <div>Grand Total: <strong style="color:var(--accent)">${curr()} ${fmt(grand)}</strong></div>`;
 }
 
-/* ═══════════════════════════════
-   PDF EXPORT — fully self-contained
-   Works offline, GitHub Pages, anywhere
-═══════════════════════════════ */
-function doExport(){
-  cfm('Download PDF',
-    'A clean print window will open. In the dialog: set Destination to "Save as PDF", Margins to "None", and enable Background graphics.',
-    '📄','Open Print → Save as PDF','btn-primary',
+/* ═══ RENDER ═══ */
+function r(){
+  const coName=g('co-name')||'Your Company', coLoc=g('co-loc'), coPhone=g('co-phone'), coEmail=g('co-email');
+  const clName=g('cl-name')||'—', qno=g('q-no')||'—', subj=g('q-subj');
+  const dateStr=fmtD(g('q-date')), validStr=fmtD(g('q-valid'));
+  const gd=parseFloat(g('p-disc'))||0, ut=getUnit(), vatPct=getVat(), ship=parseFloat(g('p-ship'))||0;
+  const docCol=getComputedStyle(document.documentElement).getPropertyValue('--doc').trim()||'#1e40af';
+
+  const sm={draft:'Draft',sent:'Sent',approved:'Approved',rejected:'Rejected'};
+  const sc={draft:'s-draft',sent:'s-sent',approved:'s-approved',rejected:'s-rejected'};
+  const st=g('q-status')||'draft';
+  const chipHtml=`<span class="schip ${sc[st]}">${sm[st]}</span>`;
+  const logoHtml=logoURL?`<img src="${logoURL}" style="display:block;max-width:${logoW}px;max-height:56px;object-fit:contain;border-radius:3px" alt="">`:'' ;
+  const contLogoHtml=logoURL?`<img src="${logoURL}" style="display:block;max-height:32px;object-fit:contain" alt="">`:'' ;
+
+  // Build rows data
+  let subtotal=0, totalSaved=0, serial=0;
+  const rowsData=items.map(item=>{
+    if(item.type==='section')return{type:'section',item};
+    const eff=item.useD?item.d:gd;
+    const raw=item.qty*item.rate, discAmt=raw*(eff/100);
+    const discUnit=round(item.rate*(1-eff/100)), lineTotal=round(raw-discAmt);
+    if(!item.optional){subtotal+=lineTotal;totalSaved+=discAmt;}
+    serial++;
+    return{type:'item',sn:serial,item,eff,discUnit,lineTotal};
+  });
+
+  // Totals
+  const vatAmt=round(subtotal*vatPct/100);
+  let extraTaxTotal=0;
+  extraTaxes.forEach(tx=>{extraTaxTotal+=round(subtotal*tx.rate/100);});
+  const grand=round(subtotal+(SW.vat?vatAmt:0)+extraTaxTotal+ship);
+  let totHtml='';
+  totHtml+=trow('Subtotal',curr()+' '+fmt(subtotal));
+  if(SW.savings&&totalSaved>0)totHtml+=trow('Discount Savings','− '+curr()+' '+fmt(round(totalSaved)),'disc-row');
+  if(ship>0)totHtml+=trow('Shipping',curr()+' '+fmt(ship));
+  if(SW.vat&&vatPct>0)totHtml+=trow(`VAT (${vatPct}%)`,curr()+' '+fmt(vatAmt),'vat-row');
+  extraTaxes.forEach(tx=>{if(tx.rate>0)totHtml+=trow(`${tx.name} (${tx.rate}%)`,curr()+' '+fmt(round(subtotal*tx.rate/100)),'vat-row');});
+  if(SW.grandtot)totHtml+=trow('Grand Total',curr()+' '+fmt(grand),'grand');
+
+  const showRates=SW.rates, showDs=SW.dscol;
+  const thHtml=`<thead><tr style="background:${docCol};-webkit-print-color-adjust:exact;print-color-adjust:exact">
+    <th style="width:4%;padding:8px 10px;color:#fff;font-size:.67rem;font-weight:600;letter-spacing:.05em;border-right:1px solid rgba(255,255,255,.2)">SN</th>
+    <th style="padding:8px 10px;color:#fff;font-size:.67rem;font-weight:600;letter-spacing:.05em;border-right:1px solid rgba(255,255,255,.2)">Description</th>
+    <th style="width:8%;text-align:center;padding:8px 10px;color:#fff;font-size:.67rem;font-weight:600;letter-spacing:.05em;border-right:1px solid rgba(255,255,255,.2)">Unit</th>
+    <th style="width:7%;text-align:center;padding:8px 10px;color:#fff;font-size:.67rem;font-weight:600;letter-spacing:.05em;border-right:1px solid rgba(255,255,255,.2)">Qty</th>
+    ${showRates?`<th style="width:13%;text-align:right;padding:8px 10px;color:#fff;font-size:.67rem;font-weight:600;letter-spacing:.05em;border-right:1px solid rgba(255,255,255,.2)">Rate</th>`:''}
+    ${showDs?`<th style="width:13%;text-align:right;padding:8px 10px;color:#fff;font-size:.67rem;font-weight:600;letter-spacing:.05em;border-right:1px solid rgba(255,255,255,.2)">Disc. Price</th>`:''}
+    <th style="width:14%;text-align:right;padding:8px 10px;color:#fff;font-size:.67rem;font-weight:600">Total</th>
+  </tr></thead>`;
+
+  function buildRow(d,idx){
+    if(d.type==='section'){
+      const cols=4+(showRates?1:0)+(showDs?1:0);
+      return`<tr><td colspan="${cols}" style="padding:7px 10px;background:#f0f2f7;font-weight:700;font-size:.74rem;letter-spacing:.04em;color:#3a3f5a;border-bottom:1px solid #d0d4e4">${esc(d.item.desc)||'SECTION'}</td></tr>`;
+    }
+    const bg=idx%2===1?'background:#f9fafc':'background:#fff';
+    const bgOpt=d.item.optional?'background:#fffdf5':bg;
+    const cb=`padding:8px 10px;vertical-align:top;border-right:1px solid #d8dce8;border-bottom:1px solid #d8dce8;color:#1a1d2e;font-size:.78rem`;
+    const cr=`padding:8px 10px;vertical-align:middle;border-bottom:1px solid #d8dce8;color:#1a1d2e;font-size:.78rem;text-align:right;font-variant-numeric:tabular-nums`;
+    const note=d.item.note?`<div style="font-size:.67rem;color:#8a90a8;margin-top:2px;line-height:1.5">${esc(d.item.note)}</div>`:'';
+    const optB=d.item.optional?`<span style="font-size:.6rem;background:#fef3e0;color:#d97706;padding:1px 5px;border-radius:3px;margin-left:5px;font-weight:700">Optional</span>`:'';
+    return`<tr style="${bgOpt}">
+      <td style="${cb};vertical-align:middle">${d.sn}</td>
+      <td style="${cb}">${esc(d.item.desc)||'—'}${optB}${note}</td>
+      <td style="${cb};text-align:center;vertical-align:middle">${ut||'—'}</td>
+      <td style="${cb};text-align:center;vertical-align:middle">${d.item.qty}</td>
+      ${showRates?`<td style="${cb};text-align:right;font-variant-numeric:tabular-nums;vertical-align:middle">${curr()} ${fmt(d.item.rate)}</td>`:''}
+      ${showDs?`<td style="${cb};text-align:right;font-variant-numeric:tabular-nums;vertical-align:middle">${d.eff>0?curr()+' '+fmt(d.discUnit):'—'}</td>`:''}
+      <td style="${cr}">${d.item.optional?`<span style="color:#d97706">Optional</span>`:curr()+' '+fmt(d.lineTotal)}</td>
+    </tr>`;
+  }
+
+  const footerHtml=`
+    <div style="padding-top:14px;border-top:1px solid #eef0f8;display:flex;gap:20px;align-items:flex-start;margin-top:16px">
+      ${SW.notes&&g('p-notes')?`<div style="flex:1"><div style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#a0a5be;margin-bottom:4px">Notes</div><div style="font-size:.72rem;color:#6a6f88;line-height:1.7">${nl(g('p-notes'))}</div></div>`:''}
+      ${SW.payterms&&(g('p-payterms')||g('p-bank'))?`<div style="flex:1"><div style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#a0a5be;margin-bottom:4px">Payment Terms</div><div style="font-size:.72rem;color:#6a6f88;line-height:1.7">${esc(g('p-payterms'))}</div>${g('p-bank')?`<div style="font-size:.72rem;color:#6a6f88;line-height:1.7;margin-top:4px">${nl(g('p-bank'))}</div>`:''}</div>`:''}
+      <div style="flex:1"><div style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#a0a5be;margin-bottom:4px">Issued By</div><div style="font-size:.72rem;color:#6a6f88;line-height:1.7">${nl([coName,coLoc,coPhone,coEmail].filter(Boolean).join('\n'))}</div></div>
+    </div>
+    ${SW.sign?`<div style="display:flex;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid #eef0f8"><div style="text-align:center;width:170px"><div style="border-bottom:1px solid #1a1d2e;margin-bottom:6px;padding-bottom:26px"></div><div style="font-size:.68rem;color:#8a90a8">Authorized Signature</div></div></div>`:''}`;
+
+  const totalsWrapHtml=`<div style="display:flex;justify-content:flex-end;margin:0 0 0"><div style="width:270px;border:1px solid #c8cce0;border-top:none;font-size:.79rem">${totHtml}</div></div>`;
+
+  // Pagination
+  const PAGE_H=1010, PAGE1_FIXED=280, PAGEN_FIXED=80, LAST_EXTRA=200, ROW_H=38;
+  let remaining=[...rowsData], isFirst=true;
+  const pages=[];
+  while(remaining.length>0||pages.length===0){
+    const fixed=isFirst?PAGE1_FIXED:PAGEN_FIXED;
+    const isLast=remaining.length<=Math.floor((PAGE_H-fixed-LAST_EXTRA)/ROW_H);
+    const available=PAGE_H-fixed-(isLast?LAST_EXTRA:0);
+    let rowCount=0, usedH=0;
+    while(rowCount<remaining.length){if(usedH+ROW_H>available)break;usedH+=ROW_H;rowCount++;}
+    if(rowCount===0)rowCount=1;
+    pages.push({rows:remaining.slice(0,rowCount),isFirst,isLast:false});
+    remaining=remaining.slice(rowCount);
+    isFirst=false;
+    if(remaining.length===0)break;
+  }
+  if(pages.length>0)pages[pages.length-1].isLast=true;
+  if(pages.length===0)pages.push({rows:[],isFirst:true,isLast:true});
+  const totalPages=pages.length;
+
+  const qdoc=$('qdoc'); qdoc.innerHTML='';
+  pages.forEach((pg,pi)=>{
+    const pageNum=pi+1;
+    const div=document.createElement('div');
+    div.className='dpage';
+    let html='';
+
+    if(pg.isFirst){
+      if(currentTheme==='bold'){
+        html+=`<div style="background:${docCol};margin:-36px -48px 20px;padding:24px 48px 20px;display:flex;align-items:center;justify-content:space-between;-webkit-print-color-adjust:exact;print-color-adjust:exact">
+          <div style="display:flex;align-items:center;gap:12px">
+            ${logoURL?`<img src="${logoURL}" style="max-height:42px;object-fit:contain;border-radius:3px">`:'' }
+            <div><div style="font-family:Georgia,serif;font-size:1.2rem;font-weight:700;color:#fff">${esc(coName)}</div><div style="font-size:.72rem;color:rgba(255,255,255,.75);margin-top:2px">${esc(coLoc)}</div></div>
+          </div>
+          <div style="text-align:right"><div style="font-family:Georgia,serif;font-size:1.1rem;font-weight:700;color:#fff;letter-spacing:.05em">QUOTATION</div><div style="margin-top:4px">${chipHtml}</div><div style="font-size:.72rem;color:rgba(255,255,255,.8);margin-top:6px">No: ${esc(qno)} &nbsp;·&nbsp; ${dateStr}</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:18px;padding:12px 14px;background:#f8f9fc;border-radius:6px;border:1px solid #eef0f8">
+          <div><div style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#a0a5be;margin-bottom:4px">From</div><div style="font-size:.88rem;font-weight:700">${esc(coName)}</div><div style="font-size:.72rem;color:#6a6f88;margin-top:2px;line-height:1.7">${nl([coLoc,coPhone,coEmail].filter(Boolean).join('\n'))}</div></div>
+          <div><div style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#a0a5be;margin-bottom:4px">Bill To</div><div style="font-size:.88rem;font-weight:700">${esc(clName)}</div><div style="font-size:.72rem;color:#6a6f88;margin-top:2px;line-height:1.7">${nl([g('cl-person'),g('cl-addr'),g('cl-phone')].filter(Boolean).join('\n'))}</div></div>
+        </div>`;
+      } else if(currentTheme==='minimal'){
+        html+=`<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;padding-bottom:14px;border-bottom:2px solid #1a1d2e">
+          <div>${logoURL?`<img src="${logoURL}" style="max-height:44px;object-fit:contain;margin-bottom:6px;display:block">`:''}<div style="font-family:Georgia,serif;font-size:1.1rem;font-weight:700;color:#0f1117">${esc(coName)}</div><div style="font-size:.72rem;color:#6a6f88">${[coLoc,coPhone,coEmail].filter(Boolean).join(' · ')}</div></div>
+          <div style="text-align:right"><div style="font-size:1.5rem;font-weight:800;letter-spacing:.04em;color:#0f1117">QUOTATION</div><div style="font-size:.78rem;color:#6a6f88;margin-top:4px">No: ${esc(qno)}</div><div style="font-size:.75rem;color:#6a6f88">Date: ${dateStr}</div><div style="font-size:.75rem;color:#6a6f88">Valid: ${validStr}</div><div style="margin-top:4px">${chipHtml}</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:18px">
+          <div><div style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#a0a5be;margin-bottom:3px">Bill To</div><div style="font-size:.88rem;font-weight:700">${esc(clName)}</div><div style="font-size:.72rem;color:#6a6f88">${nl([g('cl-person'),g('cl-addr'),g('cl-phone')].filter(Boolean).join('\n'))}</div></div>
+          <div><div style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#a0a5be;margin-bottom:3px">Subject</div><div style="font-size:.78rem;color:#1a1d2e">${subj?esc(subj):'—'}</div></div>
+        </div>`;
+      } else if(currentTheme==='modern'){
+        html+=`<div style="display:flex;margin:-36px -48px 20px;min-height:130px">
+          <div style="width:56px;background:${docCol};flex-shrink:0;-webkit-print-color-adjust:exact;print-color-adjust:exact"></div>
+          <div style="flex:1;padding:22px 24px 18px">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between">
+              <div>${logoURL?`<img src="${logoURL}" style="max-height:42px;object-fit:contain;margin-bottom:6px;display:block">`:''}<div style="font-family:Georgia,serif;font-size:1.1rem;font-weight:700;color:#0f1117">${esc(coName)}</div><div style="font-size:.72rem;color:#6a6f88">${[coLoc,coPhone,coEmail].filter(Boolean).join(' · ')}</div></div>
+              <div style="text-align:right"><div style="font-family:Georgia,serif;font-size:1rem;font-weight:700;color:${docCol}">QUOTATION</div><div style="font-size:.75rem;color:#6a6f88;margin-top:4px">No: ${esc(qno)}</div><div style="font-size:.75rem;color:#6a6f88">${dateStr}</div><div style="margin-top:4px">${chipHtml}</div></div>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:18px;padding:12px 14px;background:#f8f9fc;border-radius:6px;border:1px solid #eef0f8">
+          <div><div style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#a0a5be;margin-bottom:4px">From</div><div style="font-size:.88rem;font-weight:700">${esc(coName)}</div><div style="font-size:.72rem;color:#6a6f88;margin-top:2px;line-height:1.7">${nl([coLoc,coPhone,coEmail].filter(Boolean).join('\n'))}</div></div>
+          <div><div style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#a0a5be;margin-bottom:4px">Bill To</div><div style="font-size:.88rem;font-weight:700">${esc(clName)}</div><div style="font-size:.72rem;color:#6a6f88;margin-top:2px;line-height:1.7">${nl([g('cl-person'),g('cl-addr'),g('cl-phone')].filter(Boolean).join('\n'))}</div></div>
+        </div>`;
+      } else {
+        // Classic
+        html+=`<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px">
+          <div style="display:flex;flex-direction:column;align-items:flex-start;gap:5px">
+            ${logoHtml}
+            <div><div style="font-family:Georgia,serif;font-size:1.15rem;font-weight:700;color:#0f1117;line-height:1.2">${esc(coName)}</div><div style="font-size:.73rem;color:#6a6f88;margin-top:1px">${esc(coLoc)}</div></div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-family:Georgia,serif;font-size:1rem;font-weight:700;color:${docCol};letter-spacing:.02em">QUOTATION</div>
+            <div style="margin-top:5px">${chipHtml}</div>
+            <div style="margin-top:8px">
+              <div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:3px"><span style="font-size:.68rem;color:#8a90a8;font-weight:500">Date:</span><span style="font-size:.75rem;color:#1a1d2e;font-weight:600">${dateStr}</span></div>
+              <div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:3px"><span style="font-size:.68rem;color:#8a90a8;font-weight:500">Valid Until:</span><span style="font-size:.75rem;color:#1a1d2e;font-weight:600">${validStr}</span></div>
+              <div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:3px"><span style="font-size:.68rem;color:#8a90a8;font-weight:500">Quote No:</span><span style="font-size:.75rem;color:#1a1d2e;font-weight:600">${esc(qno)}</span></div>
+              ${subj?`<div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:3px"><span style="font-size:.68rem;color:#8a90a8;font-weight:500">Subject:</span><span style="font-size:.75rem;color:#1a1d2e;font-weight:600">${esc(subj)}</span></div>`:''}
+            </div>
+          </div>
+        </div>
+        <div style="height:3px;background:${docCol};border-radius:2px;margin-bottom:16px;-webkit-print-color-adjust:exact;print-color-adjust:exact"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:18px;padding:12px 14px;background:#f8f9fc;border-radius:6px;border:1px solid #eef0f8">
+          <div><div style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#a0a5be;margin-bottom:4px">From</div><div style="font-size:.88rem;font-weight:700;color:#0f1117;line-height:1.3">${esc(coName)}</div><div style="font-size:.72rem;color:#6a6f88;margin-top:2px;line-height:1.7">${nl([coLoc,coPhone,coEmail].filter(Boolean).join('\n'))}</div></div>
+          <div><div style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#a0a5be;margin-bottom:4px">Bill To</div><div style="font-size:.88rem;font-weight:700;color:#0f1117;line-height:1.3">${esc(clName)}</div><div style="font-size:.72rem;color:#6a6f88;margin-top:2px;line-height:1.7">${nl([g('cl-person'),g('cl-addr'),g('cl-phone')].filter(Boolean).join('\n'))}</div></div>
+        </div>`;
+      }
+    } else {
+      // Continuation header
+      html+=`<div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:10px;margin-bottom:12px;border-bottom:2px solid ${docCol}">
+        <div style="display:flex;align-items:center;gap:10px">
+          ${contLogoHtml}<div style="font-family:Georgia,serif;font-size:.88rem;font-weight:700">${esc(coName)}</div>
+        </div>
+        <div style="text-align:right"><div style="font-size:.75rem;font-weight:700;color:${docCol}">Quote No: ${esc(qno)}</div><div style="font-size:.7rem;color:#8a90a8">Continued — Page ${pageNum} of ${totalPages}</div></div>
+      </div>`;
+    }
+
+    // Table
+    html+=`<table style="width:100%;border-collapse:collapse;font-size:.78rem;border:1px solid #c8cce0;-webkit-print-color-adjust:exact;print-color-adjust:exact">
+      ${thHtml}<tbody>`;
+    pg.rows.forEach((d,i)=>{ html+=buildRow(d,i); });
+    html+=`</tbody></table>`;
+
+    if(pg.isLast){
+      html+=totalsWrapHtml;
+      html+=footerHtml;
+    }
+
+    // Centered ProQuote watermark
+    html+=`<div style="margin-top:auto;padding-top:12px;text-align:center"><span style="font-family:Georgia,serif;font-size:.62rem;font-weight:600;letter-spacing:.14em;color:#cdd0de;text-transform:uppercase">ProQuote</span></div>`;
+
+    div.innerHTML=html; qdoc.appendChild(div);
+  });
+
+  const pill=$('pg-pill');
+  if(pill)pill.textContent=totalPages===1?'1 page':totalPages+' pages';
+  if(window._scaleAfterRender)requestAnimationFrame(window._scaleAfterRender);
+  scheduleSave();
+}
+
+function trow(l,v,cls=''){
+  const grand=cls==='grand',disc=cls==='disc-row',vat=cls==='vat-row';
+  const docCol=getComputedStyle(document.documentElement).getPropertyValue('--doc').trim()||'#1e40af';
+  const bg=grand?`background:${docCol};-webkit-print-color-adjust:exact;print-color-adjust:exact`:vat?'background:#f5f7ff':'';
+  const lc=grand?'color:rgba(255,255,255,.82)':disc?'color:#b45309':'color:#5a5f78';
+  const vc2=grand?'color:#fff':disc?'color:#b45309':'color:#1a1d2e';
+  const fw=grand?'font-weight:700;font-size:.84rem':'';
+  return`<div style="display:grid;grid-template-columns:1fr auto;padding:6px 10px;border-bottom:1px solid #d8dce8;align-items:center;${bg};${fw}"><span style="${lc}">${l}</span><span style="${vc2};text-align:right;font-weight:600;padding-left:16px;font-variant-numeric:tabular-nums">${v}</span></div>`;
+}
+
+/* ═══ PRINT / PDF ═══ */
+function doPrint(){doExportPrint(false);}
+function doExport(){doExportPrint(true);}
+function doExportPrint(save){
+  cfm(
+    save?'Download PDF':'Print Quotation',
+    save?'A print window will open. Choose "Save as PDF" in the dialog.':'The print dialog will open.',
+    save?'⬇':'🖨', save?'Open PDF Dialog':'Print',
+    'btn-primary',
     ()=>{
-      const docColor = getComputedStyle(document.documentElement).getPropertyValue('--doc').trim() || '#1e40af';
-
-      // Clone the quote document HTML
-      const qdoc = $('qdoc');
-      const cloned = qdoc.cloneNode(true);
-
-      // Remove dashed page separators, set print page breaks
-      cloned.querySelectorAll('.dpage').forEach((p,i,all)=>{
-        p.style.borderBottom = 'none';
-        p.style.minHeight = '0';
-        p.style.pageBreakAfter = i < all.length-1 ? 'always' : 'avoid';
-        p.style.breakAfter = i < all.length-1 ? 'page' : 'avoid';
+      const qdocEl=$('qdoc');
+      const cloned=qdocEl.cloneNode(true);
+      const docCol=getComputedStyle(document.documentElement).getPropertyValue('--doc').trim()||'#1e40af';
+      cloned.querySelectorAll('[style*="background"]').forEach(el=>{
+        if(el.style.background&&el.style.background.includes('var(--doc)')){el.style.background=docCol;el.style.backgroundColor=docCol;}
       });
-
-      // Force inline colors for table headers and grand total (critical for PDF)
-      cloned.querySelectorAll('.dtable thead tr').forEach(tr=>{
-        tr.style.backgroundColor = docColor;
-        tr.style.background = docColor;
-      });
-      cloned.querySelectorAll('.dtable th').forEach(th=>{
-        th.style.backgroundColor = docColor;
-        th.style.background = docColor;
-        th.style.color = '#ffffff';
-      });
-      cloned.querySelectorAll('.trow.grand').forEach(row=>{
-        row.style.backgroundColor = docColor;
-        row.style.background = docColor;
-        row.style.color = '#ffffff';
-      });
-      cloned.querySelectorAll('.trow.grand .tlbl,.trow.grand .tval').forEach(el=>{
-        el.style.color = '#ffffff';
-      });
-      cloned.querySelectorAll('.dbar').forEach(b=>{
-        b.style.backgroundColor = docColor;
-        b.style.background = docColor;
-      });
-      cloned.querySelectorAll('.trow.vat-row').forEach(r=>{
-        r.style.background = '#f5f7ff';
-      });
-
-      const fname = (g('cl-name')||'Quotation').replace(/[^a-z0-9\s\-_]/gi,'_').trim() +
-                    '_' + (g('q-no')||'Quote');
-
-      const html = `<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>${fname}</title>
-<style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;background:#fff;color:#1a1d2e;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  #qdoc{width:100%;font-family:-apple-system,'Segoe UI',system-ui,sans-serif}
-  .dpage{width:100%;padding:40px 48px;position:relative;background:#fff;page-break-after:always;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .dpage:last-child{page-break-after:avoid}
-  .dhdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
-  .dhdr-l{display:flex;flex-direction:column;align-items:flex-start;gap:5px}
-  .dlogo{max-height:56px;object-fit:contain;display:block}
-  .dco-name{font-family:Georgia,'Times New Roman',serif;font-size:1.15rem;font-weight:700;color:#0f1117;line-height:1.2}
-  .dco-loc{font-size:0.73rem;color:#6a6f88;margin-top:1px}
-  .dhdr-r{text-align:right}
-  .dtitle{font-family:Georgia,'Times New Roman',serif;font-size:1rem;font-weight:700;color:${docColor};letter-spacing:.02em}
-  .schip{display:inline-block;padding:2px 9px;border-radius:20px;font-size:0.63rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-  .s-draft{background:#fff3cd;color:#856404;border:1px solid #ffc107}
-  .s-sent{background:#cfe2ff;color:#0a58ca;border:1px solid #9ec5fe}
-  .s-approved{background:#d1e7dd;color:#0f5132;border:1px solid #a3cfbb}
-  .s-rejected{background:#f8d7da;color:#842029;border:1px solid #f1aeb5}
-  .ddates{margin-top:8px}
-  .ddate-row{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:3px}
-  .ddate-lbl{font-size:0.68rem;color:#8a90a8;font-weight:500}
-  .ddate-val{font-size:0.75rem;color:#1a1d2e;font-weight:600}
-  .dbar{height:3px;background:${docColor}!important;border-radius:2px;margin-bottom:16px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .parties{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:18px;padding:12px 14px;background:#f8f9fc;border-radius:6px;border:1px solid #eef0f8}
-  .pty-lbl{font-size:0.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#a0a5be;margin-bottom:4px}
-  .pty-name{font-size:0.88rem;font-weight:700;color:#0f1117;line-height:1.3}
-  .pty-detail{font-size:0.72rem;color:#6a6f88;margin-top:2px;line-height:1.7}
-  .dtable{width:100%;border-collapse:collapse;font-size:0.78rem;border:1px solid #c8cce0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .dtable thead tr{background:${docColor}!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .dtable th{padding:8px 10px;color:#fff!important;font-size:0.67rem;font-weight:600;letter-spacing:.05em;text-align:left;border-right:1px solid rgba(255,255,255,.2);background:${docColor}!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .dtable th:last-child{border-right:none}
-  .dtable th.r{text-align:right}
-  .dtable th.c{text-align:center}
-  .dtable tbody tr{background:#fff}
-  .dtable tbody tr:nth-child(even){background:#f9fafc}
-  .dtable td{padding:8px 10px;color:#1a1d2e;vertical-align:middle;border-right:1px solid #d8dce8;border-bottom:1px solid #d8dce8}
-  .dtable td:last-child{border-right:none}
-  .dtable tbody tr:last-child td{border-bottom:none}
-  .dtable td.r{text-align:right;font-variant-numeric:tabular-nums}
-  .dtable td.c{text-align:center}
-  .utype{font-size:0.65rem;color:#8a90a8;display:block;margin-top:2px}
-  .totals-wrap{display:flex;justify-content:flex-end;margin:0 0 16px}
-  .totals-box{width:270px;border:1px solid #c8cce0;border-top:none;font-size:0.79rem}
-  .trow{display:grid;grid-template-columns:1fr auto;padding:6px 10px;border-bottom:1px solid #d8dce8;align-items:center}
-  .trow:last-child{border-bottom:none}
-  .trow.grand{background:${docColor}!important;color:#fff!important;font-weight:700;font-size:0.84rem;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .tlbl{color:#5a5f78}
-  .trow.grand .tlbl,.trow.grand .tval{color:rgba(255,255,255,.9)!important}
-  .tval{text-align:right;font-weight:600;padding-left:16px}
-  .trow.disc-row .tlbl,.trow.disc-row .tval{color:#b45309}
-  .trow.vat-row{background:#f5f7ff}
-  .dfooter{margin-top:24px;padding-top:14px;border-top:1px solid #eef0f8;display:flex;gap:20px;align-items:flex-start}
-  .fcol{flex:1}
-  .ftag{font-size:0.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#a0a5be;margin-bottom:4px}
-  .ftxt{font-size:0.72rem;color:#6a6f88;line-height:1.7}
-  .dsig{display:flex;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid #eef0f8}
-  .sigbox{text-align:center;width:170px}
-  .sigline{border-bottom:1px solid #1a1d2e;margin-bottom:6px;padding-bottom:26px}
-  .siglbl{font-size:0.68rem;color:#8a90a8}
-  .dwm{position:absolute;bottom:16px;right:18px;font-family:Georgia,serif;font-size:0.58rem;font-weight:600;letter-spacing:.12em;color:#dde0ea;text-transform:uppercase}
-  @page{size:A4;margin:0}
-  @media print{body{margin:0}*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}}
-</style>
-</head>
-<body>
-${cloned.outerHTML}
-<script>window.onload=function(){window.print();setTimeout(()=>window.close(),800);}<\/script>
-</body>
-</html>`;
-
-      const w = window.open('','_blank','width=900,height=700');
-      if(!w){ toast('Pop-up blocked. Allow pop-ups and try again.','err'); return; }
-      w.document.write(html);
-      w.document.close();
+      const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Quotation</title>
+      <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;background:#fff}
+        .schip{display:inline-block;padding:2px 9px;border-radius:20px;font-size:.63rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+        .s-draft{background:#fff3cd;color:#856404;border:1px solid #ffc107}
+        .s-sent{background:#cfe2ff;color:#0a58ca;border:1px solid #9ec5fe}
+        .s-approved{background:#d1e7dd;color:#0f5132;border:1px solid #a3cfbb}
+        .s-rejected{background:#f8d7da;color:#842029;border:1px solid #f1aeb5}
+        .dpage{width:794px;min-height:1122px;padding:36px 48px 48px;position:relative;background:#fff;display:flex;flex-direction:column;page-break-after:always}
+        .dpage:last-child{page-break-after:avoid}
+        table{width:100%;border-collapse:collapse}
+        th,td{padding:8px 10px}
+        @page{size:A4;margin:0}
+        @media print{body{margin:0}*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}}
+      </style></head><body>
+      ${cloned.outerHTML}
+      <script>window.onload=function(){window.print();setTimeout(()=>window.close(),800);}<\/script>
+      </body></html>`;
+      const w=window.open('','_blank','width=900,height=700');
+      if(!w){toast('Pop-up blocked — allow pop-ups and try again','err');return;}
+      w.document.write(html); w.document.close();
       toast('Print dialog opened — choose "Save as PDF"','ok');
     }
   );
 }
 
-/* ═══════════════════════════════
-   RESET
-═══════════════════════════════ */
+/* ═══ RESET ═══ */
 function resetAll(){
-  items=[];
+  items=[]; extraTaxes=[]; undoStack=[]; redoStack=[]; currentTheme='classic';
   logoURL=null;
-  ['co-name','co-loc','co-phone','co-email',
-   'cl-name','cl-person','cl-phone','cl-addr','q-subj',
-   'p-notes','p-payterms','p-bank'].forEach(id=>{const e=$(id);if(e)e.value='';});
-  $('p-disc').value='0';
-  $('p-vat').value='13';
-  $('p-ship').value='0';
-  $('s-curr').value='रु';
-  $('q-status').value='draft';
+  ['co-name','co-loc','co-phone','co-email','cl-name','cl-person','cl-phone','cl-addr','q-subj','p-notes','p-payterms','p-bank'].forEach(id=>{const e=$(id);if(e)e.value='';});
+  $('p-disc').value='0'; $('p-vat').value='13'; $('p-ship').value='0';
+  $('s-curr').value='रु'; $('q-status').value='draft';
   const t=new Date(),v=new Date(t);v.setDate(v.getDate()+30);
-  $('q-date').value=iso(t);$('q-valid').value=iso(v);
+  $('q-date').value=iso(t); $('q-valid').value=iso(v);
   $('q-no').value='QT-'+t.getFullYear()+'-001';
-  removeLogo();
-  buildItems();
-  goS(1);
-  r();
+  document.querySelectorAll('.theme-card').forEach(c=>c.classList.remove('sel'));
+  document.querySelector('.theme-card[data-theme="classic"]').classList.add('sel');
+  removeLogo(); buildItems(); renderTaxLines();
+  localStorage.removeItem('pq_draft');
+  goS(1); r();
   toast('New quotation started','ok');
 }
 </script>
