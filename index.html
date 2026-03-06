@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
 <title>ProQuote — Quotation Maker</title>
+<meta name="description" content="Professional quotation maker — create, preview and export quotes as PDF">
+<meta name="theme-color" content="#0041C2">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ProQuote">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAEYUlEQVR4nO3byW0cQRQEUZogl+ijXJEDcky8EoIEzFLd+ZcXQBzJKVRlnAbz8QEAAAAAAAAAKM/n7z8MiCKkh0CRREk/MsUQJf2wFEOU9GNSCFHSj0ghREk/HoUQJf1oFEKU9GNRBFHSD0URREk/EoUQJf04FEGU9MNQBFHSj0IRREk/CEUQJf0YFEGU9ENQAFHSD0ERREk/AkUQJf0AzLua9OUz72rSl88ariV98azhWtIXzzquJH3prONK0pfOWq4jfeGs5TrSF856riJ92aznKtKXzXquIn3ZrOka0hfNmq4hfdGs6RrSF826riB9yazrCtKXzLquIH3JrOsK0pfMuq4gfcms6wrSl8y6riB9yazrCtKXzLpOHdavnz9YyPQerokgfXABtDG9BwFQAAKgAARAAQiAAhAABSAACkAAFIAAKAABUAACoAAEQAEIgAIQAAUgAApAABSAACgAAVAA8YOTJxQAVysArlYAXK0AuFoBcLUC4GoFwNVODCD9xQ99ESYACkAAFIAA1pvegwAoAAFQAAKgAARAAQiAAhAABSAACkAAFIAAKAABUAACoAAEQAEIgAIQAAUgAAqgRwDkwwqAqxUAVysArlYAXK0AuFoBcLUC4GoFwNUKgKsVAFcrAK5WAFytALhaAXC1AuBqBcBHLf/jllcUAL879pdf/7N6AI9w4jPiDxF03c8gv7spgFeIP9CFrv898OeCAE4Sf6xm428RwdQAriT+aE2G3yKEiQHcQfzhmo2/bASTAkgQf8BG4y8ZwZQAksQfsdH4y0UggPeJP2Kz8ZeKYEIAFYg/ZLPxl4lAAOeIP+bB8Vf9LAEUJj36E6Ps9pkCKER69O8McdLnCyBEeviVxlflHAK4kfT4XxnelrMI4AaMv8eZBHARnQJwLgEcRwC9ziWAwxh/w/MJ4AzJ8ZceWPXzTQggHUp6/M8MzBkFcJz0+MuOq8MZpwSQiiA9/NLj6nDGSQHcGUJ68C3G1eGMEwO4OoL02NuMq8MZpwZwRQjpkb87rC4B3HrO6QE8+7+6jP7VcTnjX24KYLIlx9XhjAKYYclxdTijAGZYclwdziiAGZYcV4czvsUNBxTA2XH9a2DP/O0d9hi/AEopAAGs99WRpQcfGb8A5ikAAaz21bGlRy8AAUQjSI8+Mn4BzDQ9YgEIIG56yC3GL4DZpgddfvxHArghAgEIoO74BVDa9LDLjl8Ae0wPvOT4jwZwcQQCmBvBjPELoIXpsQtAAHHTg58bwIURCGBuBHPGL4B2psc/L4CLIhDA3AhmjV8AbRVA4QgEcK9jA7iNwwcXQE4BFIhAADnHBHA7Bw8vgJwCKBCBAATwllEE0Nr2AZRAAG1tHUAZBMCEpUhfBndZkvSlcIelSV8OZ9uC9CVxpq1IXxZn2Zb0xbG3I0hfIns6ivRlspdjSV8sa7uG9EWzlmtJXzwNvwTph6DhlyH9ODT6MqQfjUZfnvQjbxUAAAAAAAAAUJ0vErpy2iEBkBIAAAAASUVORK5CYII=">
+<link rel="manifest" id="pwa-manifest">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -236,6 +243,25 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
   .dpage{border-bottom:none;page-break-after:always}.dpage:last-child{page-break-after:avoid}
   @page{size:A4;margin:0}
 }
+
+/* SAVED DATA DRAWERS */
+.drawer{background:var(--panel2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:14px;overflow:hidden}
+.drawer-hd{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;cursor:pointer;user-select:none;gap:8px}
+.drawer-hd:hover{background:var(--border)}
+.drawer-title{font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:6px}
+.drawer-body{padding:0 10px 10px;display:none}
+.drawer.open .drawer-body{display:block}
+.drawer-chevron{font-size:.7rem;color:var(--dim);transition:transform .15s}
+.drawer.open .drawer-chevron{transform:rotate(180deg)}
+.saved-row{display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:6px;cursor:pointer;transition:background .12s;border:1px solid transparent}
+.saved-row:hover{background:var(--accent-s);border-color:var(--accent)}
+.saved-row-info{flex:1;min-width:0}
+.saved-row-name{font-size:.82rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.saved-row-meta{font-size:.69rem;color:var(--muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.saved-row-del{width:22px;height:22px;border-radius:4px;border:none;background:none;color:var(--dim);cursor:pointer;font-size:.78rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s}
+.saved-row-del:hover{background:var(--danger-s);color:var(--danger)}
+.saved-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.65rem;font-weight:700;flex-shrink:0}
+.lib-badge{font-size:.62rem;background:var(--accent-s);color:var(--accent);padding:1px 6px;border-radius:10px;font-weight:600}
 </style>
 </head>
 <body>
@@ -261,6 +287,20 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
 
 <!-- TOASTS -->
 <div class="tray" id="tray"></div>
+<!-- SAVED QUOTES MODAL -->
+<div class="overlay" id="ov-saved">
+  <div class="modal" style="max-width:500px;width:95%">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div style="font-family:Georgia,serif;font-size:1rem;font-weight:700">💾 Saved Quotes</div>
+      <button class="btn btn-ghost btn-sm" onclick="$('ov-saved').classList.remove('open')" style="font-size:1.1rem;padding:3px 8px">✕</button>
+    </div>
+    <div id="saved-list" style="max-height:380px;overflow-y:auto;margin-bottom:12px"></div>
+    <div style="font-size:.73rem;color:var(--muted);text-align:center;padding-top:10px;border-top:1px solid var(--border)">
+      Quotes are saved in this browser/device. Use <b>💾 File</b> to save to your device storage.
+    </div>
+  </div>
+</div>
+
 
 <!-- NEW QUOTE CONFIRM MODAL -->
 <div class="overlay" id="ov-new" style="z-index:600">
@@ -295,7 +335,13 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
   
   <div class="top-r">
     <button class="btn btn-ghost btn-sm" id="dark-btn" onclick="toggleDark()" title="Dark mode">🌙</button>
+    <button id="install-btn" class="btn btn-outline btn-sm" onclick="window._installPWA&&window._installPWA()" title="Install as app" style="display:none;align-items:center;gap:5px">⬇ Install App</button>
     <button class="btn btn-ghost btn-sm" onclick="showNewModal()" title="Start new quotation">↺ New</button>
+    <div style="width:1px;height:22px;background:var(--border);margin:0 2px"></div>
+    <button class="btn btn-ghost btn-sm" onclick="openFromFile()" title="Open .proquote file from device">📂 Open</button>
+    <button class="btn btn-ghost btn-sm" onclick="saveToFile()" title="Save to device as .proquote file">💾 File</button>
+    <button class="btn btn-outline btn-sm" onclick="saveQuote();openSavedModal()" title="Save & view saved quotes">🗂 Quotes</button>
+    <div style="width:1px;height:22px;background:var(--border);margin:0 2px"></div>
     <button class="btn btn-outline btn-sm" onclick="doPrint()">🖨 Print</button>
     <button class="btn btn-primary btn-sm" onclick="doExport()">⬇ PDF</button>
   </div>
@@ -328,6 +374,16 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
       <div class="pane-body">
         <!-- Profile capsules -->
         
+        <div class="drawer" id="drawer-co">
+          <div class="drawer-hd" onclick="toggleDrawer('drawer-co')">
+            <div class="drawer-title">🏢 Saved Companies <span id="co-saved-count" style="background:var(--border);border-radius:8px;padding:1px 7px;font-size:.65rem">0</span></div>
+            <span class="drawer-chevron">▼</span>
+          </div>
+          <div class="drawer-body">
+            <div id="co-saved-list" style="display:flex;flex-direction:column;gap:4px;margin-bottom:8px"></div>
+            <button class="btn btn-outline btn-full btn-sm" onclick="saveCompany()" style="font-size:.76rem">💾 Save Current Company</button>
+          </div>
+        </div>
         <div class="fg"><label class="fl">Company / Business Name *</label><input type="text" id="co-name" oninput="dr()" placeholder="Acme Studio Pvt. Ltd."></div>
         <div class="fg"><label class="fl">Location / City</label><input type="text" id="co-loc" oninput="dr()" placeholder="Kathmandu, Nepal"></div>
         <div class="r2">
@@ -400,6 +456,16 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
       <div class="pane-body">
         <!-- Client capsules -->
         
+        <div class="drawer" id="drawer-cl">
+          <div class="drawer-hd" onclick="toggleDrawer('drawer-cl')">
+            <div class="drawer-title">👥 Saved Clients <span id="cl-saved-count" style="background:var(--border);border-radius:8px;padding:1px 7px;font-size:.65rem">0</span></div>
+            <span class="drawer-chevron">▼</span>
+          </div>
+          <div class="drawer-body">
+            <div id="cl-saved-list" style="display:flex;flex-direction:column;gap:4px;margin-bottom:8px"></div>
+            <button class="btn btn-outline btn-full btn-sm" onclick="saveClient()" style="font-size:.76rem">💾 Save Current Client</button>
+          </div>
+        </div>
         <div class="fg"><label class="fl">Customer / Company Name *</label><input type="text" id="cl-name" oninput="dr()" placeholder="Horizon Brands Pvt. Ltd."></div>
         <div class="r2">
           <div class="fg"><label class="fl">Contact Person</label><input type="text" id="cl-person" oninput="dr()" placeholder="Mr. Ram Sharma"></div>
@@ -516,6 +582,21 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
             <input type="text" id="s-unit-custom" placeholder="Enter unit name" oninput="dr()" style="display:none;margin-top:6px">
           </div>
         </div>
+        <div class="drawer" id="drawer-lib" style="margin-bottom:10px">
+          <div class="drawer-hd" onclick="toggleDrawer('drawer-lib')">
+            <div class="drawer-title">📦 Product Library <span id="lib-saved-count" style="background:var(--border);border-radius:8px;padding:1px 7px;font-size:.65rem">0</span></div>
+            <span class="drawer-chevron">▼</span>
+          </div>
+          <div class="drawer-body">
+            <div id="lib-saved-list" style="display:flex;flex-direction:column;gap:4px;margin-bottom:8px"></div>
+            <div style="display:grid;grid-template-columns:1fr 80px 70px auto;gap:6px;align-items:end;margin-top:4px">
+              <div><label class="fl" style="font-size:.65rem">Product Name</label><input type="text" id="lib-name" placeholder="Logo Design" style="font-size:.8rem;padding:7px 9px"></div>
+              <div><label class="fl" style="font-size:.65rem">Rate</label><input type="number" id="lib-rate" placeholder="0.00" min="0" step="any" style="font-size:.8rem;padding:7px 9px"></div>
+              <div><label class="fl" style="font-size:.65rem">Unit</label><input type="text" id="lib-unit" placeholder="pcs" style="font-size:.8rem;padding:7px 9px"></div>
+              <button class="btn btn-primary btn-sm" onclick="saveLibItem()" style="align-self:end;white-space:nowrap">＋ Save</button>
+            </div>
+          </div>
+        </div>
         <div class="items-wrap">
           <div class="items-hd" style="grid-template-columns:20px 1fr 48px 80px 60px 26px">
             <input type="checkbox" id="sel-all" title="Select all" onchange="toggleSelAll(this.checked)" style="width:14px;height:14px;cursor:pointer;accent-color:var(--danger)">
@@ -533,6 +614,7 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
         <div style="padding:8px 12px;display:flex;gap:6px;flex-wrap:wrap">
           <button class="add-btn" style="flex:1;min-width:80px" onclick="addItem()">＋ Item</button>
           
+          <button class="btn btn-outline btn-sm" onclick="toggleDrawer('drawer-lib');goS(4)" title="Product library">📦 Library</button>
           <button class="btn btn-outline btn-sm" onclick="addSection()" title="Add section header">§ Section</button>
           <button class="btn btn-outline btn-sm" onclick="addOptional()" title="Add optional item" style="color:var(--warn);border-color:var(--warn)">? Optional</button>
         </div>
@@ -637,10 +719,16 @@ window.onload=()=>{
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',e=>{
     if(localStorage.getItem('pq_dark')===null) applyDark(e.matches);
   });
-  restoreDraft();
-  buildItems();r();
+  restoreDraft(); // async - handles buildItems/r internally
+  buildItems();r(); // initial render with empty state
   initScaler();
+  initSavedCounts();
   window.addEventListener('beforeunload',saveDraft);
+  // Close modals on backdrop click
+  ['ov-new','ov-saved'].forEach(id=>{
+    const el=$(id);
+    if(el) el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');});
+  });
   // Undo/redo via Ctrl+Z / Ctrl+Y still supported
   document.addEventListener('keydown',e=>{
     const tag=document.activeElement.tagName;
@@ -884,41 +972,187 @@ function pickCol(el){
   el.classList.add('sel');
 }
 
-/* ═══ DRAFT SAVE/RESTORE ═══ */
-function saveDraft(){
-  try{
-    const d={
-      items,extraTaxes,currentTheme,logoURL,logoW,
-      coName:g('co-name'),coLoc:g('co-loc'),coPhone:g('co-phone'),coEmail:g('co-email'),coCol:g('co-col'),
-      clName:g('cl-name'),clPerson:g('cl-person'),clPhone:g('cl-phone'),clAddr:g('cl-addr'),
-      qNo:g('q-no'),qStatus:g('q-status'),qDate:g('q-date'),qValid:g('q-valid'),qSubj:g('q-subj'),
-      pDisc:g('p-disc'),pVat:g('p-vat'),pVatC:g('p-vat-c'),pShip:g('p-ship'),pRound:g('p-round'),
-      pNotes:g('p-notes'),pPay:g('p-payterms'),pBank:g('p-bank'),
-      sCurr:g('s-curr'),sUnit:g('s-unit'),sUnitCustom:g('s-unit-custom'),sw:JSON.stringify(SW)
+/* ═══ DATA HELPERS ═══ */
+function collectData(){
+  return {
+    _v:2,_saved:new Date().toISOString(),
+    items,extraTaxes,currentTheme,logoURL,logoW,
+    coName:g('co-name'),coLoc:g('co-loc'),coPhone:g('co-phone'),coEmail:g('co-email'),coCol:g('co-col'),
+    clName:g('cl-name'),clPerson:g('cl-person'),clPhone:g('cl-phone'),clAddr:g('cl-addr'),
+    qNo:g('q-no'),qStatus:g('q-status'),qDate:g('q-date'),qValid:g('q-valid'),qSubj:g('q-subj'),
+    pDisc:g('p-disc'),pVat:g('p-vat'),pVatC:g('p-vat-c'),pShip:g('p-ship'),pRound:g('p-round'),
+    pNotes:g('p-notes'),pPay:g('p-payterms'),pBank:g('p-bank'),
+    sCurr:g('s-curr'),sUnit:g('s-unit'),sUnitCustom:g('s-unit-custom'),sw:JSON.stringify(SW)
+  };
+}
+function applyData(d){
+  if(!d)return;
+  if(d.items&&d.items.length)items=d.items; else items=[];
+  extraTaxes=d.extraTaxes||[];
+  if(d.currentTheme){currentTheme=d.currentTheme;const tc=document.querySelector(`.theme-card[data-theme="${currentTheme}"]`);if(tc){document.querySelectorAll('.theme-card').forEach(c=>c.classList.remove('sel'));tc.classList.add('sel');}}
+  if(d.logoURL){logoURL=d.logoURL;logoW=d.logoW||70;$('ldrop-in').innerHTML=`<img src="${logoURL}" style="max-width:${logoW}px;max-height:48px;object-fit:contain;border-radius:3px">`;$('logo-acts').style.display='flex';}
+  const set=(id,v)=>{const e=$(id);if(e&&v!=null)e.value=v;};
+  set('co-name',d.coName);set('co-loc',d.coLoc);set('co-phone',d.coPhone);set('co-email',d.coEmail);
+  if(d.coCol){setCol(d.coCol);$('co-col').value=d.coCol;}
+  set('cl-name',d.clName);set('cl-person',d.clPerson);set('cl-phone',d.clPhone);set('cl-addr',d.clAddr);
+  set('q-no',d.qNo);set('q-status',d.qStatus);set('q-date',d.qDate);set('q-valid',d.qValid);set('q-subj',d.qSubj);
+  set('p-disc',d.pDisc);set('p-vat',d.pVat);set('p-vat-c',d.pVatC);set('p-ship',d.pShip);set('p-round',d.pRound);
+  set('p-notes',d.pNotes);set('p-payterms',d.pPay);set('p-bank',d.pBank);
+  set('s-curr',d.sCurr);set('s-unit',d.sUnit);set('s-unit-custom',d.sUnitCustom);
+  if(d.sw){Object.assign(SW,JSON.parse(d.sw));}
+  syncSW();renderTaxLines();
+}
+
+/* ═══ INDEXEDDB ═══ */
+let _db=null;
+function openDB(){
+  return new Promise((res,rej)=>{
+    if(_db){res(_db);return;}
+    const req=indexedDB.open('ProQuoteDB',1);
+    req.onupgradeneeded=e=>{
+      const db=e.target.result;
+      if(!db.objectStoreNames.contains('quotes'))
+        db.createObjectStore('quotes',{keyPath:'id'});
     };
-    localStorage.setItem('pq_v9',JSON.stringify(d));
+    req.onsuccess=e=>{_db=e.target.result;res(_db);};
+    req.onerror=()=>rej(req.error);
+  });
+}
+function dbSave(id,data){
+  return openDB().then(db=>new Promise((res,rej)=>{
+    const tx=db.transaction('quotes','readwrite');
+    tx.objectStore('quotes').put({id,...data});
+    tx.oncomplete=res; tx.onerror=()=>rej(tx.error);
+  }));
+}
+function dbLoad(id){
+  return openDB().then(db=>new Promise((res,rej)=>{
+    const req=db.transaction('quotes','readonly').objectStore('quotes').get(id);
+    req.onsuccess=()=>res(req.result);
+    req.onerror=()=>rej(req.error);
+  }));
+}
+function dbList(){
+  return openDB().then(db=>new Promise((res,rej)=>{
+    const req=db.transaction('quotes','readonly').objectStore('quotes').getAll();
+    req.onsuccess=()=>res(req.result);
+    req.onerror=()=>rej(req.error);
+  }));
+}
+function dbDelete(id){
+  return openDB().then(db=>new Promise((res,rej)=>{
+    const tx=db.transaction('quotes','readwrite');
+    tx.objectStore('quotes').delete(id);
+    tx.oncomplete=res; tx.onerror=()=>rej(tx.error);
+  }));
+}
+
+/* ═══ DRAFT SAVE/RESTORE (IndexedDB + localStorage fallback) ═══ */
+function saveDraft(){
+  const d=collectData();
+  // Save to IndexedDB
+  dbSave('__draft__',d).catch(()=>{});
+  // Also localStorage fallback (strip logo to save space)
+  try{
+    const small={...d,logoURL:null};
+    localStorage.setItem('pq_v9',JSON.stringify(small));
   }catch(e){}
 }
 function restoreDraft(){
+  // Try IndexedDB first, fall back to localStorage
+  dbLoad('__draft__').then(d=>{
+    if(d){applyData(d);buildItems();r();toast('Draft restored','ok');}
+    else restoreDraftLS();
+  }).catch(()=>restoreDraftLS());
+}
+function restoreDraftLS(){
   try{
     const raw=localStorage.getItem('pq_v9');if(!raw)return;
     const d=JSON.parse(raw);
-    if(d.items&&d.items.length)items=d.items;
-    extraTaxes=d.extraTaxes||[];
-    if(d.currentTheme){currentTheme=d.currentTheme;const tc=document.querySelector(`.theme-card[data-theme="${currentTheme}"]`);if(tc){document.querySelectorAll('.theme-card').forEach(c=>c.classList.remove('sel'));tc.classList.add('sel');}}
-    if(d.logoURL){logoURL=d.logoURL;logoW=d.logoW||70;$('ldrop-in').innerHTML=`<img src="${logoURL}" style="max-width:${logoW}px;max-height:48px;object-fit:contain;border-radius:3px">`;$('logo-acts').style.display='flex';}
-    const set=(id,v)=>{const e=$(id);if(e&&v!=null)e.value=v;};
-    set('co-name',d.coName);set('co-loc',d.coLoc);set('co-phone',d.coPhone);set('co-email',d.coEmail);
-    if(d.coCol){setCol(d.coCol);$('co-col').value=d.coCol;}
-    set('cl-name',d.clName);set('cl-person',d.clPerson);set('cl-phone',d.clPhone);set('cl-addr',d.clAddr);
-    set('q-no',d.qNo);set('q-status',d.qStatus);set('q-date',d.qDate);set('q-valid',d.qValid);set('q-subj',d.qSubj);
-    set('p-disc',d.pDisc);set('p-vat',d.pVat);set('p-vat-c',d.pVatC);set('p-ship',d.pShip);set('p-round',d.pRound);
-    set('p-notes',d.pNotes);set('p-payterms',d.pPay);set('p-bank',d.pBank);
-    set('s-curr',d.sCurr);set('s-unit',d.sUnit);set('s-unit-custom',d.sUnitCustom);
-    if(d.sw){Object.assign(SW,JSON.parse(d.sw));}
-    syncSW();renderTaxLines();
-    toast('Draft restored','ok');
+    applyData(d);buildItems();r();toast('Draft restored','ok');
   }catch(e){console.warn('Draft restore failed',e);}
+}
+
+/* ═══ SAVE TO DEVICE FILE ═══ */
+function saveToFile(){
+  const d=collectData();
+  const name=(g('q-no')||'quote').replace(/[^a-z0-9_-]/gi,'_');
+  const json=JSON.stringify(d,null,2);
+  const blob=new Blob([json],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=name+'.proquote';
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),5000);
+  toast('Saved: '+name+'.proquote','ok');
+}
+
+/* ═══ OPEN FROM DEVICE FILE ═══ */
+function openFromFile(){
+  const inp=document.createElement('input');
+  inp.type='file';inp.accept='.proquote,.json';
+  inp.onchange=e=>{
+    const f=e.target.files[0];if(!f)return;
+    const rd=new FileReader();
+    rd.onload=ev=>{
+      try{
+        const d=JSON.parse(ev.target.result);
+        applyData(d);buildItems();r();
+        toast('Loaded: '+f.name,'ok');
+      }catch(err){toast('Invalid file','err');}
+    };
+    rd.readAsText(f);
+  };
+  inp.click();
+}
+
+/* ═══ SAVED QUOTES (in-app, IndexedDB) ═══ */
+function openSavedModal(){
+  dbList().then(quotes=>{
+    const list=$('saved-list');if(!list)return;
+    if(!quotes.filter(q=>q.id!=='__draft__').length){
+      list.innerHTML='<div style="text-align:center;padding:24px;color:var(--muted);font-size:.82rem">No saved quotes yet.<br>Use <b>Save Quote</b> to save one.</div>';
+    } else {
+      list.innerHTML=quotes.filter(q=>q.id!=='__draft__').sort((a,b)=>b._saved>a._saved?1:-1).map(q=>`
+        <div style="border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:8px">
+          <div style="padding:10px 14px;display:flex;align-items:center;gap:10px">
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:700;font-size:.88rem">${esc(q.clName||'(no client)')}</div>
+              <div style="font-size:.72rem;color:var(--muted)">${esc(q.qNo||'')} · ${esc(q.coName||'')} · ${q._saved?new Date(q._saved).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):''}</div>
+            </div>
+            <div style="font-size:.78rem;font-weight:700;color:var(--accent)">${esc(q.sCurr||'')}</div>
+          </div>
+          <div style="display:flex;border-top:1px solid var(--border)">
+            <button class="btn btn-sm" onclick="loadSaved('${q.id}')" style="flex:1;border-radius:0;border:none;background:var(--accent-s);color:var(--accent);font-weight:600;padding:8px">⬆ Load</button>
+            <div style="width:1px;background:var(--border)"></div>
+            <button class="btn btn-sm btn-danger" onclick="deleteSaved('${q.id}')" style="border-radius:0;border:none;padding:8px 12px">🗑</button>
+          </div>
+        </div>`).join('');
+    }
+    $('ov-saved').classList.add('open');
+  }).catch(()=>toast('Could not load saved quotes','err'));
+}
+function saveQuote(){
+  const d=collectData();
+  const id='q_'+Date.now();
+  dbSave(id,d).then(()=>{
+    toast('Quote saved ✓','ok');
+  }).catch(()=>toast('Save failed','err'));
+}
+function loadSaved(id){
+  dbLoad(id).then(d=>{
+    if(!d){toast('Not found','err');return;}
+    applyData(d);buildItems();r();
+    $('ov-saved').classList.remove('open');
+    toast('Quote loaded','ok');
+  });
+}
+function deleteSaved(id){
+  dbDelete(id).then(()=>{
+    toast('Deleted');
+    openSavedModal();
+  });
 }
 
 /* ═══ TOAST ═══ */
@@ -1266,6 +1500,246 @@ function trow(l,v,cls=''){
   const fw=grand?'font-weight:700;font-size:.82rem':'';
   return`<div style="display:grid;grid-template-columns:1fr auto;padding:5px 10px;border-bottom:1px solid #d8dce8;align-items:center;${bg};${fw}"><span style="${lc}">${l}</span><span style="${vc};text-align:right;font-weight:600;padding-left:14px;font-variant-numeric:tabular-nums">${v}</span></div>`;
 }
+
+
+
+/* ═══ SAVED DATA SYSTEM ═══ */
+
+function toggleDrawer(id){
+  const d=document.getElementById(id);
+  if(!d)return;
+  d.classList.toggle('open');
+  // Refresh content when opening
+  if(d.classList.contains('open')){
+    if(id==='drawer-co')renderCoList();
+    if(id==='drawer-cl')renderClList();
+    if(id==='drawer-lib')renderLibList();
+  }
+}
+
+/* ── COMPANY PROFILES ── */
+function getCompanies(){try{return JSON.parse(localStorage.getItem('pq_companies')||'[]');}catch(e){return[];}}
+function setCompanies(a){localStorage.setItem('pq_companies',JSON.stringify(a));}
+
+function saveCompany(){
+  const name=g('co-name').trim();
+  if(!name){toast('Enter company name first','err');return;}
+  const all=getCompanies();
+  const existing=all.findIndex(x=>x.name.toLowerCase()===name.toLowerCase());
+  const data={
+    id:existing>=0?all[existing].id:uid(),
+    name,loc:g('co-loc'),phone:g('co-phone'),email:g('co-email'),
+    color:g('co-col')||'#1e40af',logoURL:logoURL||null,logoW,
+    saved:new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})
+  };
+  if(existing>=0){all[existing]=data;toast('Company updated','ok');}
+  else{all.unshift(data);toast('Company saved','ok');}
+  setCompanies(all);
+  renderCoList();
+}
+
+function loadCompany(id){
+  const p=getCompanies().find(x=>x.id===id);if(!p)return;
+  const set=(el,v)=>{const e=$(el);if(e)e.value=v||'';};
+  set('co-name',p.name);set('co-loc',p.loc);set('co-phone',p.phone);set('co-email',p.email);
+  if(p.color){setCol(p.color);$('co-col').value=p.color;}
+  if(p.logoURL){logoURL=p.logoURL;logoW=p.logoW||70;setLogoUI();}
+  else{logoURL=null;removeLogo();}
+  dr();toast('Loaded: '+p.name,'ok');
+}
+
+function delCompany(id){
+  setCompanies(getCompanies().filter(x=>x.id!==id));
+  renderCoList();toast('Company deleted');
+}
+
+function renderCoList(){
+  const all=getCompanies();
+  const count=$('co-saved-count');if(count)count.textContent=all.length;
+  const list=$('co-saved-list');if(!list)return;
+  if(!all.length){
+    list.innerHTML='<div style="font-size:.75rem;color:var(--muted);text-align:center;padding:8px 0">No saved companies yet</div>';
+    return;
+  }
+  list.innerHTML=all.map(p=>`
+    <div class="saved-row" onclick="loadCompany('${p.id}')">
+      <div class="saved-dot" style="background:${p.color||'#1e40af'}">${(p.name[0]||'?').toUpperCase()}</div>
+      <div class="saved-row-info">
+        <div class="saved-row-name">${esc(p.name)}</div>
+        <div class="saved-row-meta">${[p.loc,p.phone,p.email].filter(Boolean).join(' · ')||'No details'}</div>
+      </div>
+      <button class="saved-row-del" onclick="event.stopPropagation();delCompany('${p.id}')" title="Delete">✕</button>
+    </div>`).join('');
+}
+
+/* ── CLIENT BOOK ── */
+function getClients(){try{return JSON.parse(localStorage.getItem('pq_clients2')||'[]');}catch(e){return[];}}
+function setClients(a){localStorage.setItem('pq_clients2',JSON.stringify(a));}
+
+function saveClient(){
+  const name=g('cl-name').trim();
+  if(!name){toast('Enter client name first','err');return;}
+  const all=getClients();
+  const existing=all.findIndex(x=>x.name.toLowerCase()===name.toLowerCase());
+  const data={
+    id:existing>=0?all[existing].id:uid(),
+    name,person:g('cl-person'),phone:g('cl-phone'),addr:g('cl-addr'),
+    saved:new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})
+  };
+  if(existing>=0){all[existing]=data;toast('Client updated','ok');}
+  else{all.unshift(data);toast('Client saved','ok');}
+  setClients(all);
+  renderClList();
+}
+
+function loadClient(id){
+  const c=getClients().find(x=>x.id===id);if(!c)return;
+  const set=(el,v)=>{const e=$(el);if(e)e.value=v||'';};
+  set('cl-name',c.name);set('cl-person',c.person);set('cl-phone',c.phone);set('cl-addr',c.addr);
+  dr();toast('Loaded: '+c.name,'ok');
+}
+
+function delClient(id){
+  setClients(getClients().filter(x=>x.id!==id));
+  renderClList();toast('Client deleted');
+}
+
+function renderClList(){
+  const all=getClients();
+  const count=$('cl-saved-count');if(count)count.textContent=all.length;
+  const list=$('cl-saved-list');if(!list)return;
+  if(!all.length){
+    list.innerHTML='<div style="font-size:.75rem;color:var(--muted);text-align:center;padding:8px 0">No saved clients yet</div>';
+    return;
+  }
+  list.innerHTML=all.map(c=>`
+    <div class="saved-row" onclick="loadClient('${c.id}')">
+      <div class="saved-dot" style="background:var(--accent)">${(c.name[0]||'?').toUpperCase()}</div>
+      <div class="saved-row-info">
+        <div class="saved-row-name">${esc(c.name)}</div>
+        <div class="saved-row-meta">${[c.person,c.phone].filter(Boolean).join(' · ')||'No details'}</div>
+      </div>
+      <button class="saved-row-del" onclick="event.stopPropagation();delClient('${c.id}')" title="Delete">✕</button>
+    </div>`).join('');
+}
+
+/* ── PRODUCT LIBRARY ── */
+function getLibrary(){try{return JSON.parse(localStorage.getItem('pq_library2')||'[]');}catch(e){return[];}}
+function setLibrary(a){localStorage.setItem('pq_library2',JSON.stringify(a));}
+
+function saveLibItem(){
+  const name=g('lib-name').trim();
+  if(!name){toast('Enter product name','err');return;}
+  const lib=getLibrary();
+  lib.unshift({id:uid(),name,rate:parseFloat(g('lib-rate'))||0,unit:g('lib-unit')||''});
+  setLibrary(lib);
+  $('lib-name').value='';$('lib-rate').value='';$('lib-unit').value='';
+  renderLibList();toast('Saved to library','ok');
+}
+
+function insertLibItem(id){
+  const it=getLibrary().find(x=>x.id===id);if(!it)return;
+  pushUndo();
+  items.push({id:uid(),type:'item',desc:it.name,qty:'',rate:it.rate||'',d:0,useD:false,sel:false,optional:false,note:''});
+  buildItems();r();
+  toast('Added: '+it.name,'ok');
+}
+
+function delLibItem(id){
+  setLibrary(getLibrary().filter(x=>x.id!==id));
+  renderLibList();toast('Removed from library');
+}
+
+function renderLibList(){
+  const all=getLibrary();
+  const count=$('lib-saved-count');if(count)count.textContent=all.length;
+  const list=$('lib-saved-list');if(!list)return;
+  if(!all.length){
+    list.innerHTML='<div style="font-size:.75rem;color:var(--muted);text-align:center;padding:6px 0">No products saved yet — add one below</div>';
+    return;
+  }
+  list.innerHTML=all.map(it=>`
+    <div class="saved-row" onclick="insertLibItem('${it.id}')">
+      <div class="saved-dot" style="background:var(--success);font-size:.7rem">＋</div>
+      <div class="saved-row-info">
+        <div class="saved-row-name">${esc(it.name)}</div>
+        <div class="saved-row-meta">${curr()} ${fmt(it.rate)}${it.unit?' · '+esc(it.unit):''}</div>
+      </div>
+      <button class="saved-row-del" onclick="event.stopPropagation();delLibItem('${it.id}')" title="Delete">✕</button>
+    </div>`).join('');
+}
+
+/* ── INIT COUNTS ON LOAD ── */
+function initSavedCounts(){
+  const cc=$('co-saved-count');if(cc)cc.textContent=getCompanies().length;
+  const clc=$('cl-saved-count');if(clc)clc.textContent=getClients().length;
+  const lc=$('lib-saved-count');if(lc)lc.textContent=getLibrary().length;
+}
+
+/* ═══ PWA SETUP ═══ */
+(function(){
+  // Inline manifest as blob
+  const icons192 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAEYUlEQVR4nO3byW0cQRQEUZogl+ijXJEDcky8EoIEzFLd+ZcXQBzJKVRlnAbz8QEAAAAAAAAAKM/n7z8MiCKkh0CRREk/MsUQJf2wFEOU9GNSCFHSj0ghREk/HoUQJf1oFEKU9GNRBFHSD0URREk/EoUQJf04FEGU9MNQBFHSj0IRREk/CEUQJf0YFEGU9ENQAFHSD0ERREk/AkUQJf0AzLua9OUz72rSl88ariV98azhWtIXzzquJH3prONK0pfOWq4jfeGs5TrSF856riJ92aznKtKXzXquIn3ZrOka0hfNmq4hfdGs6RrSF826riB9yazrCtKXzLquIH3JrOsK0pfMuq4gfcms6wrSl8y6riB9yazrCtKXzLpOHdavnz9YyPQerokgfXABtDG9BwFQAAKgAARAAQiAAhAABSAACkAAFIAAKAABUAACoAAEQAEIgAIQAAUgAApAABSAACgAAVAA8YOTJxQAVysArlYAXK0AuFoBcLUC4GoFwNVODCD9xQ99ESYACkAAFIAA1pvegwAoAAFQAAKgAARAAQiAAhAABSAACkAAFIAAKAABUAACoAAEQAEIgAIQAAUgAAqgRwDkwwqAqxUAVysArlYAXK0AuFoBcLUC4GoFwNUKgKsVAFcrAK5WAFytALhaAXC1AuBqBcBHLf/jllcUAL879pdf/7N6AI9w4jPiDxF03c8gv7spgFeIP9CFrv898OeCAE4Sf6xm428RwdQAriT+aE2G3yKEiQHcQfzhmo2/bASTAkgQf8BG4y8ZwZQAksQfsdH4y0UggPeJP2Kz8ZeKYEIAFYg/ZLPxl4lAAOeIP+bB8Vf9LAEUJj36E6Ps9pkCKER69O8McdLnCyBEeviVxlflHAK4kfT4XxnelrMI4AaMv8eZBHARnQJwLgEcRwC9ziWAwxh/w/MJ4AzJ8ZceWPXzTQggHUp6/M8MzBkFcJz0+MuOq8MZpwSQiiA9/NLj6nDGSQHcGUJ68C3G1eGMEwO4OoL02NuMq8MZpwZwRQjpkb87rC4B3HrO6QE8+7+6jP7VcTnjX24KYLIlx9XhjAKYYclxdTijAGZYclwdziiAGZYcV4czvsUNBxTA2XH9a2DP/O0d9hi/AEopAAGs99WRpQcfGb8A5ikAAaz21bGlRy8AAUQjSI8+Mn4BzDQ9YgEIIG56yC3GL4DZpgddfvxHArghAgEIoO74BVDa9LDLjl8Ae0wPvOT4jwZwcQQCmBvBjPELoIXpsQtAAHHTg58bwIURCGBuBHPGL4B2psc/L4CLIhDA3AhmjV8AbRVA4QgEcK9jA7iNwwcXQE4BFIhAADnHBHA7Bw8vgJwCKBCBAATwllEE0Nr2AZRAAG1tHUAZBMCEpUhfBndZkvSlcIelSV8OZ9uC9CVxpq1IXxZn2Zb0xbG3I0hfIns6ivRlspdjSV8sa7uG9EWzlmtJXzwNvwTph6DhlyH9ODT6MqQfjUZfnvQjbxUAAAAAAAAAUJ0vErpy2iEBkBIAAAAASUVORK5CYII=";
+  const icons512 = "data:image/png;base64,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";
+  const manifest = {
+    name: "ProQuote",
+    short_name: "ProQuote",
+    description: "Professional quotation maker",
+    start_url: "./",
+    display: "standalone",
+    background_color: "#0041C2",
+    theme_color: "#0041C2",
+    orientation: "landscape-primary",
+    icons: [
+      {src: icons192, sizes: "192x192", type: "image/png", purpose: "any maskable"},
+      {src: icons512, sizes: "512x512", type: "image/png", purpose: "any maskable"}
+    ]
+  };
+  const mBlob = new Blob([JSON.stringify(manifest)], {type:'application/manifest+json'});
+  const mURL = URL.createObjectURL(mBlob);
+  document.getElementById('pwa-manifest').href = mURL;
+
+  // Service worker for offline use
+  if('serviceWorker' in navigator){
+    const swCode = `
+const CACHE = 'proquote-v1';
+self.addEventListener('install', e => {
+  self.skipWaiting();
+});
+self.addEventListener('fetch', e => {
+  e.respondWith(
+    caches.match(e.request).then(r => r || fetch(e.request).catch(() => r))
+  );
+});
+`;
+    const swBlob = new Blob([swCode], {type:'text/javascript'});
+    const swURL = URL.createObjectURL(swBlob);
+    navigator.serviceWorker.register(swURL, {scope:'./'})
+      .then(() => console.log('ProQuote SW registered'))
+      .catch(e => console.log('SW:', e.message));
+  }
+
+  // Install prompt
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    // Show install button
+    const btn = document.getElementById('install-btn');
+    if(btn) btn.style.display = 'flex';
+  });
+  window.addEventListener('appinstalled', () => {
+    const btn = document.getElementById('install-btn');
+    if(btn) btn.style.display = 'none';
+    toast('ProQuote installed! ✓', 'ok');
+  });
+  window._installPWA = function(){
+    if(deferredPrompt){
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(()=>{ deferredPrompt=null; });
+    }
+  };
+})();
 
 </script>
 </body>
