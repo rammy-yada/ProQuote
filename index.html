@@ -66,7 +66,8 @@ body.dark .profile-capsule{background:var(--panel2);border-color:var(--border)}
 /* FORM PANEL */
 .fp{background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
 .pane{display:none;flex:1;flex-direction:column;min-height:0}
-.pane.active{display:flex}
+.pane.active{display:flex;animation:paneIn .2s ease}
+@keyframes paneIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .pane-head{padding:18px 22px 14px;border-bottom:1px solid var(--border);background:var(--panel2);flex-shrink:0}
 .pane-title{font-family:Georgia,serif;font-size:1.05rem;font-weight:700}
 .pane-sub{font-size:.78rem;color:var(--muted);margin-top:3px}
@@ -94,12 +95,15 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
 .sec-lbl{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:12px}
 
 /* BUTTONS */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:8px 14px;border-radius:var(--r);font-family:-apple-system,system-ui,sans-serif;font-size:.82rem;font-weight:600;border:1px solid transparent;cursor:pointer;transition:all .15s;white-space:nowrap}
-.btn-primary{background:var(--accent);color:#fff;border:none}.btn-primary:hover{background:var(--accent-h)}
-.btn-outline{background:#fff;color:var(--text);border:1px solid var(--border)}.btn-outline:hover{border-color:var(--border2);background:var(--panel2)}
-.btn-ghost{background:transparent;color:var(--muted);border:none}.btn-ghost:hover{color:var(--text);background:var(--panel2)}
-.btn-danger{background:var(--danger-s);color:var(--danger);border:1px solid rgba(229,57,53,.15)}.btn-danger:hover{background:var(--danger);color:#fff}
-.btn-sm{padding:5px 10px;font-size:.74rem}.btn-full{width:100%}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;border-radius:var(--r);font-family:-apple-system,system-ui,sans-serif;font-size:.82rem;font-weight:600;border:1px solid transparent;cursor:pointer;transition:background .18s,border-color .18s,box-shadow .18s,transform .1s,color .18s;white-space:nowrap;letter-spacing:.01em}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--accent);color:#fff;border:none;box-shadow:0 2px 8px rgba(37,87,214,.25)}.btn-primary:hover{background:var(--accent-h);box-shadow:0 4px 14px rgba(37,87,214,.35)}
+.btn-outline{background:var(--panel);color:var(--text);border:1px solid var(--border)}.btn-outline:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-s)}
+.btn-ghost{background:transparent;color:var(--muted);border:none;border-radius:var(--r)}.btn-ghost:hover{color:var(--text);background:var(--panel2)}
+.btn-danger{background:var(--danger-s);color:var(--danger);border:1px solid rgba(229,57,53,.2)}.btn-danger:hover{background:var(--danger);color:#fff;box-shadow:0 2px 8px rgba(229,57,53,.3)}
+.btn-success{background:var(--success);color:#fff;border:none;box-shadow:0 2px 8px rgba(27,138,90,.22)}.btn-success:hover{filter:brightness(1.08)}
+.btn-whatsapp{background:#25D366;color:#fff;border:none;box-shadow:0 2px 8px rgba(37,211,102,.25)}.btn-whatsapp:hover{background:#1ebe5d}
+.btn-sm{padding:5px 11px;font-size:.74rem}.btn-full{width:100%}
 
 /* TOGGLE */
 .tog-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border:1px solid var(--border);border-radius:var(--r);margin-bottom:7px;cursor:pointer;user-select:none;background:var(--panel2);transition:border .15s}
@@ -198,41 +202,68 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
 .tray{position:fixed;bottom:18px;right:18px;z-index:600;display:flex;flex-direction:column;gap:6px;pointer-events:none}
 .toast{background:#1a1d2e;color:#fff;padding:9px 14px;border-radius:7px;font-size:.78rem;font-weight:500;box-shadow:var(--sh-lg);display:flex;align-items:center;gap:6px;animation:tIn .2s ease;pointer-events:auto;max-width:260px}
 .toast.ok{background:var(--success)}.toast.err{background:var(--danger)}
-@keyframes tIn{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:translateX(0)}}
-@keyframes tOut{to{opacity:0;transform:translateX(14px)}}
+@keyframes tIn{from{opacity:0;transform:translateX(20px) scale(.95)}to{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes tOut{to{opacity:0;transform:translateX(20px) scale(.92)}}
 @keyframes slideDown{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes slideUp{from{transform:translateY(0);opacity:1}to{transform:translateY(-100%);opacity:0}}
 
-/* MOBILE */
-@media(max-width:900px){.main{grid-template-columns:360px 1fr}}
+/* TABLET */
+@media(max-width:1024px){.main{grid-template-columns:380px 1fr}}
+@media(max-width:900px){.main{grid-template-columns:340px 1fr}}
+
+/* MOBILE PORTRAIT — form first, preview below */
 @media(max-width:768px){
-  body{overflow:auto;height:auto}
-  .main{grid-template-columns:1fr;overflow:visible;display:block}
-  .fp{border-right:none;max-height:none;overflow:visible;display:block}
-  .pane{max-height:none;display:none;flex-direction:column}
+  html{font-size:14px}
+  body{overflow-y:auto;overflow-x:hidden;height:auto;min-height:100vh}
+  .main{display:flex;flex-direction:column;overflow:visible;min-height:0}
+  .fp{border-right:none;border-bottom:1px solid var(--border);display:flex;flex-direction:column;overflow:visible;flex-shrink:0}
+  .pane{display:none;flex-direction:column;min-height:0}
   .pane.active{display:flex}
-  .pane-body{overflow-y:visible;max-height:none;padding:16px}
-  .pp{padding:10px;overflow-x:hidden}
+  .pane-body{overflow-y:visible;max-height:none;padding:14px 16px}
+  .pp{min-height:50vh;padding:12px 8px 24px;overflow-x:hidden;overflow-y:visible}
   .doc-scaler{width:100%;overflow:hidden}
-  .pvbar{flex-wrap:wrap;gap:6px}
+  .pvbar{flex-wrap:wrap;gap:6px;padding:0 4px}
+  .pvbar-l{font-size:.68rem}
   .r2{grid-template-columns:1fr}
-  /* Topbar simplified on mobile */
-  .top-r .btn-outline:not(#install-btn){display:none}
-  .topbar{padding:0 10px}
-  /* Bigger touch targets */
-  .btn{min-height:40px}
-  .btn-sm{min-height:34px}
-  .tog-row{padding:12px}
-  .stab{padding:0 8px;font-size:.72rem}
-  /* Save indicators bigger */
-  .save-indicator{font-size:.85rem;padding:10px 14px}
+  /* Topbar */
+  .topbar{padding:0 10px;height:50px}
+  .top-r{gap:4px}
+  .top-r .btn-ghost:not(#dark-btn){display:none}
+  .top-r #install-btn{display:none !important}
+  /* Stepbar */
+  .stepbar{height:42px;padding:0 6px}
+  .stab{padding:0 7px;font-size:.7rem;gap:4px}
+  .ssep{margin:10px 0}
+  /* Touch targets */
+  .btn{min-height:42px;padding:9px 14px}
+  .btn-sm{min-height:36px;padding:6px 11px;font-size:.76rem}
+  .btn-full{min-height:46px;font-size:.9rem}
+  .tog-row{padding:12px 14px;min-height:44px}
+  .pnav{padding:12px 16px;gap:8px}
+  .pane-head{padding:14px 16px 10px}
+  /* Items on mobile — stack description full width */
+  .items-hd{grid-template-columns:18px 1fr 44px 72px 50px 22px;gap:3px;padding:5px 8px}
+  .irow{grid-template-columns:18px 1fr 44px 72px 50px 22px;gap:3px;padding:4px 8px}
+  .items-wrap{border-radius:6px}
+  /* Save indicator */
+  .save-indicator{font-size:.82rem;padding:8px 12px}
 }
-/* Landscape phone */
+
+/* MOBILE LANDSCAPE — side by side like tablet */
 @media(max-width:768px) and (orientation:landscape){
-  .main{display:grid;grid-template-columns:320px 1fr}
-  .fp{border-right:1px solid var(--border);overflow-y:auto;height:calc(100vh - 100px)}
+  body{overflow:hidden;height:100vh}
+  .main{display:grid;grid-template-columns:300px 1fr;flex-direction:unset;height:calc(100vh - 96px)}
+  .fp{overflow:hidden;border-right:1px solid var(--border);border-bottom:none;display:flex}
   .pane-body{overflow-y:auto;max-height:none}
-  .pp{height:calc(100vh - 100px)}
-  .top-r .btn-outline:not(#install-btn){display:inline-flex}
+  .pp{height:100%;overflow-y:auto;padding:10px 8px}
+  .top-r .btn-ghost:not(#dark-btn){display:inline-flex}
+}
+
+/* SMALL PHONES */
+@media(max-width:380px){
+  .stab span:not(.sbadge){display:none}
+  .stab{padding:0 6px}
+  .pane-body{padding:12px}
 }
 
 /* DOCUMENT STYLES */
@@ -285,6 +316,12 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
 .saved-row-del:hover{background:var(--danger-s);color:var(--danger)}
 .saved-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.65rem;font-weight:700;flex-shrink:0}
 .lib-badge{font-size:.62rem;background:var(--accent-s);color:var(--accent);padding:1px 6px;border-radius:10px;font-weight:600}
+
+/* OVERFLOW MENU */
+.menu-item{display:flex;align-items:center;gap:9px;width:100%;padding:9px 16px;background:none;border:none;font-family:-apple-system,system-ui,sans-serif;font-size:.83rem;font-weight:500;color:var(--text);cursor:pointer;text-align:left;transition:background .12s;white-space:nowrap}
+.menu-item:hover{background:var(--accent-s);color:var(--accent)}
+body.dark .menu-item:hover{background:var(--border);color:var(--text)}
+#overflow-menu{transition:none}
 
 /* SAVE FLOW - simplified */
 .save-indicator{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;color:var(--success);font-weight:600;padding:4px 10px;background:var(--success-s,#e8f5e9);border-radius:20px;border:1px solid var(--success)}
@@ -350,6 +387,83 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
   </div>
 </div>
 
+<!-- TEMPLATES MODAL -->
+<div class="overlay" id="ov-templates" style="z-index:600">
+  <div class="modal" style="max-width:520px;max-height:85vh;overflow-y:auto;padding:22px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div>
+        <div style="font-family:Georgia,serif;font-size:1rem;font-weight:700">⚡ Item Templates</div>
+        <div style="font-size:.75rem;color:var(--muted);margin-top:2px">Click a category to add all, or tap individual items</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="closeTemplatesModal()" style="font-size:1.1rem;padding:4px 8px">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <!-- Design -->
+      <div style="border:1px solid var(--border);border-radius:var(--r);overflow:hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--panel2);cursor:pointer" onclick="insertTemplate('design')">
+          <span style="font-size:.82rem;font-weight:700">🎨 Design</span>
+          <span style="font-size:.7rem;color:var(--accent);font-weight:600">Add all →</span>
+        </div>
+        <div style="padding:6px 8px;display:flex;flex-direction:column;gap:3px">
+          <div onclick="insertSingleTemplate('design',0)" style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s" onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''"><span>Logo Design</span><span style="color:var(--muted)">रु 15,000</span></div>
+          <div onclick="insertSingleTemplate('design',1)" style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s" onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''"><span>Brand Identity Package</span><span style="color:var(--muted)">रु 35,000</span></div>
+          <div onclick="insertSingleTemplate('design',2)" style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s" onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''"><span>Business Card Design</span><span style="color:var(--muted)">रु 3,500</span></div>
+          <div onclick="insertSingleTemplate('design',3)" style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s" onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''"><span>Social Media Kit</span><span style="color:var(--muted)">रु 8,000</span></div>
+        </div>
+      </div>
+      <!-- Web -->
+      <div style="border:1px solid var(--border);border-radius:var(--r);overflow:hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--panel2);cursor:pointer" onclick="insertTemplate('web')">
+          <span style="font-size:.82rem;font-weight:700">💻 Web / Dev</span>
+          <span style="font-size:.7rem;color:var(--accent);font-weight:600">Add all →</span>
+        </div>
+        <div style="padding:6px 8px;display:flex;flex-direction:column;gap:3px">
+          <div onclick="insertSingleTemplate('web',0)" style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s" onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''"><span>Website Design (UI/UX)</span><span style="color:var(--muted)">रु 25,000</span></div>
+          <div onclick="insertSingleTemplate('web',1)" style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s" onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''"><span>Website Development</span><span style="color:var(--muted)">रु 40,000</span></div>
+          <div onclick="insertSingleTemplate('web',2)" style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s" onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''"><span>WordPress Setup</span><span style="color:var(--muted)">रु 18,000</span></div>
+          <div onclick="insertSingleTemplate('web',3)" style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s" onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''"><span>Domain & Hosting Setup</span><span style="color:var(--muted)">रु 5,000</span></div>
+        </div>
+      </div>
+      <!-- Photography -->
+      <div style="border:1px solid var(--border);border-radius:var(--r);overflow:hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--panel2);cursor:pointer" onclick="insertTemplate('photo')">
+          <span style="font-size:.82rem;font-weight:700">📷 Photography</span>
+          <span style="font-size:.7rem;color:var(--accent);font-weight:600">Add all →</span>
+        </div>
+        <div style="padding:6px 8px;display:flex;flex-direction:column;gap:3px">
+          <div onclick="insertSingleTemplate('photo',0)" style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s" onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''"><span>Product Photography</span><span style="color:var(--muted)">रु 12,000</span></div>
+          <div onclick="insertSingleTemplate('photo',1)" style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s" onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''"><span>Corporate Headshots</span><span style="color:var(--muted)">रु 8,000</span></div>
+          <div onclick="insertSingleTemplate('photo',2)" style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s" onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''"><span>Event Coverage (half day)</span><span style="color:var(--muted)">रु 15,000</span></div>
+        </div>
+      </div>
+      <!-- Print -->
+      <div style="border:1px solid var(--border);border-radius:var(--r);overflow:hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--panel2);cursor:pointer" onclick="insertTemplate('print')">
+          <span style="font-size:.82rem;font-weight:700">🖨 Print & Media</span>
+          <span style="font-size:.7rem;color:var(--accent);font-weight:600">Add all →</span>
+        </div>
+        <div style="padding:6px 8px;display:flex;flex-direction:column;gap:3px">
+          <div onclick="insertSingleTemplate('print',0)" style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s" onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''"><span>Flyer Design (A5)</span><span style="color:var(--muted)">रु 4,500</span></div>
+          <div onclick="insertSingleTemplate('print',1)" style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s" onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''"><span>Brochure Design (tri-fold)</span><span style="color:var(--muted)">रु 8,000</span></div>
+          <div onclick="insertSingleTemplate('print',2)" style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s" onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''"><span>Banner Design</span><span style="color:var(--muted)">रु 5,000</span></div>
+        </div>
+      </div>
+      <!-- IT -->
+      <div style="border:1px solid var(--border);border-radius:var(--r);overflow:hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--panel2);cursor:pointer" onclick="insertTemplate('it')">
+          <span style="font-size:.82rem;font-weight:700">🔧 IT Services</span>
+          <span style="font-size:.7rem;color:var(--accent);font-weight:600">Add all →</span>
+        </div>
+        <div style="padding:6px 8px;display:flex;flex-direction:column;gap:3px">
+          <div onclick="insertSingleTemplate('it',0)" style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s" onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''"><span>IT Support (hourly)</span><span style="color:var(--muted)">रु 2,500</span></div>
+          <div onclick="insertSingleTemplate('it',1)" style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s" onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''"><span>Network Setup</span><span style="color:var(--muted)">रु 12,000</span></div>
+          <div onclick="insertSingleTemplate('it',2)" style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s" onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''"><span>Computer Repair</span><span style="color:var(--muted)">रु 3,500</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <!-- TOPBAR -->
 <div class="topbar">
@@ -369,17 +483,87 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
   </div>
   
   <div class="top-r">
-    <button class="btn btn-ghost btn-sm" id="dark-btn" onclick="toggleDark()" title="Dark mode">🌙</button>
-    <button id="install-btn" class="btn btn-outline btn-sm" onclick="window._installPWA&&window._installPWA()" title="Install as app" style="display:none;align-items:center;gap:5px">⬇ Install App</button>
-    <button class="btn btn-ghost btn-sm" onclick="showNewModal()" title="Start new quotation">↺ New</button>
-    <div style="width:1px;height:22px;background:var(--border);margin:0 2px"></div>
-    <button class="btn btn-ghost btn-sm" onclick="openFromFile()" title="Open .proquote file from device">📂 Open</button>
-    <button class="btn btn-ghost btn-sm" onclick="saveToFile()" title="Save to device as .proquote file">💾 File</button>
-    <button class="btn btn-outline btn-sm" onclick="saveQuote();openSavedModal()" title="Save & view saved quotes">🗂 Quotes</button>
-    <div style="width:1px;height:22px;background:var(--border);margin:0 2px"></div>
-    <button class="btn btn-outline btn-sm" onclick="doPrint()">🖨 Print</button>
+    <!-- Always visible: dark mode + new + install + PDF -->
+    <button class="btn btn-ghost btn-sm" id="dark-btn" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
+    <button class="btn btn-outline btn-sm" onclick="showNewModal()" title="Start new quotation" style="gap:5px">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+      New
+    </button>
+    <button id="install-btn" class="btn btn-sm" onclick="window._installPWA&&window._installPWA()" title="Add to home screen" style="display:none;align-items:center;gap:5px;background:#25D366;color:#fff;border:none;font-weight:700">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v13M7 9l5 6 5-6"/><path d="M3 19h18"/></svg>
+      Install
+    </button>
     <button class="btn btn-primary btn-sm" onclick="doExport()">⬇ PDF</button>
+    <!-- 3-dot overflow menu -->
+    <div style="position:relative" id="menu-wrap">
+      <button class="btn btn-ghost btn-sm" id="menu-btn" onclick="toggleMenu()" title="More options" style="padding:6px 10px;font-size:1.2rem;letter-spacing:.05em;min-height:36px">⋮</button>
+      <div id="overflow-menu" style="display:none;position:absolute;top:calc(100% + 6px);right:0;min-width:210px;background:var(--panel);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.16);z-index:300;overflow:hidden;animation:mIn .15s ease">
+        <!-- Export group -->
+        <div style="padding:5px 0;border-bottom:1px solid var(--border)">
+          <div style="padding:4px 14px 2px;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)">Export</div>
+          <button class="menu-item" onclick="doExport();closeMenu()">⬇&nbsp; Download PDF</button>
+          <button class="menu-item" onclick="doExportPNG();closeMenu()">🖼&nbsp; Save as PNG</button>
+          <button class="menu-item" onclick="doPrint();closeMenu()">🖨&nbsp; Print</button>
+          <button class="menu-item" style="color:#25D366" onclick="shareWhatsApp();closeMenu()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Share via WhatsApp
+          </button>
+        </div>
+        <!-- File group -->
+        <div style="padding:5px 0;border-bottom:1px solid var(--border)">
+          <div style="padding:4px 14px 2px;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)">File</div>
+          <button class="menu-item" onclick="openFromFile();closeMenu()">📂&nbsp; Open File</button>
+          <button class="menu-item" onclick="saveToFile();closeMenu()">💾&nbsp; Save to File</button>
+          <button class="menu-item" onclick="saveQuote();openSavedModal();closeMenu()">🗂&nbsp; Saved Quotes</button>
+        </div>
+        <!-- App group -->
+        <div style="padding:5px 0">
+          <div style="padding:4px 14px 2px;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)">App</div>
+          <button class="menu-item" id="menu-install-btn" onclick="window._installPWA&&window._installPWA();closeMenu()" style="display:none;font-weight:700;color:var(--accent)">⬇&nbsp; Add to Home Screen</button>
+          <button class="menu-item" onclick="toggleDark();closeMenu()">🌙&nbsp; Toggle Dark Mode</button>
+          <button class="menu-item" onclick="showNewModal();closeMenu()" style="color:var(--danger)">↺&nbsp; New Quotation</button>
+        </div>
+      </div>
+    </div>
   </div>
+</div>
+
+<!-- ANDROID INSTALL BANNER -->
+<div id="install-banner" style="display:none;background:linear-gradient(135deg,#0041C2,#1a56e8);color:#fff;padding:11px 14px;flex-shrink:0;align-items:center;gap:10px;z-index:90">
+  <div style="font-size:1.5rem;flex-shrink:0">📲</div>
+  <div style="flex:1;min-width:0">
+    <div style="font-size:.83rem;font-weight:700;line-height:1.3">Add ProQuote to Home Screen</div>
+    <div style="font-size:.7rem;opacity:.85;margin-top:2px">Works offline · No app store needed</div>
+  </div>
+  <button onclick="window._installPWA&&window._installPWA()" style="background:#fff;color:#0041C2;border:none;border-radius:8px;padding:8px 14px;font-size:.8rem;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.2)">Install</button>
+  <button onclick="dismissInstallBanner()" style="background:none;border:none;color:rgba(255,255,255,.6);font-size:1.3rem;cursor:pointer;padding:2px 6px;flex-shrink:0;line-height:1">✕</button>
+</div>
+
+<!-- iOS INSTALL BANNER -->
+<div id="ios-banner" style="display:none;background:linear-gradient(135deg,#1a1d2e,#2a2f4a);color:#fff;padding:12px 14px;flex-shrink:0;align-items:flex-start;gap:10px;z-index:90">
+  <div style="font-size:1.5rem;flex-shrink:0;margin-top:2px">🍎</div>
+  <div style="flex:1;min-width:0">
+    <div style="font-size:.84rem;font-weight:700;margin-bottom:5px">Install on iPhone / iPad</div>
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <div style="display:flex;align-items:center;gap:8px;font-size:.75rem;opacity:.9">
+        <span style="background:rgba(255,255,255,.15);border-radius:5px;padding:2px 7px;font-weight:700;white-space:nowrap">1</span>
+        <span>Open this page in <strong>Safari</strong> (not Chrome)</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:.75rem;opacity:.9">
+        <span style="background:rgba(255,255,255,.15);border-radius:5px;padding:2px 7px;font-weight:700;white-space:nowrap">2</span>
+        <span>Tap the
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin:0 1px"><path d="M8 7l4-4 4 4M12 3v13"/><rect x="3" y="14" width="18" height="7" rx="2"/></svg>
+          <strong>Share</strong> button at the bottom
+        </span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:.75rem;opacity:.9">
+        <span style="background:rgba(255,255,255,.15);border-radius:5px;padding:2px 7px;font-weight:700;white-space:nowrap">3</span>
+        <span>Tap <strong>"Add to Home Screen"</strong> then <strong>Add</strong></span>
+      </div>
+    </div>
+    <div style="font-size:.68rem;opacity:.55;margin-top:6px">Works fully offline after installing ✓</div>
+  </div>
+  <button onclick="dismissInstallBanner()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.3rem;cursor:pointer;padding:2px 6px;flex-shrink:0;line-height:1;margin-top:-2px">✕</button>
 </div>
 
 <!-- STEPBAR -->
@@ -658,6 +842,7 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
           <button class="btn btn-outline btn-sm" onclick="toggleDrawer('drawer-lib');goS(4)" title="Product library">📦 Library</button>
           <button class="btn btn-outline btn-sm" onclick="addSection()" title="Add section header">§ Section</button>
           <button class="btn btn-outline btn-sm" onclick="addOptional()" title="Add optional item" style="color:var(--warn);border-color:var(--warn)">? Optional</button>
+          <button class="btn btn-outline btn-sm" onclick="openTemplatesModal()" title="Insert from templates" style="color:var(--accent);border-color:var(--accent)">⚡ Templates</button>
         </div>
         <div class="pnav" style="border-top:1px solid var(--border);padding-top:10px">
           <button class="btn btn-outline" onclick="goS(3)">← Back</button>
@@ -670,9 +855,16 @@ input[type=color]{width:36px;height:36px;padding:2px;border-radius:6px;cursor:po
     <div class="pane" id="pane-5">
       <div class="pane-head"><div class="pane-title">Preview & Export</div><div class="pane-sub">Review then download or print</div></div>
       <div class="pane-body">
-        <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:16px">
-          <button class="btn btn-primary btn-full" onclick="doExport()" style="padding:11px">⬇ Download PDF</button>
-          <button class="btn btn-outline btn-full" onclick="doPrint()" style="padding:11px">🖨 Print</button>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+          <button class="btn btn-primary btn-full" onclick="doExport()" style="padding:11px;font-size:.88rem">⬇ Download PDF</button>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <button class="btn btn-outline btn-full" onclick="doPrint()" style="padding:10px">🖨 Print</button>
+            <button class="btn btn-outline btn-full" onclick="doExportPNG()" style="padding:10px">🖼 Save as PNG</button>
+          </div>
+          <button class="btn btn-whatsapp btn-full" onclick="shareWhatsApp()" style="padding:10px;font-size:.84rem">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Share via WhatsApp
+          </button>
         </div>
         <hr class="hr">
         <div class="sec-lbl">Quick Toggles</div>
@@ -766,7 +958,7 @@ window.onload=()=>{
   initSavedCounts();
   window.addEventListener('beforeunload',saveDraft);
   // Close modals on backdrop click
-  ['ov-new','ov-saved'].forEach(id=>{
+  ['ov-new','ov-saved','ov-templates'].forEach(id=>{
     const el=$(id);
     if(el) el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');});
   });
@@ -778,6 +970,8 @@ window.onload=()=>{
     if((e.ctrlKey||e.metaKey)&&e.key==='z'&&!typing){e.preventDefault();doUndo();}
     if((e.ctrlKey||e.metaKey)&&(e.key==='y'||(e.shiftKey&&e.key==='Z'))&&!typing){e.preventDefault();doRedo();}
   });
+  // Show install banner on mobile after a short delay
+  setTimeout(maybeShowBanner, 1800);
 };
 
 /* ═══ QUOTE NO ═══ */
@@ -787,8 +981,8 @@ function nextQNo(){
     const d=JSON.parse(localStorage.getItem('pq_qno')||'{}');
     const n=(d[yr]||0)+1;d[yr]=n;
     localStorage.setItem('pq_qno',JSON.stringify(d));
-    return`QT-${yr}-${String(n).padStart(3,'0')}`;
-  }catch(e){return'QT-001';}
+    return`PQ-${yr}-${String(n).padStart(3,'0')}`;
+  }catch(e){return'PQ-001';}
 }
 
 /* ═══ STEPS ═══ */
@@ -1723,6 +1917,174 @@ function initSavedCounts(){
   renderLibList();
 }
 
+
+/* ═══ WHATSAPP SHARE ═══ */
+function shareWhatsApp(){
+  const gd=parseFloat(g('p-disc'))||0;
+  let sub=0;
+  items.forEach(it=>{
+    if(it.type==='section'||it.optional)return;
+    const eff=it.useD?it.d:gd;
+    sub+=round(it.qty*it.rate*(1-eff/100));
+  });
+  const vp=getVat(),va=round(sub*vp/100),ship=parseFloat(g('p-ship'))||0;
+  let extTax=0;extraTaxes.forEach(tx=>{extTax+=round(sub*tx.rate/100);});
+  const grand=round(sub+(SW.vat?va:0)+extTax+ship);
+  const clName=g('cl-name')||'—';
+  const qno=g('q-no')||'—';
+  const validStr=fmtD(g('q-valid'));
+  const lineItems=items.filter(x=>x.type!=='section'&&!x.optional)
+    .map(it=>{
+      const eff=it.useD?it.d:gd;
+      const tot=round((it.qty||1)*(it.rate||0)*(1-eff/100));
+      return'\u2022 '+(it.desc||'Item')+': '+curr()+' '+fmt(tot);
+    }).join('\n');
+  const nl='\n';
+  const sep='\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500';
+  const msg='*QUOTATION \u2014 '+qno+'*'+nl+sep+nl+'*To:* '+clName+nl+'*Valid Until:* '+validStr+nl+nl+'*Items:*'+nl+lineItems+nl+sep+nl+'*Subtotal:* '+curr()+' '+fmt(sub)+(vp>0?nl+'*VAT ('+vp+'%):* '+curr()+' '+fmt(va):'')+(ship>0?nl+'*Shipping:* '+curr()+' '+fmt(ship):'')+nl+'*Total:* '+curr()+' '+fmt(grand)+nl+sep+nl+'_Sent via ProQuote_';
+  const url='https://wa.me/?text='+encodeURIComponent(msg);
+  window.open(url,'_blank');
+  toast('Opening WhatsApp…','ok');
+}
+
+/* ═══ DOWNLOAD AS PNG ═══ */
+function doExportPNG(){
+  const qdocEl=$('qdoc');
+  if(!qdocEl||!qdocEl.children.length){toast('Add items first','err');return;}
+  // Use html2canvas if available, otherwise dom-to-image fallback, else instruct
+  if(typeof html2canvas!=='undefined'){
+    toast('Generating image…');
+    html2canvas(qdocEl,{scale:2,useCORS:true,backgroundColor:'#fff',logging:false}).then(canvas=>{
+      const link=document.createElement('a');
+      link.download=(g('q-no')||'quotation').replace(/[^a-z0-9_-]/gi,'_')+'.png';
+      link.href=canvas.toDataURL('image/png');
+      link.click();
+      toast('PNG downloaded','ok');
+    }).catch(e=>toast('PNG failed: '+e.message,'err'));
+  } else {
+    // Dynamically load html2canvas
+    toast('Loading image engine…');
+    const sc=document.createElement('script');
+    sc.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    sc.onload=()=>doExportPNG();
+    sc.onerror=()=>toast('PNG requires internet connection','err');
+    document.head.appendChild(sc);
+  }
+}
+
+/* ═══ ITEM TEMPLATES ═══ */
+const ITEM_TEMPLATES={
+  'design':[
+    {desc:'Logo Design',qty:1,rate:15000,note:'3 concepts, 2 revision rounds'},
+    {desc:'Brand Identity Package',qty:1,rate:35000,note:'Logo, colors, typography, guidelines'},
+    {desc:'Business Card Design',qty:1,rate:3500,note:'Front & back, print-ready'},
+    {desc:'Social Media Kit',qty:1,rate:8000,note:'Profile, cover, 5 post templates'},
+  ],
+  'web':[
+    {desc:'Website Design (UI/UX)',qty:1,rate:25000,note:'Up to 5 pages, responsive'},
+    {desc:'Website Development',qty:1,rate:40000,note:'HTML/CSS/JS, responsive'},
+    {desc:'WordPress Setup',qty:1,rate:18000,note:'Theme customization, plugins'},
+    {desc:'Domain & Hosting Setup',qty:1,rate:5000,note:'1 year domain + hosting config'},
+  ],
+  'photo':[
+    {desc:'Product Photography',qty:1,rate:12000,note:'Up to 20 products, edited'},
+    {desc:'Corporate Headshots',qty:1,rate:8000,note:'Up to 5 people, edited'},
+    {desc:'Event Coverage (half day)',qty:1,rate:15000,note:'4 hours, 100+ edited photos'},
+  ],
+  'print':[
+    {desc:'Flyer Design (A5)',qty:1,rate:4500,note:'Both sides, print-ready'},
+    {desc:'Brochure Design (tri-fold)',qty:1,rate:8000,note:'Print-ready, 300dpi'},
+    {desc:'Banner Design',qty:1,rate:5000,note:'Any size, print-ready file'},
+    {desc:'Printing (A4, 100 copies)',qty:100,rate:15,note:'Full color, glossy'},
+  ],
+  'it':[
+    {desc:'IT Support (hourly)',qty:1,rate:2500,note:'On-site or remote'},
+    {desc:'Network Setup',qty:1,rate:12000,note:'Router, switches, config'},
+    {desc:'Computer Repair',qty:1,rate:3500,note:'Diagnosis + fix included'},
+  ],
+};
+
+function openTemplatesModal(){
+  const modal=$('ov-templates');
+  if(modal)modal.classList.add('open');
+}
+function closeTemplatesModal(){
+  const modal=$('ov-templates');
+  if(modal)modal.classList.remove('open');
+}
+function insertTemplate(cat){
+  const tmpl=ITEM_TEMPLATES[cat];
+  if(!tmpl)return;
+  pushUndo();
+  // Add section header for the category
+  const labels={'design':'Design','web':'Web / Dev','photo':'Photography','print':'Print & Media','it':'IT Services'};
+  items.push({id:uid(),type:'section',desc:labels[cat]||cat});
+  tmpl.forEach(t=>{
+    items.push({id:uid(),type:'item',desc:t.desc,qty:t.qty,rate:t.rate,d:0,useD:false,sel:false,optional:false,note:t.note||''});
+  });
+  buildItems();r();
+  closeTemplatesModal();
+  toast(tmpl.length+' items added from template','ok');
+}
+function insertSingleTemplate(cat,idx){
+  const t=ITEM_TEMPLATES[cat]&&ITEM_TEMPLATES[cat][idx];
+  if(!t)return;
+  pushUndo();
+  items.push({id:uid(),type:'item',desc:t.desc,qty:t.qty,rate:t.rate,d:0,useD:false,sel:false,optional:false,note:t.note||''});
+  buildItems();r();
+  toast('Added: '+t.desc,'ok');
+}
+
+/* ═══ INSTALL BANNER ═══ */
+function dismissInstallBanner(){
+  ['install-banner','ios-banner'].forEach(id=>{
+    const b=$(id);
+    if(b&&b.style.display!=='none'){
+      b.style.animation='slideUp .25s ease forwards';
+      setTimeout(()=>{b.style.display='none';},240);
+    }
+  });
+  try{localStorage.setItem('pq_banner_dismissed','1');}catch(e){}
+}
+function maybeShowBanner(){
+  try{if(localStorage.getItem('pq_banner_dismissed'))return;}catch(e){return;}
+  const isStandalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+  if(isStandalone)return; // already installed
+  const ua=navigator.userAgent;
+  const isIOS=/iPhone|iPad|iPod/i.test(ua);
+  const isAndroid=/Android/i.test(ua);
+  if(isIOS){
+    // iOS: always show step-by-step Safari instructions
+    const b=$('ios-banner');
+    if(b){b.style.display='flex';b.style.animation='slideDown .3s ease';}
+  } else if(isAndroid){
+    // Android: show only if beforeinstallprompt has fired (prompt available)
+    // We show it immediately; if prompt not available the Install btn still educates
+    const b=$('install-banner');
+    if(b){b.style.display='flex';b.style.animation='slideDown .3s ease';}
+  }
+}
+
+/* ═══ OVERFLOW MENU ═══ */
+function toggleMenu(){
+  const m=$('overflow-menu');
+  if(!m)return;
+  const open=m.style.display==='block';
+  m.style.display=open?'none':'block';
+  if(!open){
+    // close on outside click
+    setTimeout(()=>{
+      document.addEventListener('click',function h(e){
+        if(!$('menu-wrap').contains(e.target)){m.style.display='none';}
+        document.removeEventListener('click',h);
+      });
+    },0);
+  }
+}
+function closeMenu(){
+  const m=$('overflow-menu');if(m)m.style.display='none';
+}
+
 /* ═══ PWA SETUP ═══ */
 (function(){
   // Inline manifest as blob
@@ -1736,7 +2098,7 @@ function initSavedCounts(){
     display: "standalone",
     background_color: "#0041C2",
     theme_color: "#0041C2",
-    orientation: "landscape-primary",
+    orientation: "any",
     icons: [
       {src: icons192, sizes: "192x192", type: "image/png", purpose: "any maskable"},
       {src: icons512, sizes: "512x512", type: "image/png", purpose: "any maskable"}
@@ -1749,13 +2111,38 @@ function initSavedCounts(){
   // Service worker for offline use
   if('serviceWorker' in navigator){
     const swCode = `
-const CACHE = 'proquote-v1';
+const CACHE = 'proquote-v3';
 self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE).then(c => {
+      // Cache the app shell (this page itself)
+      return c.addAll([self.registration.scope]).catch(()=>{});
+    })
+  );
   self.skipWaiting();
 });
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+    )
+  );
+  self.clients.claim();
+});
 self.addEventListener('fetch', e => {
+  if(e.request.method !== 'GET') return;
   e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request).catch(() => r))
+    caches.open(CACHE).then(cache =>
+      cache.match(e.request).then(cached => {
+        const network = fetch(e.request).then(res => {
+          if(res && res.status === 200 && res.type !== 'opaque'){
+            cache.put(e.request, res.clone());
+          }
+          return res;
+        }).catch(() => cached);
+        return cached || network;
+      })
+    )
   );
 });
 `;
@@ -1771,13 +2158,17 @@ self.addEventListener('fetch', e => {
   window.addEventListener('beforeinstallprompt', e => {
     e.preventDefault();
     deferredPrompt = e;
-    // Show install button
+    // Show install button in topbar (small screens) and in menu
     const btn = document.getElementById('install-btn');
     if(btn) btn.style.display = 'flex';
+    const mbtn = document.getElementById('menu-install-btn');
+    if(mbtn) mbtn.style.display = 'flex';
   });
   window.addEventListener('appinstalled', () => {
     const btn = document.getElementById('install-btn');
     if(btn) btn.style.display = 'none';
+    const mbtn = document.getElementById('menu-install-btn');
+    if(mbtn) mbtn.style.display = 'none';
     toast('ProQuote installed! ✓', 'ok');
   });
   window._installPWA = function(){
