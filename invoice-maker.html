@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Invoice Maker — ProQuote</title>
+    <meta name="theme-color" content="#0041C2">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="manifest" id="pwa-manifest">
+</head>
+
+<body>
+    <!-- ═══ SPLASH SCREEN ═══ -->
+    <div id="splash">
+        <div class="splash-logo">
+            <img src="logo.svg" class="splash-icon" alt="ProQuote Logo">
+            <div class="splash-name">Pro<span>Invoice</span></div>
+            <div class="splash-tagline">Professional Invoice Maker</div>
+            <div class="splash-bar">
+                <div class="splash-bar-inner"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- CONFIRM MODAL -->
+    <div class="overlay" id="ov">
+        <div class="modal">
+            <div class="micon" id="m-ico">⚠️</div>
+            <div class="mtitle" id="m-ttl"></div>
+            <div class="mmsg" id="m-msg"></div>
+            <div class="mbtns">
+                <button class="btn btn-outline">Cancel</button>
+                <button class="btn" id="m-ok">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+    <!-- TOASTS -->
+    <div class="tray" id="tray"></div>
+    <!-- SAVED QUOTES MODAL -->
+    <div class="overlay" id="ov-saved">
+        <div class="modal" style="max-width:500px;width:95%">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+                <div style="font-family:Georgia,serif;font-size:1rem;font-weight:700">💾 Saved Quotes</div>
+                <button class="btn btn-ghost btn-sm" onclick="$('ov-saved').classList.remove('open')"
+                    style="font-size:1.1rem;padding:3px 8px">✕</button>
+            </div>
+            <div id="saved-list" style="max-height:380px;overflow-y:auto;margin-bottom:12px"></div>
+            <div
+                style="font-size:.73rem;color:var(--muted);text-align:center;padding:12px;border-top:1px solid var(--border);background:var(--panel2);border-radius:0 0 10px 10px">
+                <div style="font-weight:700;color:var(--accent);margin-bottom:4px">💡 Pro Tip: Organize in Folders</div>
+                <div>Use <b>💾 Save to File</b> to keep your invoices in a dedicated folder on your computer (e.g.,
+                    <code>Documents/Invoices/2026/</code>) for easy access.</div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- NEW QUOTE CONFIRM MODAL -->
+    <div class="overlay" id="ov-new" style="z-index:600">
+        <div class="modal" style="max-width:340px;text-align:center">
+            <div style="font-size:2rem;margin-bottom:8px">📄</div>
+            <div style="font-family:Georgia,serif;font-size:1rem;font-weight:700;margin-bottom:8px">Start New Invoice?
+            </div>
+            <div style="font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:20px">This will clear all
+                current data. This cannot be undone.</div>
+            <div style="display:flex;gap:8px;justify-content:center">
+                <button class="btn btn-outline" onclick="closeNewModal()" style="flex:1">Cancel</button>
+                <button class="btn btn-danger" onclick="closeNewModal();resetAll()" style="flex:1">Yes, Start
+                    New</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TEMPLATES MODAL -->
+    <div class="overlay" id="ov-templates" style="z-index:600">
+        <div class="modal" style="max-width:520px;max-height:85vh;overflow-y:auto;padding:22px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+                <div>
+                    <div style="font-family:Georgia,serif;font-size:1rem;font-weight:700">⚡ Item Templates</div>
+                    <div style="font-size:.75rem;color:var(--muted);margin-top:2px">Click a category to add all, or tap
+                        individual items</div>
+                </div>
+                <button class="btn btn-ghost btn-sm" onclick="closeTemplatesModal()"
+                    style="font-size:1.1rem;padding:4px 8px">✕</button>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+                <!-- Design -->
+                <div style="border:1px solid var(--border);border-radius:var(--r);overflow:hidden">
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--panel2);cursor:pointer"
+                        onclick="insertTemplate('design')">
+                        <span style="font-size:.82rem;font-weight:700">🎨 Design</span>
+                        <span style="font-size:.7rem;color:var(--accent);font-weight:600">Add all →</span>
+                    </div>
+                    <div style="padding:6px 8px;display:flex;flex-direction:column;gap:3px">
+                        <div onclick="insertSingleTemplate('design',0)"
+                            style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s"
+                            onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''">
+                            <span>Logo
+                                Design</span><span style="color:var(--muted)">रु 15,000</span>
+                        </div>
+                        <div onclick="insertSingleTemplate('design',1)"
+                            style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s"
+                            onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''">
+                            <span>Brand Identity Package</span><span style="color:var(--muted)">रु 35,000</span>
+                        </div>
+                        <div onclick="insertSingleTemplate('design',2)"
+                            style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s"
+                            onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''">
+                            <span>Business Card Design</span><span style="color:var(--muted)">रु 3,500</span>
+                        </div>
+                        <div onclick="insertSingleTemplate('design',3)"
+                            style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s"
+                            onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''">
+                            <span>Social Media Kit</span><span style="color:var(--muted)">रु 8,000</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Web -->
+                <div style="border:1px solid var(--border);border-radius:var(--r);overflow:hidden">
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--panel2);cursor:pointer"
+                        onclick="insertTemplate('web')">
+                        <span style="font-size:.82rem;font-weight:700">💻 Web / Dev</span>
+                        <span style="font-size:.7rem;color:var(--accent);font-weight:600">Add all →</span>
+                    </div>
+                    <div style="padding:6px 8px;display:flex;flex-direction:column;gap:3px">
+                        <div onclick="insertSingleTemplate('web',0)"
+                            style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s"
+                            onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''">
+                            <span>Website Design (UI/UX)</span><span style="color:var(--muted)">रु 25,000</span>
+                        </div>
+                        <div onclick="insertSingleTemplate('web',1)"
+                            style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s"
+                            onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''">
+                            <span>Website Development</span><span style="color:var(--muted)">रु 40,000</span>
+                        </div>
+                        <div onclick="insertSingleTemplate('web',2)"
+                            style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s"
+                            onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''">
+                            <span>WordPress Setup</span><span style="color:var(--muted)">रु 18,000</span>
+                        </div>
+                        <div onclick="insertSingleTemplate('web',3)"
+                            style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s"
+                            onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''">
+                            <span>Domain & Hosting Setup</span><span style="color:var(--muted)">रु 5,000</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Photography -->
+                <div style="border:1px solid var(--border);border-radius:var(--r);overflow:hidden">
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--panel2);cursor:pointer"
+                        onclick="insertTemplate('photo')">
+                        <span style="font-size:.82rem;font-weight:700">📷 Photography</span>
+                        <span style="font-size:.7rem;color:var(--accent);font-weight:600">Add all →</span>
+                    </div>
+                    <div style="padding:6px 8px;display:flex;flex-direction:column;gap:3px">
+                        <div onclick="insertSingleTemplate('photo',0)"
+                            style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s"
+                            onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''">
+                            <span>Product Photography</span><span style="color:var(--muted)">रु 12,000</span>
+                        </div>
+                        <div onclick="insertSingleTemplate('photo',1)"
+                            style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s"
+                            onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''">
+                            <span>Corporate Headshots</span><span style="color:var(--muted)">रु 8,000</span>
+                        </div>
+                        <div onclick="insertSingleTemplate('photo',2)"
+                            style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s"
+                            onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''">
+                            <span>Event Coverage (half day)</span><span style="color:var(--muted)">रु 15,000</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Print -->
+                <div style="border:1px solid var(--border);border-radius:var(--r);overflow:hidden">
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--panel2);cursor:pointer"
+                        onclick="insertTemplate('print')">
+                        <span style="font-size:.82rem;font-weight:700">🖨 Print & Media</span>
+                        <span style="font-size:.7rem;color:var(--accent);font-weight:600">Add all →</span>
+                    </div>
+                    <div style="padding:6px 8px;display:flex;flex-direction:column;gap:3px">
+                        <div onclick="insertSingleTemplate('print',0)"
+                            style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s"
+                            onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''">
+                            <span>Flyer Design (A5)</span><span style="color:var(--muted)">रु 4,500</span>
+                        </div>
+                        <div onclick="insertSingleTemplate('print',1)"
+                            style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s"
+                            onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''">
+                            <span>Brochure Design (tri-fold)</span><span style="color:var(--muted)">रु 8,000</span>
+                        </div>
+                        <div onclick="insertSingleTemplate('print',2)"
+                            style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s"
+                            onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''">
+                            <span>Banner Design</span><span style="color:var(--muted)">रु 5,000</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- IT -->
+                <div style="border:1px solid var(--border);border-radius:var(--r);overflow:hidden">
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--panel2);cursor:pointer"
+                        onclick="insertTemplate('it')">
+                        <span style="font-size:.82rem;font-weight:700">🔧 IT Services</span>
+                        <span style="font-size:.7rem;color:var(--accent);font-weight:600">Add all →</span>
+                    </div>
+                    <div style="padding:6px 8px;display:flex;flex-direction:column;gap:3px">
+                        <div onclick="insertSingleTemplate('it',0)"
+                            style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s"
+                            onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''">
+                            <span>IT
+                                Support (hourly)</span><span style="color:var(--muted)">रु 2,500</span>
+                        </div>
+                        <div onclick="insertSingleTemplate('it',1)"
+                            style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s"
+                            onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''">
+                            <span>Network Setup</span><span style="color:var(--muted)">रु 12,000</span>
+                        </div>
+                        <div onclick="insertSingleTemplate('it',2)"
+                            style="padding:6px 8px;border-radius:5px;cursor:pointer;font-size:.78rem;display:flex;justify-content:space-between;transition:background .1s"
+                            onmouseover="this.style.background='var(--accent-s)'" onmouseout="this.style.background=''">
+                            <span>Computer Repair</span><span style="color:var(--muted)">रु 3,500</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <div class="logo">
+            <a href="index.html"
+                style="text-decoration:none; color:inherit; display:flex; align-items:center; gap:8px;">
+                <img src="logo.svg" alt="ProQuote Logo" style="width:28px; height:28px; border-radius:8px;">
+                <span>Pro<span>Invoice</span></span>
+            </a>
+        </div>
+
+        <div class="top-r">
+            <!-- Always visible: dark mode + new + install + PDF -->
+            <button class="btn btn-ghost btn-sm" id="dark-btn" onclick="toggleDark()"
+                title="Toggle dark mode">🌙</button>
+            <button class="btn btn-outline btn-sm" onclick="showNewModal()" title="Start new quotation" style="gap:5px">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 5v14M5 12h14" />
+                </svg>
+                New
+            </button>
+            <button id="install-btn" class="btn btn-sm" onclick="window._installPWA&&window._installPWA()"
+                title="Add to home screen"
+                style="display:none;align-items:center;gap:5px;background:#25D366;color:#fff;border:none;font-weight:700">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 2v13M7 9l5 6 5-6" />
+                    <path d="M3 19h18" />
+                </svg>
+                Install
+            </button>
+            <button class="btn btn-primary btn-sm" onclick="doExport()">⬇ PDF</button>
+            <!-- 3-dot overflow menu -->
+            <div style="position:relative" id="menu-wrap">
+                <button class="btn btn-ghost btn-sm" id="menu-btn" onclick="toggleMenu()" title="More options"
+                    style="padding:6px 10px;font-size:1.2rem;letter-spacing:.05em;min-height:36px">⋮</button>
+                <div id="overflow-menu"
+                    style="display:none;position:absolute;top:calc(100% + 6px);right:0;min-width:210px;background:var(--panel);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.16);z-index:300;overflow:hidden;animation:mIn .15s ease">
+                    <!-- Export group -->
+                    <div style="padding:5px 0;border-bottom:1px solid var(--border)">
+                        <div
+                            style="padding:4px 14px 2px;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)">
+                            Export</div>
+                        <button class="menu-item" onclick="doExport();closeMenu()">⬇&nbsp; Download PDF</button>
+                        <button class="menu-item" onclick="doExportJPG();closeMenu()">🖼&nbsp; Save as JPG</button>
+                        <button class="menu-item" onclick="doPrint();closeMenu()">🖨&nbsp; Print</button>
+                        <button class="menu-item" style="color:#25D366" onclick="shareWhatsApp();closeMenu()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0">
+                                <path
+                                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                            </svg>
+                            Share via WhatsApp
+                        </button>
+                    </div>
+                    <!-- File group -->
+                    <div style="padding:5px 0;border-bottom:1px solid var(--border)">
+                        <div
+                            style="padding:4px 14px 2px;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)">
+                            File</div>
+                        <button class="menu-item" onclick="openFromFile();closeMenu()">📂&nbsp; Open File</button>
+                        <button class="menu-item" onclick="saveToFile();closeMenu()">💾&nbsp; Save to File</button>
+                        <button class="menu-item" onclick="saveQuote();openSavedModal();closeMenu()">🗂&nbsp; Saved
+                            Quotes</button>
+                    </div>
+                    <!-- App group -->
+                    <div style="padding:5px 0">
+                        <div
+                            style="padding:4px 14px 2px;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)">
+                            App</div>
+                        <button class="menu-item" id="menu-install-btn"
+                            onclick="window._installPWA&&window._installPWA();closeMenu()"
+                            style="display:none;font-weight:700;color:var(--accent)">⬇&nbsp; Add to Home Screen</button>
+                        <button class="menu-item" onclick="toggleDark();closeMenu()">🌙&nbsp; Toggle Dark Mode</button>
+                        <button class="menu-item" onclick="showNewModal();closeMenu()"
+                            style="color:var(--danger)">↺&nbsp; New
+                            Quotation</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ANDROID INSTALL BANNER -->
+    <div id="install-banner"
+        style="display:none;background:linear-gradient(135deg,#0041C2,#1a56e8);color:#fff;padding:11px 14px;flex-shrink:0;align-items:center;gap:10px;z-index:90">
+        <div style="font-size:1.5rem;flex-shrink:0">📲</div>
+        <div style="flex:1;min-width:0">
+            <div style="font-size:.83rem;font-weight:700;line-height:1.3">Add ProQuote to Home Screen</div>
+            <div style="font-size:.7rem;opacity:.85;margin-top:2px">Works offline · No app store needed</div>
+        </div>
+        <button onclick="window._installPWA&&window._installPWA()"
+            style="background:#fff;color:#0041C2;border:none;border-radius:8px;padding:8px 14px;font-size:.8rem;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.2)">Install</button>
+        <button onclick="dismissInstallBanner()"
+            style="background:none;border:none;color:rgba(255,255,255,.6);font-size:1.3rem;cursor:pointer;padding:2px 6px;flex-shrink:0;line-height:1">✕</button>
+    </div>
+
+    <!-- iOS INSTALL BANNER -->
+    <div id="ios-banner"
+        style="display:none;background:linear-gradient(135deg,#1a1d2e,#2a2f4a);color:#fff;padding:12px 14px;flex-shrink:0;align-items:flex-start;gap:10px;z-index:90">
+        <div style="font-size:1.5rem;flex-shrink:0;margin-top:2px">🍎</div>
+        <div style="flex:1;min-width:0">
+            <div style="font-size:.84rem;font-weight:700;margin-bottom:5px">Install on iPhone / iPad</div>
+            <div style="display:flex;flex-direction:column;gap:5px">
+                <div style="display:flex;align-items:center;gap:8px;font-size:.75rem;opacity:.9">
+                    <span
+                        style="background:rgba(255,255,255,.15);border-radius:5px;padding:2px 7px;font-weight:700;white-space:nowrap">1</span>
+                    <span>Open this page in <strong>Safari</strong> (not Chrome)</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;font-size:.75rem;opacity:.9">
+                    <span
+                        style="background:rgba(255,255,255,.15);border-radius:5px;padding:2px 7px;font-weight:700;white-space:nowrap">2</span>
+                    <span>Tap the
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" style="vertical-align:middle;margin:0 1px">
+                            <path d="M8 7l4-4 4 4M12 3v13" />
+                            <rect x="3" y="14" width="18" height="7" rx="2" />
+                        </svg>
+                        <strong>Share</strong> button at the bottom
+                    </span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;font-size:.75rem;opacity:.9">
+                    <span
+                        style="background:rgba(255,255,255,.15);border-radius:5px;padding:2px 7px;font-weight:700;white-space:nowrap">3</span>
+                    <span>Tap <strong>"Add to Home Screen"</strong> then <strong>Add</strong></span>
+                </div>
+            </div>
+            <div style="font-size:.68rem;opacity:.55;margin-top:6px">Works fully offline after installing ✓</div>
+        </div>
+        <button onclick="dismissInstallBanner()"
+            style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.3rem;cursor:pointer;padding:2px 6px;flex-shrink:0;line-height:1;margin-top:-2px">✕</button>
+    </div>
+
+    <!-- STEPBAR -->
+    <div class="stepbar">
+        <button class="stab active" id="st1" onclick="goS(1)">
+            <div class="sbadge">1</div>Company
+        </button>
+        <div class="ssep"></div>
+        <button class="stab" id="st2" onclick="goS(2)">
+            <div class="sbadge">2</div>Customer
+        </button>
+        <div class="ssep"></div>
+        <button class="stab" id="st3" onclick="goS(3)">
+            <div class="sbadge">3</div>Pricing
+        </button>
+        <div class="ssep"></div>
+        <button class="stab" id="st4" onclick="goS(4)">
+            <div class="sbadge">4</div>Items
+        </button>
+        <div class="ssep"></div>
+        <button class="stab" id="st5" onclick="goS(5)">
+            <div class="sbadge">5</div>Preview
+        </button>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+        <!-- FORM PANEL -->
+        <div class="fp">
+
+            <!-- STEP 1: COMPANY -->
+            <div class="pane active" id="pane-1">
+                <div class="pane-head">
+                    <div class="pane-title">Your Company</div>
+                    <div class="pane-sub">Appears at the top of the quotation</div>
+                </div>
+                <div class="pane-body">
+                    <!-- Profile capsules -->
+
+                    <!-- SAVED COMPANIES -->
+                    <div style="margin-bottom:14px">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+                            <span
+                                style="font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">🏢
+                                Your Companies</span>
+                            <span id="co-saved-count"
+                                style="background:var(--border);border-radius:8px;padding:1px 8px;font-size:.65rem;font-weight:700">0
+                                saved</span>
+                        </div>
+                        <div id="co-saved-list" style="display:flex;flex-direction:column;gap:5px;margin-bottom:8px">
+                        </div>
+                        <button class="quick-save-btn" onclick="saveCompany()" id="co-save-btn">
+                            💾 Save This Company
+                        </button>
+                        <div id="co-saved-hint"
+                            style="font-size:.7rem;color:var(--muted);text-align:center;margin-top:5px">Fill
+                            in company name above then tap Save</div>
+                    </div>
+                    <hr class="hr" style="margin-top:0">
+                    <div class="fg"><label class="fl">Company / Business Name *</label><input type="text" id="co-name"
+                            oninput="dr()" placeholder="Acme Studio Pvt. Ltd."></div>
+                    <div class="fg"><label class="fl">Location / City</label><input type="text" id="co-loc"
+                            oninput="dr()" placeholder="Kathmandu, Nepal"></div>
+                    <div class="r2">
+                        <div class="fg"><label class="fl">Phone</label><input type="tel" id="co-phone" oninput="dr()"
+                                placeholder="+977 98XXXXXXXX"></div>
+                        <div class="fg"><label class="fl">Email</label><input type="email" id="co-email" oninput="dr()"
+                                placeholder="hello@company.com"></div>
+                    </div>
+                    <div class="r2">
+                        <div class="fg"><label class="fl">VAT / PAN Number</label><input type="text" id="co-vat"
+                                oninput="dr()" placeholder="603XXXXXX"></div>
+                        <div class="fg"><label class="fl">Website (optional)</label><input type="text" id="co-web"
+                                oninput="dr()" placeholder="www.yourcompany.com"></div>
+                    </div>
+                    <hr class="hr">
+                    <div class="sec-lbl">Logo (optional)</div>
+                    <div class="ldrop" id="ldrop">
+                        <input type="file" accept="image/*" onchange="uploadLogo(event)">
+                        <div id="ldrop-in">
+                            <div style="font-size:1.4rem;margin-bottom:4px">🏢</div>
+                            <div class="ldrop-lbl">Click or drag logo here</div>
+                            <div class="ldrop-sub">PNG, JPG, SVG · max 2MB</div>
+                        </div>
+                    </div>
+                    <div id="logo-acts" style="display:none;gap:6px;margin-top:7px;flex-wrap:wrap">
+                        <button class="btn btn-sm btn-outline" onclick="toggleResize()">✂ Resize</button>
+                        <button class="btn btn-sm btn-danger" onclick="removeLogo()">✕ Remove</button>
+                    </div>
+                    <div id="logo-resize" style="display:none;margin-top:8px">
+                        <label class="fl">Logo size: <span id="lsize-lbl">70</span>px</label>
+                        <input type="range" id="lsize" min="40" max="150" value="70" oninput="resizeLogo(this.value)">
+                    </div>
+                    <div id="logo-bg-row" style="display:none;margin-top:8px">
+                        <label class="logo-bg-toggle">
+                            <input type="checkbox" id="logo-bg-chk" onchange="toggleLogoBg(this.checked)">
+                            <span>Add white background to logo</span>
+                        </label>
+                        <div id="logobg-hint" style="font-size:.68rem;color:var(--muted);margin-top:3px">Transparent
+                            (for PNG
+                            logos)</div>
+                    </div>
+                    <hr class="hr">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px">
+                        <div>
+                            <div class="sec-lbl">Company Stamp</div>
+                            <div class="ldrop" id="sdrop" style="padding:15px 10px">
+                                <input type="file" accept="image/*" onchange="uploadStamp(event)">
+                                <div id="sdrop-in">
+                                    <div style="font-size:1.1rem">🏵️</div>
+                                    <div class="ldrop-lbl" style="font-size:.65rem">Upload Stamp</div>
+                                </div>
+                            </div>
+                            <div id="stamp-acts" style="display:none;gap:4px;margin-top:5px">
+                                <button class="btn btn-sm btn-danger btn-full" onclick="removeStamp()">✕ Remove</button>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="sec-lbl">Signature</div>
+                            <div class="ldrop" id="sigdrop" style="padding:15px 10px">
+                                <input type="file" accept="image/*" onchange="uploadSignature(event)">
+                                <div id="sigdrop-in">
+                                    <div style="font-size:1.1rem">✍️</div>
+                                    <div class="ldrop-lbl" style="font-size:.65rem">Upload Signature</div>
+                                </div>
+                            </div>
+                            <div id="sig-acts" style="display:none;gap:4px;margin-top:5px">
+                                <button class="btn btn-sm btn-danger btn-full" onclick="removeSignature()">✕ Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="hr">
+                    <div class="sec-lbl">Brand Colour</div>
+                    <div style="display:flex;align-items:center;gap:10px">
+                        <input type="color" id="co-col" value="#1e40af" onchange="setCol(this.value)">
+                        <span style="font-size:.76rem;color:var(--muted)">Table header & accent</span>
+                    </div>
+                    <div class="cpicks">
+                        <div class="cpick sel" style="background:#1e40af" data-c="#1e40af" onclick="pickCol(this)">
+                        </div>
+                        <div class="cpick" style="background:#0f766e" data-c="#0f766e" onclick="pickCol(this)"></div>
+                        <div class="cpick" style="background:#b45309" data-c="#b45309" onclick="pickCol(this)"></div>
+                        <div class="cpick" style="background:#6d28d9" data-c="#6d28d9" onclick="pickCol(this)"></div>
+                        <div class="cpick" style="background:#be123c" data-c="#be123c" onclick="pickCol(this)"></div>
+                        <div class="cpick" style="background:#1a1d2e" data-c="#1a1d2e" onclick="pickCol(this)"></div>
+                        <div class="cpick" style="background:#1d6b0a" data-c="#1d6b0a" onclick="pickCol(this)"></div>
+                    </div>
+                    <hr class="hr">
+                    <!-- Document Theme -->
+                    <div class="sec-lbl">Document Theme</div>
+                    <div class="theme-grid">
+                        <div class="theme-card sel" data-theme="classic" onclick="setTheme('classic',this)">
+                            <div class="theme-preview" style="background:#f8f9fc">
+                                <div style="height:10px;background:#1e40af;border-radius:2px 2px 0 0"></div>
+                                <div style="padding:4px 5px;display:flex;flex-direction:column;gap:2px">
+                                    <div style="height:3px;background:#d0d4e4;border-radius:2px;width:70%"></div>
+                                    <div style="height:3px;background:#d0d4e4;border-radius:2px;width:50%"></div>
+                                </div>
+                            </div>
+                            <div class="theme-name">Classic</div>
+                            <div class="theme-desc">Clean header + bar</div>
+                        </div>
+                        <div class="theme-card" data-theme="minimal" onclick="setTheme('minimal',this)">
+                            <div class="theme-preview" style="background:#fff;border:1px solid #e0e0e0">
+                                <div
+                                    style="height:8px;border-bottom:2px solid #1a1d2e;display:flex;align-items:center;padding:0 4px">
+                                    <div style="width:30px;height:3px;background:#1a1d2e;border-radius:1px"></div>
+                                </div>
+                                <div style="padding:4px 5px;display:flex;flex-direction:column;gap:2px">
+                                    <div style="height:3px;background:#ccc;border-radius:2px;width:80%"></div>
+                                    <div style="height:3px;background:#ccc;border-radius:2px;width:55%"></div>
+                                </div>
+                            </div>
+                            <div class="theme-name">Minimal</div>
+                            <div class="theme-desc">Clean & simple</div>
+                        </div>
+                        <div class="theme-card" data-theme="bold" onclick="setTheme('bold',this)">
+                            <div class="theme-preview" style="background:#f8f9fc">
+                                <div
+                                    style="height:16px;background:#1e40af;border-radius:2px 2px 0 0;display:flex;align-items:center;padding:0 4px;gap:3px">
+                                    <div
+                                        style="width:12px;height:12px;background:rgba(255,255,255,.3);border-radius:50%">
+                                    </div>
+                                    <div style="flex:1;height:3px;background:rgba(255,255,255,.5);border-radius:2px">
+                                    </div>
+                                </div>
+                                <div style="padding:4px 5px;display:flex;flex-direction:column;gap:2px">
+                                    <div style="height:3px;background:#d0d4e4;border-radius:2px;width:75%"></div>
+                                    <div style="height:3px;background:#d0d4e4;border-radius:2px;width:50%"></div>
+                                </div>
+                            </div>
+                            <div class="theme-name">Bold</div>
+                            <div class="theme-desc">Full colour header</div>
+                        </div>
+                        <div class="theme-card" data-theme="modern" onclick="setTheme('modern',this)">
+                            <div class="theme-preview"
+                                style="background:#f8f9fc;display:grid;grid-template-columns:12px 1fr">
+                                <div style="background:#1e40af;border-radius:2px 0 0 2px"></div>
+                                <div
+                                    style="padding:4px 5px;display:flex;flex-direction:column;gap:2px;justify-content:center">
+                                    <div style="height:3px;background:#d0d4e4;border-radius:2px;width:80%"></div>
+                                    <div style="height:3px;background:#d0d4e4;border-radius:2px;width:55%"></div>
+                                </div>
+                            </div>
+                            <div class="theme-name">Modern</div>
+                            <div class="theme-desc">Side accent bar</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pnav" style="flex-direction:column;gap:8px">
+
+                    <button class="btn btn-primary btn-full" onclick="goS(2)">Next: Customer →</button>
+                </div>
+            </div>
+
+            <!-- STEP 2: CUSTOMER -->
+            <div class="pane" id="pane-2">
+                <div class="pane-head">
+                    <div class="pane-title">Customer / Client</div>
+                    <div class="pane-sub">Who is this quotation for?</div>
+                </div>
+                <div class="pane-body">
+                    <!-- Client capsules -->
+
+                    <!-- SAVED CLIENTS -->
+                    <div style="margin-bottom:14px">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+                            <span
+                                style="font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">👥
+                                Your Clients</span>
+                            <span id="cl-saved-count"
+                                style="background:var(--border);border-radius:8px;padding:1px 8px;font-size:.65rem;font-weight:700">0
+                                saved</span>
+                        </div>
+                        <div id="cl-saved-list" style="display:flex;flex-direction:column;gap:5px;margin-bottom:8px">
+                        </div>
+                        <button class="quick-save-btn" onclick="saveClient()" id="cl-save-btn">
+                            💾 Save This Client
+                        </button>
+                        <div style="font-size:.7rem;color:var(--muted);text-align:center;margin-top:5px">Fill in client
+                            name
+                            above then tap Save</div>
+                    </div>
+                    <hr class="hr" style="margin-top:0">
+                    <div class="fg"><label class="fl">Customer / Company Name *</label><input type="text" id="cl-name"
+                            oninput="dr()" placeholder="Horizon Brands Pvt. Ltd."></div>
+                    <div class="r2">
+                        <div class="fg"><label class="fl">Contact Person</label><input type="text" id="cl-person"
+                                oninput="dr()" placeholder="Mr. Ram Sharma"></div>
+                        <div class="fg"><label class="fl">Phone</label><input type="tel" id="cl-phone" oninput="dr()"
+                                placeholder="+977 98XXXXXXXX"></div>
+                    </div>
+                    <div class="fg"><label class="fl">Location / Address</label><textarea id="cl-addr" rows="2"
+                            oninput="dr()" placeholder="New Road, Kathmandu 44600"></textarea></div>
+                    <hr class="hr">
+                    <div class="sec-lbl">Quotation Reference</div>
+                    <div class="r2">
+                        <div class="fg"><label class="fl">Quote Number</label><input type="text" id="q-no"
+                                oninput="dr()" placeholder="Auto-generated"></div>
+                        <div class="fg"><label class="fl">Status</label>
+                            <select id="q-status" onchange="r()">
+                                <option value="draft">Draft</option>
+                                <option value="sent">Sent</option>
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="r2">
+                        <div class="fg"><label class="fl">Date *</label><input type="date" id="q-date" oninput="r()">
+                        </div>
+                        <div class="fg"><label class="fl">Valid Until *</label><input type="date" id="q-valid"
+                                oninput="r()">
+                        </div>
+                    </div>
+                    <div class="fg"><label class="fl">Subject / Project (optional)</label><input type="text" id="q-subj"
+                            oninput="dr()" placeholder="Brand Identity & Website Project"></div>
+                </div>
+                <div class="pnav" style="flex-direction:column;gap:8px">
+
+                    <div style="display:flex;gap:8px">
+                        <button class="btn btn-outline" onclick="goS(1)">← Back</button>
+                        <button class="btn btn-primary" style="flex:1" onclick="goS(3)">Next: Pricing →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 3: PRICING -->
+            <div class="pane" id="pane-3">
+                <div class="pane-head">
+                    <div class="pane-title">Pricing & Settings</div>
+                    <div class="pane-sub">Discount, taxes and what to show</div>
+                </div>
+                <div class="pane-body">
+                    <div class="sec-lbl">Discount & Tax</div>
+                    <div class="r2">
+                        <div class="fg"><label class="fl">Default Discount %</label><input type="number" id="p-disc"
+                                value="0" min="0" max="100" step="0.5" oninput="dr()" placeholder="0"></div>
+                        <div class="fg"><label class="fl">VAT %</label>
+                            <select id="p-vat" onchange="vatChange()">
+                                <option value="0">0% — No VAT</option>
+                                <option value="13" selected>13% — Nepal VAT</option>
+                                <option value="5">5%</option>
+                                <option value="10">10%</option>
+                                <option value="18">18%</option>
+                                <option value="custom">Custom...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="fg" id="vat-custom-row" style="display:none">
+                        <label class="fl">Custom VAT %</label>
+                        <input type="number" id="p-vat-c" value="0" min="0" max="100" oninput="dr()">
+                    </div>
+                    <!-- Extra tax lines -->
+                    <div id="tax-lines"></div>
+                    <button class="btn btn-ghost btn-sm" onclick="addTaxLine()"
+                        style="font-size:.76rem;color:var(--accent);margin-bottom:10px">＋ Add Tax Line</button>
+                    <div class="r2">
+                        <div class="fg"><label class="fl">Shipping / Delivery</label><input type="number" id="p-ship"
+                                value="0" min="0" oninput="dr()" placeholder="0"></div>
+                        <div class="fg"><label class="fl">Rounding</label>
+                            <select id="p-round" onchange="r()">
+                                <option value="none">None</option>
+                                <option value="round">Round</option>
+                                <option value="ceil">Round Up</option>
+                                <option value="floor">Round Down</option>
+                            </select>
+                        </div>
+                    </div>
+                    <hr class="hr">
+                    <div class="sec-lbl">Document Visibility</div>
+                    <div class="tog-row" onclick="tog('rates')">
+                        <div>
+                            <div class="tog-name">Show Rate Column</div>
+                            <div class="tog-hint">Display unit rate in table</div>
+                        </div>
+                        <div class="sw on" id="sw-rates"></div>
+                    </div>
+                    <div class="tog-row" onclick="tog('dscol')">
+                        <div>
+                            <div class="tog-name">Show Discounted Price Column</div>
+                        </div>
+                        <div class="sw on" id="sw-dscol"></div>
+                    </div>
+                    <div class="tog-row" onclick="tog('savings')">
+                        <div>
+                            <div class="tog-name">Show Discount Savings Row</div>
+                        </div>
+                        <div class="sw on" id="sw-savings"></div>
+                    </div>
+                    <div class="tog-row" onclick="tog('vat')">
+                        <div>
+                            <div class="tog-name">Include VAT in Total</div>
+                        </div>
+                        <div class="sw on" id="sw-vat"></div>
+                    </div>
+                    <div class="tog-row" onclick="tog('grandtot')">
+                        <div>
+                            <div class="tog-name">Show Grand Total</div>
+                        </div>
+                        <div class="sw on" id="sw-grandtot"></div>
+                    </div>
+                    <hr class="hr">
+                    <div class="sec-lbl">Watermark</div>
+                    <div class="tog-row" onclick="togWatermark()">
+                        <div>
+                            <div class="tog-name">Add "PAID" Watermark</div>
+                            <div class="tog-hint">Shows diagonal PAID stamp on document</div>
+                        </div>
+                        <div class="sw" id="sw-watermark"></div>
+                    </div>
+                    <div id="watermark-color-row"
+                        style="display:none;margin-top:8px;padding:10px 12px;background:var(--panel2);border:1px solid var(--border);border-radius:var(--r)">
+                        <label class="fl" style="margin-bottom:8px">Watermark Style</label>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap">
+                            <button class="wm-style-btn wm-sel" data-wm="PAID" onclick="setWmText('PAID',this)"
+                                style="flex:1;padding:7px;border:2px solid var(--accent);border-radius:6px;background:var(--accent-s);color:var(--accent);font-weight:700;font-size:.8rem;cursor:pointer">PAID</button>
+                            <button class="wm-style-btn" data-wm="APPROVED" onclick="setWmText('APPROVED',this)"
+                                style="flex:1;padding:7px;border:2px solid var(--border);border-radius:6px;background:var(--panel2);color:var(--muted);font-weight:700;font-size:.8rem;cursor:pointer">APPROVED</button>
+                            <button class="wm-style-btn" data-wm="DRAFT" onclick="setWmText('DRAFT',this)"
+                                style="flex:1;padding:7px;border:2px solid var(--border);border-radius:6px;background:var(--panel2);color:var(--muted);font-weight:700;font-size:.8rem;cursor:pointer">DRAFT</button>
+                            <button class="wm-style-btn" data-wm="VOID" onclick="setWmText('VOID',this)"
+                                style="flex:1;padding:7px;border:2px solid var(--border);border-radius:6px;background:var(--panel2);color:var(--muted);font-weight:700;font-size:.8rem;cursor:pointer">VOID</button>
+                        </div>
+                    </div>
+                    <hr class="hr">
+                    <div class="sec-lbl">Notes & Terms</div>
+                    <div class="tog-row" onclick="tog('notes')">
+                        <div class="tog-name">Include Notes</div>
+                        <div class="sw on" id="sw-notes"></div>
+                    </div>
+                    <div id="notes-section">
+                        <div class="fg"><label class="fl">Notes</label><textarea id="p-notes" rows="3" oninput="dr()"
+                                placeholder="50% advance required. Revisions limited to 3 rounds."></textarea></div>
+                    </div>
+                    <div class="tog-row" onclick="tog('payterms')">
+                        <div class="tog-name">Include Payment Terms</div>
+                        <div class="sw on" id="sw-payterms"></div>
+                    </div>
+                    <div id="payterms-section">
+                        <div class="fg"><label class="fl">Payment Terms</label><input type="text" id="p-payterms"
+                                oninput="dr()" placeholder="50% advance, balance on delivery"></div>
+                        <div class="fg"><label class="fl">Bank / Payment Details</label><textarea id="p-bank" rows="2"
+                                oninput="dr()" placeholder="Bank: Citizens Bank | A/C: 00100XXXXXXX"></textarea></div>
+                    </div>
+                    <div class="tog-row" onclick="tog('stamp')">
+                        <div class="tog-name">Include Company Stamp</div>
+                        <div class="sw on" id="sw-stamp"></div>
+                    </div>
+                    <div class="tog-row" onclick="tog('sign')">
+                        <div class="tog-name">Include Signature Block</div>
+                        <div class="sw on" id="sw-sign"></div>
+                    </div>
+                </div>
+                <div class="pnav">
+                    <button class="btn btn-outline" onclick="goS(2)">← Back</button>
+                    <button class="btn btn-primary" style="flex:1" onclick="goS(4)">Next: Items →</button>
+                </div>
+            </div>
+
+            <!-- STEP 4: ITEMS -->
+            <div class="pane" id="pane-4">
+                <div class="pane-head">
+                    <div class="pane-title">Line Items</div>
+                    <div class="pane-sub"><kbd
+                            style="background:var(--border);border-radius:3px;padding:1px 5px;font-size:.72rem;font-family:monospace">Shift+A</kbd>
+                        add · <kbd
+                            style="background:var(--border);border-radius:3px;padding:1px 5px;font-size:.72rem;font-family:monospace">Ctrl+Z</kbd>
+                        undo · <kbd
+                            style="background:var(--border);border-radius:3px;padding:1px 5px;font-size:.72rem;font-family:monospace">Tab</kbd>
+                        next field</div>
+                </div>
+                <div class="pane-body" id="items-pane-body" style="padding-bottom:0;overflow-y:auto">
+                    <div class="r2" style="margin-bottom:12px">
+                        <div class="fg"><label class="fl">Currency</label>
+                            <select id="s-curr" onchange="r()">
+                                <option value="रु">NPR — रु</option>
+                                <option value="$">USD — $</option>
+                                <option value="£">GBP — £</option>
+                                <option value="€">EUR — €</option>
+                                <option value="₹">INR — ₹</option>
+                            </select>
+                        </div>
+                        <div class="fg"><label class="fl">Unit Label</label>
+                            <select id="s-unit" onchange="unitChange()">
+                                <option value="">None</option>
+                                <option value="pcs">Pcs</option>
+                                <option value="kg">Kg</option>
+                                <option value="mtr">Mtr</option>
+                                <option value="sqft">Sq.ft</option>
+                                <option value="set">Set</option>
+                                <option value="custom">Custom…</option>
+                            </select>
+                            <input type="text" id="s-unit-custom" placeholder="Enter unit name" oninput="dr()"
+                                style="display:none;margin-top:6px">
+                        </div>
+                    </div>
+                    <!-- PRODUCT LIBRARY -->
+                    <div
+                        style="background:var(--panel2);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;margin-bottom:10px">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+                            <span
+                                style="font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">📦
+                                Product Library</span>
+                            <span id="lib-saved-count"
+                                style="background:var(--border);border-radius:8px;padding:1px 8px;font-size:.65rem;font-weight:700">0
+                                saved</span>
+                        </div>
+                        <!-- Add new product - always visible, simple -->
+                        <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">
+                            <input type="text" id="lib-name" placeholder="Product name"
+                                style="flex:2;min-width:100px;font-size:.82rem;padding:8px 10px">
+                            <input type="number" id="lib-rate" placeholder="Rate" min="0" step="any"
+                                style="flex:1;min-width:70px;font-size:.82rem;padding:8px 10px">
+                            <button class="btn btn-primary btn-sm" onclick="saveLibItem()"
+                                style="white-space:nowrap;padding:8px 12px">＋ Save</button>
+                        </div>
+                        <!-- Saved products list -->
+                        <div id="lib-saved-list" style="display:flex;flex-direction:column;gap:4px"></div>
+                    </div>
+                    <div class="items-wrap">
+                        <div class="items-hd">
+                            <input type="checkbox" id="sel-all" title="Select all" onchange="toggleSelAll(this.checked)"
+                                style="width:14px;height:14px;cursor:pointer;accent-color:rgba(255,255,255,.7)">
+                            <span>Description</span>
+                            <span style="text-align:center">Qty</span>
+                            <span style="text-align:right">Rate</span>
+                            <span style="text-align:right">Disc%</span>
+                            <span></span>
+                        </div>
+                        <div id="items-body"></div>
+                    </div>
+                </div>
+                <div style="flex-shrink:0;border-top:1px solid var(--border);background:var(--panel)">
+                    <div id="bulk-bar"
+                        style="display:none;align-items:center;justify-content:space-between;padding:8px 14px;background:var(--danger-s);border-bottom:1px solid rgba(229,57,53,.25);gap:8px">
+                        <span id="bulk-count" style="font-size:.8rem;font-weight:600;color:var(--danger)">0
+                            selected</span>
+                        <button class="btn btn-danger btn-sm" onclick="deleteSelected()">🗑 Delete Selected</button>
+                    </div>
+                    <div style="padding:8px 12px;display:flex;gap:6px;flex-wrap:wrap">
+                        <button class="add-btn" style="flex:1;min-width:80px" onclick="addItem()">＋ Item</button>
+
+                        <button class="btn btn-outline btn-sm" onclick="toggleDrawer('drawer-lib');goS(4)"
+                            title="Product library">📦 Library</button>
+                        <button class="btn btn-outline btn-sm" onclick="addSection()" title="Add section header">§
+                            Section</button>
+                        <button class="btn btn-outline btn-sm" onclick="addOptional()" title="Add optional item"
+                            style="color:var(--warn);border-color:var(--warn)">? Optional</button>
+                        <button class="btn btn-outline btn-sm" onclick="openTemplatesModal()"
+                            title="Insert from templates" style="color:var(--accent);border-color:var(--accent)">⚡
+                            Templates</button>
+                    </div>
+                    <div class="pnav" style="border-top:1px solid var(--border);padding-top:10px">
+                        <button class="btn btn-outline" onclick="goS(3)">← Back</button>
+                        <button class="btn btn-primary" style="flex:1" onclick="goS(5)">Preview →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 5: PREVIEW -->
+            <div class="pane" id="pane-5">
+                <div class="pane-head">
+                    <div class="pane-title">Preview & Export</div>
+                    <div class="pane-sub">Review then download or print</div>
+                </div>
+                <div class="pane-body">
+                    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+                        <button class="btn btn-primary btn-full" onclick="doExport()"
+                            style="padding:11px;font-size:.88rem">⬇
+                            Download PDF</button>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                            <button class="btn btn-outline btn-full" onclick="doPrint()" style="padding:10px">🖨
+                                Print</button>
+                            <button class="btn btn-outline btn-full" onclick="doExportJPG()" style="padding:10px">🖼
+                                Save as
+                                JPG</button>
+                        </div>
+                        <button class="btn btn-whatsapp btn-full" onclick="shareWhatsApp()"
+                            style="padding:10px;font-size:.84rem">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                            </svg>
+                            Share via WhatsApp
+                        </button>
+                    </div>
+                    <hr class="hr">
+                    <div class="sec-lbl">Quick Toggles</div>
+                    <div class="tog-row" onclick="tog('rates')">
+                        <div class="tog-name">Show Rate Column</div>
+                        <div class="sw on" id="sw-rates-2"></div>
+                    </div>
+                    <div class="tog-row" onclick="tog('grandtot')">
+                        <div class="tog-name">Show Grand Total</div>
+                        <div class="sw on" id="sw-grandtot-2"></div>
+                    </div>
+                    <div class="tog-row" onclick="tog('dscol')">
+                        <div class="tog-name">Show Disc. Price Column</div>
+                        <div class="sw on" id="sw-dscol-2"></div>
+                    </div>
+                    <hr class="hr">
+                    <div class="sec-lbl">Summary</div>
+                    <div class="sum-card" id="sum-box"></div>
+                </div>
+                <div class="pnav"><button class="btn btn-outline" onclick="goS(4)">← Edit Items</button></div>
+            </div>
+        </div><!-- /fp -->
+
+        <!-- PREVIEW PANEL -->
+        <div class="pp" id="pp">
+            <div class="pvbar">
+                <div class="pvbar-l">📄 Live Preview <span class="pg-pill" id="pg-pill">1 page</span></div>
+
+            </div>
+            <div class="doc-scaler">
+                <div class="doc-scaler-inner" id="doc-scaler-inner">
+                    <div id="qdoc"></div>
+                </div>
+            </div>
+        </div>
+    </div><!-- /main -->
+
+
+    <!-- TOAST TRAY -->
+    <div class="tray" id="tray"></div>
+
+    <script src="js/app.js"></script>
+</body>
+
+</html>

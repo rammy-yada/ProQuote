@@ -1,0 +1,13 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Solid Blue Background: fully fills the space -->
+  <rect width="512" height="512" fill="#0041C2" />
+  
+  <!-- Centered Quotes -->
+  <g transform="translate(256, 170) scale(6) translate(-52, -50)">
+    <path d="M45,40 C41.69,40 39,42.69 39,46 V50 H51 V46 C51,42.69 48.31,40 45,40 Z M59,40 C55.69,40 53,42.69 53,46 V50 H65 V46 C65,42.69 62.31,40 59,40 Z M39,50 L39,60 L45,60 C48.31,60 51,57.31 51,54 L51,50 L39,50 Z M53,50 L53,60 L59,60 C62.31,60 65,57.31 65,54 L65,50 L53,50 Z" fill="#B59410" />
+  </g>
+
+  <!-- Two Lines -->
+  <path d="M 128,340 H 384" stroke="#B59410" stroke-width="28" stroke-linecap="round"/>
+  <path d="M 176,420 H 336" stroke="#B59410" stroke-width="28" stroke-linecap="round"/>
+</svg>
